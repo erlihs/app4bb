@@ -8,10 +8,37 @@ export default defineConfig({
     // https://vitepress.dev/reference/default-theme-config
     nav: [
       { text: 'Home', link: '/' },
+      { text: 'Introduction', link: '/introduction/' },
       { text: 'Guide', link: '/guide/' },
     ],
 
     sidebar: {
+      '/introduction/': [
+        {
+          text: 'Why?',
+          items: [
+            { text: 'Vision', link: '/introduction/vision' },
+            { text: 'Lean canvas', link: '/introduction/lean-canvas' },
+            { text: 'Roadmap', link: '/introduction/roadmap' },
+          ],
+        },
+        {
+          text: 'Who?',
+          items: [
+            { text: 'Skills', link: '/introduction/skills' },
+            { text: 'Habits', link: '/introduction/habits' },
+            { text: 'AI', link: '/introduction/ai' },
+          ],
+        },
+        {
+          text: 'How?',
+          items: [
+            { text: 'Design', link: '/introduction/design' },
+            { text: 'Architecture', link: '/introduction/architecture' },
+            { text: 'Quality', link: '/introduction/quality' },
+          ],
+        },
+      ],
       '/guide/': [
         {
           text: 'Getting started',
