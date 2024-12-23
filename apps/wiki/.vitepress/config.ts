@@ -77,6 +77,7 @@ export default defineConfig({
               text: 'UI Component Framework',
               link: '/guide/web-application/ui-component-framework',
             },
+            { text: 'Multi Language Support', link: '/guide/web-application/i18n' },
           ],
         },
         {

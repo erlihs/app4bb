@@ -1,6 +1,11 @@
 <script setup lang="ts">
 import { RouterLink, RouterView } from 'vue-router'
 import HelloWorld from './components/HelloWorld.vue'
+import { useI18n } from 'vue-i18n'
+const { t, locale } = useI18n()
+function toggleLocale() {
+  locale.value = locale.value === 'en' ? 'fr' : 'en'
+}
 </script>
 
 <template>
@@ -9,14 +14,14 @@ import HelloWorld from './components/HelloWorld.vue'
 
     <div class="wrapper">
       <HelloWorld msg="You did it!" />
-
       <nav>
-        <RouterLink to="/">Home</RouterLink>
-        <RouterLink to="/about">About</RouterLink>
+        <v-btn @click="toggleLocale()">{{ locale }}</v-btn>
+        <RouterLink to="/">{{ t('app.home') }}</RouterLink>
+        <RouterLink to="/about">{{ t('app.about') }}</RouterLink>
+        <RouterLink to="/sandbox">Sandbox</RouterLink>
       </nav>
     </div>
   </header>
-
   <RouterView />
 </template>
 

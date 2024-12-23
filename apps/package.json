@@ -20,10 +20,12 @@
     "docs:preview": "vitepress preview wiki --port 5174"
   },
   "dependencies": {
+    "@intlify/unplugin-vue-i18n": "^6.0.2",
     "@mdi/js": "^7.4.47",
     "pinia": "^2.2.6",
     "unplugin-vue-markdown": "^0.28.0",
     "vue": "^3.5.13",
+    "vue-i18n": "^10.0.5",
     "vue-router": "^4.4.5",
     "vuetify": "^3.7.6"
   },
