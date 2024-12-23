@@ -30,5 +30,11 @@ export default [
       'cypress/support/**/*.{js,ts,jsx,tsx}'
     ],
   },
-  skipFormatting
+  skipFormatting,
+  {
+    files: ['src/pages/**/*.vue'],
+    rules: {
+      'vue/multi-word-component-names': 'off',
+    },
+  }
 ]
