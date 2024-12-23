@@ -47,6 +47,14 @@ export default defineConfig({
             { text: 'Create project', link: '/guide/getting-started/create-project' },
           ],
         },
+        {
+          text: 'Landing page',
+          items: [
+            { text: 'Branding and style', link: '/guide/landing-page/branding-and-style' },
+            { text: 'Landing page', link: '/guide/landing-page/landing-page' },
+            { text: 'Search engines', link: '/guide/landing-page/seo' },
+          ],
+        },
       ],
     },
 
