@@ -72,7 +72,11 @@ export default defineConfig({
           text: 'Web application',
           items: [
             { text: 'Install Vite + Vue + TS', link: '/guide/web-application/install-vite-vue-ts' },
-            { text: 'File based routing', link: '/guide/web-application/file-based-routing' },
+            { text: 'File Based Routing', link: '/guide/web-application/file-based-routing' },
+            {
+              text: 'UI Component Framework',
+              link: '/guide/web-application/ui-component-framework',
+            },
           ],
         },
         {
