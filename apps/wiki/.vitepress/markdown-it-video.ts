@@ -10,10 +10,9 @@ function youtubeParser(url) {
   return match && match[7].length === 11 ? match[7] : url
 }
 
-/* eslint-disable max-len */
 const vimeoRegex =
   /https?:\/\/(?:www\.|player\.)?vimeo.com\/(?:channels\/(?:\w+\/)?|groups\/([^/]*)\/videos\/|album\/(\d+)\/video\/|)(\d+)(?:$|\/|\?)/
-/* eslint-enable max-len */
+
 function vimeoParser(url) {
   const match = url.match(vimeoRegex)
   return match && typeof match[3] === 'string' ? match[3] : url
@@ -43,11 +42,9 @@ const EMBED_REGEX = /@\[([a-zA-Z].+)]\([\s]*(.*?)[\s]*[)]/im
 
 function videoEmbed(md, options) {
   function videoReturn(state, silent) {
-    var serviceEnd
-    var serviceStart
-    var token
-    var videoID
-    var theState = state
+    let token
+    let videoID
+    const theState = state
     const oldPos = state.pos
 
     if (
@@ -86,8 +83,8 @@ function videoEmbed(md, options) {
       videoID = ''
     }
 
-    serviceStart = oldPos + 2
-    serviceEnd = md.helpers.parseLinkLabel(state, oldPos + 1, false)
+    const serviceStart = oldPos + 2
+    const serviceEnd = md.helpers.parseLinkLabel(state, oldPos + 1, false)
 
     //
     // We found the end of the link, and know for a fact it's a valid link;
@@ -146,9 +143,8 @@ function videoUrl(service, videoID, url, options) {
         let j = 0
 
         while (timeParts.length > 0) {
-          /* eslint-disable no-restricted-properties */
           startTime += Number(timeParts.pop()) * Math.pow(60, j)
-          /* eslint-enable no-restricted-properties */
+
           j += 1
         }
         parameters.set('start', startTime)
@@ -192,9 +188,9 @@ function tokenizeVideo(md, options) {
   function tokenizeReturn(tokens, idx) {
     const videoID = md.utils.escapeHtml(tokens[idx].videoID)
     const service = md.utils.escapeHtml(tokens[idx].service).toLowerCase()
-    var checkUrl =
+    const checkUrl =
       /http(?:s?):\/\/(?:www\.)?[a-zA-Z0-9-:.]{1,}\/render(?:\/)?[a-zA-Z0-9.&;?=:%]{1,}url=http(?:s?):\/\/[a-zA-Z0-9 -:.]{1,}\/[a-zA-Z0-9]{1,5}\/\?[a-zA-Z0-9.=:%]{1,}/
-    var num
+    let num
 
     if (service === 'osf' && videoID) {
       num = Math.random() * 0x10000
@@ -252,8 +248,8 @@ const defaults = {
 }
 
 export default function (md, options) {
-  var theOptions = options
-  var theMd = md
+  let theOptions = options
+  const theMd = md
   if (theOptions) {
     Object.keys(defaults).forEach(function checkForKeys(key) {
       if (typeof theOptions[key] === 'undefined') {

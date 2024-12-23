@@ -12,7 +12,7 @@ export default [
 
   {
     name: 'app/files-to-ignore',
-    ignores: ['**/dist/**', '**/dist-ssr/**', '**/coverage/**'],
+    ignores: ['**/dist/**', '**/dist-ssr/**', '**/coverage/**', '**/cache/**'],
   },
 
   ...pluginVue.configs['flat/essential'],
@@ -30,5 +30,5 @@ export default [
       'cypress/support/**/*.{js,ts,jsx,tsx}'
     ],
   },
-  skipFormatting,
+  skipFormatting
 ]
