@@ -4,21 +4,33 @@ layout: home
 
 hero:
   name: 'Bullshit Bingo'
-  text: 'Release the energy to focus on business'
-  tagline: My great project tagline
+  tagline: Release the Energy to Focus on Business
+  image:
+    src: ./logo.png
+    alt: Bullshit Bingo
   actions:
     - theme: brand
-      text: Markdown Examples
-      link: /markdown-examples
+      text: Introduction
+      link: /introduction/
     - theme: alt
-      text: API Examples
-      link: /api-examples
+      text: Guide
+      link: /guide/
 
 features:
-  - title: Feature A
-    details: Lorem ipsum dolor sit amet, consectetur adipiscing elit
-  - title: Feature B
-    details: Lorem ipsum dolor sit amet, consectetur adipiscing elit
-  - title: Feature C
-    details: Lorem ipsum dolor sit amet, consectetur adipiscing elit
+  - title: Why?
+    link: /introduction/vision
+    details: Create a vision, Understand the problem, Draw roadmap
+  - title: who?
+    link: /introduction/skills
+    details: Acknowledge skills, Develop Habits, Plan time
+  - title: How?
+    link: /introduction/design
+    details: Do the design right, Choose architecture, Keep high standards
 ---
+
+&nbsp;
+&nbsp;
+
+# Why do we need yet another web application?
+
+> We don't need yet another web application. We need time. Time to do things that are of high value to us. And if any of these things need a web application, this is the right place to start.
