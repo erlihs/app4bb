@@ -69,6 +69,12 @@ export default defineConfig({
           ],
         },
         {
+          text: 'Web application',
+          items: [
+            { text: 'Install Vite + Vue + TS', link: '/guide/web-application/install-vite-vue-ts' },
+          ],
+        },
+        {
           text: 'Wiki',
           items: [
             { text: 'Setting up VitePress', link: '/guide/wiki/setting-up-vitepress' },
