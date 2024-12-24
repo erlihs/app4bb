@@ -280,3 +280,176 @@ onMounted(() => {
 })
 </script>
 ```
+
+## Navigation
+
+1. Create a new store `@/stores/app/navigation.ts` for populating navigation menu and breadcrumbs.
+
+```ts
+import { defineStore, acceptHMRUpdate } from 'pinia'
+import { useRouter, useRoute } from 'vue-router'
+
+export const useNavigationStore = defineStore('navigation', () => {
+  const routes = useRouter().getRoutes()
+  const route = useRoute()
+
+  const allPages = routes.map((route) => {
+    return {
+      path: route.path,
+      level: route.path == '/' ? 0 : route.path.split('/').length - 1,
+      children:
+        routes.find((r) => r.path.includes(route.path) && r.path !== route.path) !== undefined,
+      title:
+        route.meta?.title?.toString() ||
+        route.path
+          .split('/')
+          .at(-1)
+          ?.split('-')
+          .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+          .join(' ') ||
+        '',
+      description: route.meta?.description?.toString() || '',
+      icon: (route.meta?.icon as string) || '',
+      color: (route.meta?.color as string) || '',
+      role: (route.meta?.role as string) || '',
+    }
+  })
+
+  const title = computed(() => (path: string) => {
+    const page = allPages.find((page) => page.path === path)
+    return page ? page.title : ''
+  })
+
+  const breadcrumbs = computed(() => {
+    const crumbs = allPages
+      .sort((a, b) => a.level - b.level)
+      .map((page) => {
+        return {
+          title: page.title,
+          disabled: route.path === page.path,
+          href: page.path,
+          icon: page.icon,
+        }
+      })
+    return crumbs
+  })
+
+  const pages = computed(() => {
+    return allPages.filter((page) => page.level < 2)
+  })
+
+  return {
+    pages,
+    title,
+    breadcrumbs,
+  }
+})
+
+if (import.meta.hot) {
+  import.meta.hot.accept(acceptHMRUpdate(useNavigationStore, import.meta.hot))
+}
+```
+
+2. Include the new Navigation store in Main store `@/stores/index.ts`
+
+```ts{5,11}
+import { defineStore, acceptHMRUpdate } from 'pinia'
+
+export const useAppStore = defineStore('app', () => {
+  const settings = useSettingsStore()
+  const navigation = useNavigationStore()
+
+  function init() {
+    settings.init()
+  }
+
+  return { settings, navigation, init }
+})
+
+if (import.meta.hot) {
+  import.meta.hot.accept(acceptHMRUpdate(useSettingsStore, import.meta.hot))
+}
+```
+
+3. Add breadcrumbs and navigation store to `@/App.vue`
+
+```vue
+<template>
+  <v-app>
+    <v-navigation-drawer v-model="drawer" app>
+      <v-list>
+        <v-list-item
+          v-for="page in app.navigation.pages"
+          :key="page.path"
+          :prepend-icon="page.icon"
+          :to="page.path"
+        >
+          <v-list-item-title>{{ page.title }}</v-list-item-title>
+        </v-list-item>
+      </v-list>
+    </v-navigation-drawer>
+    <v-app-bar>
+      <!-- ... -->
+    </v-app-bar>
+    <v-main class="ma-4">
+      <v-breadcrumbs :items="app.navigation.breadcrumbs">
+        <template v-slot:title="{ item, index }">
+          <v-breadcrumbs-item
+            v-if="index !== app.navigation.breadcrumbs.length - 1"
+            :to="item.href"
+          >
+            {{ item.title }}
+          </v-breadcrumbs-item>
+          <v-breadcrumbs-item v-else>{{ item.title }}</v-breadcrumbs-item>
+        </template>
+      </v-breadcrumbs>
+      <router-view />
+    </v-main>
+    <v-footer app>
+      <!-- ... -->
+    </v-footer>
+  </v-app>
+</template>
+
+<script setup lang="ts">
+const drawer = ref(false)
+const { mobile } = useDisplay()
+const app = useAppStore()
+onMounted(() => {
+  app.init()
+})
+</script>
+```
+
+4. Add cards to Home view `@/pages/index.vue`
+
+```vue
+<template>
+  <h1>Home</h1>
+  <v-row>
+    <v-col cols="12" md="4" v-for="page in navigation.pages.filter((page) => page.path !== '/' )" :key="page.path">
+      <v-card
+        min-height="8em"
+        :style="cardBackground(page.color)"
+        :prepend-icon="page.icon"
+        :title="page.title"
+        :to="page.path"
+        :text="page.description"
+      >
+      </v-card>
+    </v-col>
+  </v-row>
+</template>
+
+<script setup lang="ts">
+definePage({meta:{
+  title: 'Welcome Home',
+  description: 'Welcome to the home page',
+  icon: '$mdiHome',
+  color: '#ABCDEF',
+}})
+const navigation = useNavigationStore()
+const cardBackground = useCardBackground
+</script>
+```
+
