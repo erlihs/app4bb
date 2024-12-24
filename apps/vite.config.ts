@@ -11,6 +11,7 @@ import VueI18nPlugin from '@intlify/unplugin-vue-i18n/vite'
 import AutoImport from 'unplugin-auto-import/vite'
 import Components from 'unplugin-vue-components/vite'
 import AutoImportMdiIcons from './src/plugins/AutoImportMdiIcons'
+import { unheadComposablesImports } from 'unhead'
 
 async function extractMetaFromMarkdown(absolutePath: string): Promise<Record<string, unknown> | null> {
   try {
@@ -74,7 +75,8 @@ export default defineConfig({
             'useRtl',
             'useTheme'
           ]
-        }
+        },
+        unheadComposablesImports[0],
       ],
       dirs: ['./src/composables/**', './src/stores/**']
     }),

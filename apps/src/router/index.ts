@@ -9,6 +9,12 @@ const router = createRouter({
 
 router.beforeEach(async (to) => {
   await loadPageTranslations(to.path)
+
+  const appTitle = 'Bullshit Bingo'
+  const pageTitle = useNavigationStore().title(to.path)
+  const title = pageTitle ? `${appTitle} - ${pageTitle}` : appTitle
+  useHead({ title })
+
   return true
 })
 

@@ -6,6 +6,7 @@ This article shows how to create main layout, backed by Pinia store. Enhancement
 
 - new layout with app bar, navigation bar and footer.
 - responsive theme, language and font size selectors.
+- dynamic page title.
 
 ## Layout
 
@@ -427,7 +428,12 @@ onMounted(() => {
 <template>
   <h1>Home</h1>
   <v-row>
-    <v-col cols="12" md="4" v-for="page in navigation.pages.filter((page) => page.path !== '/' )" :key="page.path">
+    <v-col
+      cols="12"
+      md="4"
+      v-for="page in navigation.pages.filter((page) => page.path !== '/')"
+      :key="page.path"
+    >
       <v-card
         min-height="8em"
         :style="cardBackground(page.color)"
@@ -442,14 +448,69 @@ onMounted(() => {
 </template>
 
 <script setup lang="ts">
-definePage({meta:{
-  title: 'Welcome Home',
-  description: 'Welcome to the home page',
-  icon: '$mdiHome',
-  color: '#ABCDEF',
-}})
+definePage({
+  meta: {
+    title: 'Welcome Home',
+    description: 'Welcome to the home page',
+    icon: '$mdiHome',
+    color: '#ABCDEF',
+  },
+})
 const navigation = useNavigationStore()
 const cardBackground = useCardBackground
 </script>
 ```
 
+## Dynamic Page title
+
+1. Install [Unhead](https://unhead.unjs.io/) to enable manipulation of page head data
+
+```ps
+npm install @unhead/vue
+```
+
+2. Modify `./vite.config.ts` to add `unhead` to auto imports
+
+```ts{2,10}
+// ...
+import { unheadComposablesImports } from 'unhead'
+// ...
+export default defineConfig({
+  plugins: [
+// ...
+    AutoImport({
+      imports: [
+//...
+        unheadComposablesImports[0],
+//...
+      ],
+    })
+  ],
+})
+```
+
+3. Create `unhead` instance in `@/main.ts`
+
+```ts
+// ...
+import { createHead } from '@unhead/vue'
+// ...
+app.use(createHead())
+// ...
+```
+
+4. Modify router `@/router/index.ts` to enable dynamic page title
+
+```ts{4-7}
+//...
+router.beforeEach(async (to) => {
+// ...
+  const appTitle = 'Bullshit Bingo'
+  const pageTitle = useNavigationStore().title(to.path)
+  const title = pageTitle ? `${appTitle} - ${pageTitle}` : appTitle
+  useHead({ title })
+
+  return true
+})
+// ...
+```

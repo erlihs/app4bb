@@ -8,6 +8,7 @@ import router from './router'
 import vuetify from './plugins/vuetify'
 import i18n from './plugins/i18n'
 import { createPiniaLocalStoragePlugin } from './plugins/pinia'
+import { createHead } from '@unhead/vue'
 
 const app = createApp(App)
 
@@ -17,3 +18,4 @@ app.use(vuetify)
 app.use(i18n)
 
 app.mount('#app')
+app.use(createHead())
