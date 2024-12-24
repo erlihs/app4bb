@@ -6,6 +6,8 @@
 
 import {
 	mdiCog,
+	mdiDotsVertical,
+	mdiEyePlusOutline,
 	mdiHome,
 	mdiInformation,
 	mdiPen,
@@ -15,6 +17,8 @@ import {
 
 export default {
   mdiCog,
+  mdiDotsVertical,
+  mdiEyePlusOutline,
   mdiHome,
   mdiInformation,
   mdiPen,

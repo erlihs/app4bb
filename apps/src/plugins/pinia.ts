@@ -47,7 +47,7 @@ export function createPiniaLocalStoragePlugin(): PiniaPlugin {
     }
 
     store.$subscribe((mutation, state) => {
-      if (!PiniaPersistOptions) return 
+      if (!PiniaPersistOptions) return
       try {
         const filteredState = filterState(state)
         localStorage.setItem(key, JSON.stringify(filteredState))
