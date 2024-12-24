@@ -18,14 +18,14 @@ export function createPiniaLocalStoragePlugin(): PiniaPlugin {
     const store = context.store
     const key = store.$id
     const PiniaPersistOptions = context.options.persist as PiniaPersistOptions
-    const debug = PiniaPersistOptions.debug || false
+    const debug = PiniaPersistOptions?.debug || false
 
     if (debug)
       console.log(`Creating PiniaLocalStoragePlugin for ${key} with options:`, PiniaPersistOptions)
 
     function filterState(state: Record<string, unknown>): Record<string, unknown> {
-      const include = PiniaPersistOptions.include || []
-      const exclude = PiniaPersistOptions.exclude || []
+      const include = PiniaPersistOptions?.include || []
+      const exclude = PiniaPersistOptions?.exclude || []
       if (include.length > 0) {
         return Object.fromEntries(Object.entries(state).filter(([key]) => include.includes(key)))
       }
@@ -47,6 +47,7 @@ export function createPiniaLocalStoragePlugin(): PiniaPlugin {
     }
 
     store.$subscribe((mutation, state) => {
+      if (!PiniaPersistOptions) return 
       try {
         const filteredState = filterState(state)
         localStorage.setItem(key, JSON.stringify(filteredState))
