@@ -9,6 +9,7 @@ This article shows how to create main layout, backed by Pinia store. Enhancement
 - dynamic page title.
 - page not found (HTTP 404).
 - Alerts and loading.
+- Versioning.
 
 ## Layout
 
@@ -729,4 +730,43 @@ if (import.meta.hot) {
 // ...
 const ui = useUiStore()
 </script>
+```
+
+## Versioning
+
+1. Add version info to App Store `@/Stores/index.ts`
+
+```ts{2,8,11,15}
+import { defineStore, acceptHMRUpdate } from 'pinia'
+import { version as packageVersion } from '../../package.json'
+
+export const useAppStore = defineStore('app', () => {
+  const settings = useSettingsStore()
+  const navigation = useNavigationStore()
+  const ui = useUiStore()
+  const version = ref('...')
+
+  function init() {
+    version.value = 'v' + packageVersion + (import.meta.env.DEV ? '-dev' : '')
+    settings.init()
+  }
+
+  return { settings, navigation, ui, version, init }
+})
+
+if (import.meta.hot) {
+  import.meta.hot.accept(acceptHMRUpdate(useAppStore, import.meta.hot))
+}
+```
+
+2. Add version to App `@/App.vue`
+
+```vue
+<!-- ... -->
+<v-footer app>
+  <v-row>
+    <v-col> {{ app.version }} </v-col>
+  </v-row>
+</v-footer>
+<!-- ... -->
 ```

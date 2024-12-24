@@ -138,7 +138,7 @@
     </v-main>
     <v-footer app>
       <v-row>
-        <v-col> v0.3 </v-col>
+        <v-col> {{ app.version }} </v-col>
       </v-row>
     </v-footer>
   </v-app>
