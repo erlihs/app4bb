@@ -76,7 +76,7 @@ export default defineConfig({
           ]
         }
       ],
-      dirs: ['./src/composables/**']
+      dirs: ['./src/composables/**', './src/stores/**']
     }),
     Components({}),
     AutoImportMdiIcons({}),

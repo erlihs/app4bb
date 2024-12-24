@@ -44,7 +44,7 @@ plugins: [
         ],
       },
     ],
-    dirs: ['./src/composables/**'],
+    dirs: ['./src/composables/**', './src/stores/**'],
   }),
 ]
 //...
