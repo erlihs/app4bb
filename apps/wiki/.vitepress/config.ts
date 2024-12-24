@@ -80,6 +80,7 @@ export default defineConfig({
             { text: 'Multi Language Support', link: '/guide/web-application/i18n' },
             { text: 'State Management', link: '/guide/web-application/state-management' },
             { text: 'Auto Imports', link: '/guide/web-application/auto-imports' },
+            { text: 'Application Layout', link: '/guide/web-application/application-layout' },
           ],
         },
         {

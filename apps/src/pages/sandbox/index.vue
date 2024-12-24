@@ -15,7 +15,6 @@
 <script setup lang="ts">
 const cardBackground = useCardBackground
 const { t } = useI18n()
-import { useSettingsStore } from '@/stores/settings';
 const settings = useSettingsStore()
 onMounted(() => {
   settings.init()
