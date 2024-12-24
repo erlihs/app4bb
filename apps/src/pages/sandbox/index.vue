@@ -16,7 +16,4 @@
 const cardBackground = useCardBackground
 const { t } = useI18n()
 const settings = useSettingsStore()
-onMounted(() => {
-  settings.init()
-})
 </script>
