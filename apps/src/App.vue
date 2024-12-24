@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import { RouterLink, RouterView } from 'vue-router'
-import HelloWorld from './components/HelloWorld.vue'
 import { useI18n } from 'vue-i18n'
 const { t, locale } = useI18n()
 function toggleLocale() {

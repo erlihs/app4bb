@@ -6,10 +6,12 @@
 
 import {
 	mdiHome,
-	mdiInformation
+	mdiInformation,
+	mdiPen
 } from "@mdi/js"
 
 export default {
   mdiHome,
   mdiInformation,
+  mdiPen,
 }

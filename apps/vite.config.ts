@@ -8,6 +8,9 @@ import VueRouter from 'unplugin-vue-router/vite'
 import Markdown from 'unplugin-vue-markdown/vite'
 import Vuetify from 'vite-plugin-vuetify'
 import VueI18nPlugin from '@intlify/unplugin-vue-i18n/vite'
+import AutoImport from 'unplugin-auto-import/vite'
+import Components from 'unplugin-vue-components/vite'
+import AutoImportMdiIcons from './src/plugins/AutoImportMdiIcons'
 
 async function extractMetaFromMarkdown(absolutePath: string): Promise<Record<string, unknown> | null> {
   try {
@@ -53,6 +56,30 @@ export default defineConfig({
     }),
     Vuetify(),
     VueI18nPlugin({}),
+    AutoImport({
+      imports: [
+        'vue',
+        'vue-router',
+        'vue-i18n',
+        {
+          from: 'vuetify',
+          imports: [
+            'useDisplay',
+            'useDate',
+            'useDefaults',
+            'useDisplay',
+            'useGoTo',
+            'useLayout',
+            'useLocale',
+            'useRtl',
+            'useTheme'
+          ]
+        }
+      ],
+      dirs: ['./src/composables/**']
+    }),
+    Components({}),
+    AutoImportMdiIcons({}),
     vueDevTools(),
   ],
   resolve: {

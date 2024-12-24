@@ -1,5 +1,5 @@
 <template>
-  <v-card :style="useCardBackground('#00AA00')">
+  <v-card :style="cardBackground('#00AA00')">
     <v-card-title><v-icon icon="$mdiHome" />{{ t('sandbox.title') }}</v-card-title>
     <v-card-text>{{ t('sandbox.content') }}</v-card-text>
     <v-card-text>{{ t('sandbox.missing') }}</v-card-text>
@@ -13,13 +13,9 @@
 </template>
 
 <script setup lang="ts">
-import { useTheme } from 'vuetify'
-import { useCardBackground } from '@/composables/ui'
-import { useI18n } from 'vue-i18n'
 const { t } = useI18n()
-
 const theme = useTheme()
-
+const cardBackground = useCardBackground
 function toggleTheme() {
   theme.global.name.value = theme.global.current.value.dark ? 'light' : 'dark'
 }
