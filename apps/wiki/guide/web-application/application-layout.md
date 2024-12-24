@@ -7,6 +7,7 @@ This article shows how to create main layout, backed by Pinia store. Enhancement
 - new layout with app bar, navigation bar and footer.
 - responsive theme, language and font size selectors.
 - dynamic page title.
+- page not found (HTTP 404).
 
 ## Layout
 
@@ -512,5 +513,44 @@ router.beforeEach(async (to) => {
 
   return true
 })
+// ...
+```
+
+## Page not found
+
+1. Add Page not found page `@/pages/[...path].vue`
+
+```vue
+<template>
+  <h1>Page not found!</h1>
+  <p>Ups! The page you are looking for does not exist.</p>
+  <router-link to="/">Go back to the home page</router-link>
+</template>
+```
+
+2. Exclude Page Not Found from pages and breadcrumbs in `@/stores/app/navigation.ts`
+
+```ts{4,20}
+// ...
+  const breadcrumbs = computed(() => {
+    const crumbs = allPages
+      .filter((page) => page.path !== '/:path(.*)')
+      .sort((a, b) => a.level - b.level)
+      .map((page) => {
+        return {
+          title: page.title,
+          disabled: route.path === page.path,
+          href: page.path,
+          icon: page.icon,
+        }
+      })
+    return crumbs
+  })
+
+  const pages = computed(() => {
+    return allPages
+      .filter((page) => page.level < 2)
+      .filter((page) => page.path !== '/:path(.*)')
+  })
 // ...
 ```

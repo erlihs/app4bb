@@ -34,6 +34,7 @@ export const useNavigationStore = defineStore('navigation', () => {
 
   const breadcrumbs = computed(() => {
     const crumbs = allPages
+      .filter((page) => page.path !== '/:path(.*)')
       .sort((a, b) => a.level - b.level)
       .map((page) => {
         return {
@@ -47,7 +48,7 @@ export const useNavigationStore = defineStore('navigation', () => {
   })
 
   const pages = computed(() => {
-    return allPages.filter((page) => page.level < 2)
+    return allPages.filter((page) => page.level < 2).filter((page) => page.path !== '/:path(.*)')
   })
 
   return {
