@@ -87,6 +87,13 @@
         :prepend-icon="app.settings.themeIcon"
         @click="app.settings.themeToggle()"
       ></v-btn>
+      <v-progress-linear
+        :active="app.ui.loading"
+        indeterminate
+        absolute
+        location="bottom"
+        height="6"
+      ></v-progress-linear>
     </v-app-bar>
     <v-main class="ma-4">
       <v-breadcrumbs :items="app.navigation.breadcrumbs">
@@ -100,7 +107,34 @@
           <v-breadcrumbs-item v-else>{{ item.title }}</v-breadcrumbs-item>
         </template>
       </v-breadcrumbs>
+      <v-alert
+        type="info"
+        :text="app.ui.info ? t(app.ui.info) : ''"
+        v-show="app.ui.info.length > 0"
+        class="mb-2"
+      ></v-alert>
+      <v-alert
+        type="warning"
+        :text="app.ui.warning ? t(app.ui.warning) : ''"
+        v-show="app.ui.warning.length > 0"
+        class="mb-2"
+      ></v-alert>
+      <v-alert
+        type="error"
+        :text="app.ui.error ? t(app.ui.error) : ''"
+        v-show="app.ui.error.length > 0"
+        class="mb-2"
+      ></v-alert>
       <router-view />
+      <v-snackbar v-model="app.ui.snackbar">
+        {{ app.ui.snack }}
+        <template v-slot:actions>
+          <v-btn color="pink" variant="text" @click="app.ui.snack = ''">
+            {{ t('close') }}
+          </v-btn>
+        </template>
+      </v-snackbar>
+      <v-overlay v-model="app.ui.loading" contained></v-overlay>
     </v-main>
     <v-footer app>
       <v-row>
@@ -114,6 +148,7 @@
 const drawer = ref(false)
 const { mobile } = useDisplay()
 const app = useAppStore()
+const { t } = useI18n()
 onMounted(() => {
   app.init()
 })

@@ -8,6 +8,7 @@ This article shows how to create main layout, backed by Pinia store. Enhancement
 - responsive theme, language and font size selectors.
 - dynamic page title.
 - page not found (HTTP 404).
+- Alerts and loading.
 
 ## Layout
 
@@ -553,4 +554,179 @@ router.beforeEach(async (to) => {
       .filter((page) => page.path !== '/:path(.*)')
   })
 // ...
+```
+
+# Alerts and Loading
+
+1. Create a store for handling common alert mechanism `@/stores/app/ui.ts`
+
+```ts
+import { defineStore, acceptHMRUpdate } from 'pinia'
+
+export const useUiStore = defineStore('ui', () => {
+  const loading = ref(false)
+  const info = ref('')
+  const warning = ref('')
+  const error = ref('')
+  const snack = ref('')
+  const snackbar = computed(() => !!snack.value)
+
+  function clearMessages() {
+    info.value = ''
+    warning.value = ''
+    error.value = ''
+  }
+
+  function setInfo(message: string) {
+    clearMessages()
+    info.value = message
+  }
+
+  function setWarning(message: string) {
+    clearMessages()
+    warning.value = message
+  }
+
+  function setError(message: string) {
+    clearMessages()
+    error.value = message
+  }
+
+  function setSnack(message: string) {
+    clearMessages()
+    snack.value = message
+  }
+
+  function startLoading() {
+    clearMessages()
+    loading.value = true
+  }
+
+  function stopLoading() {
+    loading.value = false
+  }
+
+  return {
+    loading,
+    info,
+    warning,
+    error,
+    snack,
+    snackbar,
+    clearMessages,
+    setInfo,
+    setWarning,
+    setError,
+    setSnack,
+    startLoading,
+    stopLoading,
+  }
+})
+
+if (import.meta.hot) {
+  import.meta.hot.accept(acceptHMRUpdate(useUiStore, import.meta.hot))
+}
+```
+
+2. Include UI store in App store `@/stores/index.ts`
+
+```ts{6,12}
+import { defineStore, acceptHMRUpdate } from 'pinia'
+
+export const useAppStore = defineStore('app', () => {
+  const settings = useSettingsStore()
+  const navigation = useNavigationStore()
+  const ui = useUiStore()
+
+  function init() {
+    settings.init()
+  }
+
+  return { settings, navigation, ui, init }
+})
+
+if (import.meta.hot) {
+  import.meta.hot.accept(acceptHMRUpdate(useAppStore, import.meta.hot))
+}
+
+```
+
+3. Add components to App `@/App.vue`
+
+```vue
+<template>
+  <v-app>
+    <v-navigation-drawer v-model="drawer" app>
+      <!-- ... -->
+    </v-navigation-drawer>
+    <v-app-bar>
+      <!-- ... -->
+      <v-progress-linear
+        :active="app.ui.loading"
+        indeterminate
+        absolute
+        location="bottom"
+        height="6"
+      ></v-progress-linear>
+    </v-app-bar>
+    <v-main class="ma-4">
+      <!-- ... -->
+      <v-alert
+        type="info"
+        :text="app.ui.info ? t(app.ui.info) : ''"
+        v-show="app.ui.info.length > 0"
+        class="mb-2"
+      ></v-alert>
+      <v-alert
+        type="warning"
+        :text="app.ui.warning ? t(app.ui.warning) : ''"
+        v-show="app.ui.warning.length > 0"
+        class="mb-2"
+      ></v-alert>
+      <v-alert
+        type="error"
+        :text="app.ui.error ? t(app.ui.error) : ''"
+        v-show="app.ui.error.length > 0"
+        class="mb-2"
+      ></v-alert>
+      <!-- ... -->
+      <v-snackbar v-model="app.ui.snackbar">
+        {{ app.ui.snack }}
+        <template v-slot:actions>
+          <v-btn color="pink" variant="text" @click="app.ui.snack = ''">
+            {{ t('close') }}
+          </v-btn>
+        </template>
+      </v-snackbar>
+      <v-overlay v-model="app.ui.loading" contained></v-overlay>
+    </v-main>
+    <v-footer app>
+      <!-- ... -->
+    </v-footer>
+  </v-app>
+</template>
+```
+
+4. Add actions in `@/pages/sandbox/index.vue` to test.
+
+```vue
+<template>
+  <v-card :style="cardBackground('#00AA00')">
+    <!-- ... -->
+    <v-card-actions>
+      <v-btn color="info" @click="ui.setInfo('This is info')">Info</v-btn>
+      <v-btn color="warning" @click="ui.setWarning('This is warning')">Warning</v-btn>
+      <v-btn color="error" @click="ui.setError('This is error')">Error</v-btn>
+      <v-btn class="ml-4" @click="ui.setSnack('This is a snack message')">Snack</v-btn>
+      <v-spacer></v-spacer>
+      <v-btn v-if="!ui.loading" @click="ui.startLoading()">Loading</v-btn>
+      <v-btn v-else @click="ui.stopLoading()">Loading</v-btn>
+    </v-card-actions>
+  </v-card>
+</template>
+
+<script setup lang="ts">
+// ...
+const ui = useUiStore()
+</script>
 ```
