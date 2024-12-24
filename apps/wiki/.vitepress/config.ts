@@ -78,6 +78,7 @@ export default defineConfig({
               link: '/guide/web-application/ui-component-framework',
             },
             { text: 'Multi Language Support', link: '/guide/web-application/i18n' },
+            { text: 'State Management', link: '/guide/web-application/state-management' },
             { text: 'Auto Imports', link: '/guide/web-application/auto-imports' },
           ],
         },

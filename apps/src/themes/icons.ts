@@ -7,11 +7,15 @@
 import {
 	mdiHome,
 	mdiInformation,
-	mdiPen
+	mdiPen,
+	mdiWeatherNight,
+	mdiWeatherSunny
 } from "@mdi/js"
 
 export default {
   mdiHome,
   mdiInformation,
   mdiPen,
+  mdiWeatherNight,
+  mdiWeatherSunny,
 }

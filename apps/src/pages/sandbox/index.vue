@@ -7,16 +7,17 @@
       <v-btn color="primary">Primary</v-btn>
       <v-btn color="secondary">Secondary</v-btn>
       <v-spacer></v-spacer>
-      <v-btn @click="toggleTheme()">Toggle theme</v-btn>
+      <v-btn :prepend-icon="settings.themeIcon" @click="settings.themeToggle()">Toggle theme</v-btn>
     </v-card-actions>
   </v-card>
 </template>
 
 <script setup lang="ts">
-const { t } = useI18n()
-const theme = useTheme()
 const cardBackground = useCardBackground
-function toggleTheme() {
-  theme.global.name.value = theme.global.current.value.dark ? 'light' : 'dark'
-}
+const { t } = useI18n()
+import { useSettingsStore } from '@/stores/settings';
+const settings = useSettingsStore()
+onMounted(() => {
+  settings.init()
+})
 </script>
