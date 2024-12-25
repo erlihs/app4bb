@@ -81,6 +81,23 @@ export default defineConfig({
             { text: 'State Management', link: '/guide/web-application/state-management' },
             { text: 'Auto Imports', link: '/guide/web-application/auto-imports' },
             { text: 'Application Layout', link: '/guide/web-application/application-layout' },
+            {
+              text: 'Backend',
+              collapsed: true,
+              items: [
+                { text: 'Oracle Database', link: '/guide/web-application/back-end/oci' },
+                {
+                  text: 'Best practices',
+                  link: '/guide/web-application/back-end/oci-best-practices',
+                },
+                {
+                  text: 'Naming conventions',
+                  link: '/guide/web-application/back-end/oci-naming-conventions',
+                },
+                { text: 'Hands on', link: '/guide/web-application/back-end/oci-hands-on' },
+                { text: 'Advanced tips', link: '/guide/web-application/back-end/oci-advanced' },
+              ],
+            },
           ],
         },
         {
