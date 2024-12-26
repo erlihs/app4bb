@@ -57,6 +57,25 @@ definePage({ meta: { title: 'Home', icon: '$mdiHome' } })
 <template>
   <v-app>
     <v-navigation-drawer v-model="drawer" app>
+      <v-container>
+        <v-row>
+          <v-col cols="4">
+            <v-img
+              eager
+              class="rounded-lg border-thin"
+              alt="Bullshit Bingo"
+              src="/logo.svg"
+              aspect-ratio="1/1"
+            >
+              <div
+                class="fill-height"
+                :class="app.settings.theme == 'dark' ? 'dark-image' : ''"
+              ></div>
+            </v-img>
+          </v-col>
+        </v-row>
+      </v-container>
+      <v-divider />
       <v-list>
         <v-list-item
           v-for="page in pages"
@@ -91,6 +110,14 @@ const pages = ref([
   { title: 'Sandbox', icon: '$mdiCog', path: '/sandbox' },
 ])
 </script>
+
+<style>
+.dark-image {
+  background-color: black;
+  opacity: 0.6;
+}
+</style>
+
 ```
 
 As a result - new and clean layout with navigation drawer, header and footer.
