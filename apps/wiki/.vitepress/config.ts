@@ -155,6 +155,7 @@ export default defineConfig({
               ],
             },
             { text: 'Authorization', link: '/guide/web-application/authorization' },
+            { text: 'Auditing', link: '/guide/web-application/auditing' },
           ],
         },
         {

@@ -85,6 +85,7 @@ export function useHttp(options: UseHttpOptions = {}): UseHttpInstance {
 
   instance.interceptors.request.use(
     (config) => {
+      config.headers['request-startTime'] = performance.now()
       const appStore = useAppStore()
       if (appStore.auth.accessToken && config.headers) {
         config.headers.Authorization = `Bearer ${appStore.auth.accessToken}`
@@ -98,6 +99,14 @@ export function useHttp(options: UseHttpOptions = {}): UseHttpInstance {
     (response) => {
       if (options.convertKeys ?? useHttpOptions.convertKeys == 'snake_to_camel') {
         response.data = snakeToCamel(response.data)
+      }
+      const duration = performance.now() - (response.config.headers['request-startTime'] as number)
+      if (duration >= import.meta.env.VITE_PERFORMANCE_API_CALL_THRESHOLD_IN_MS) {
+        const appAudit = useAuditStore()
+        appAudit.wrn(
+          'API call time threshold exceeded',
+          `API ${response.config.url} took ${duration}ms`,
+        )
       }
       return response
     },

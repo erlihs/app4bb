@@ -118,5 +118,20 @@ CREATE OR REPLACE PACKAGE BODY pck_app AS
             pck_api_audit.err('Heartbeat error', NULL, v_uuid);
     END;
 
+    PROCEDURE post_audit(
+        p_data CLOB
+    ) AS
+        v_uuid app_users.uuid%TYPE := pck_api_auth.uuid;
+    BEGIN
+        IF v_uuid IS NULL THEN
+            pck_api_audit.wrn('Audit error', 'User not authenticated');
+            pck_api_auth.http_401;
+            RETURN;
+        END IF;
+
+        pck_api_audit.audit(p_data, v_uuid);
+
+    END;
+
 END;
 /

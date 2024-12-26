@@ -21,5 +21,9 @@ CREATE OR REPLACE PACKAGE pck_app AS -- Package provides methods for app
 
     PROCEDURE get_heartbeat; -- Procedure keeps session alive
 
+    PROCEDURE post_audit( -- Procedure logs user activity
+        p_data CLOB --  Audit data in JSON format [{severity, action, details, created}]
+    );
+
 END;
 /

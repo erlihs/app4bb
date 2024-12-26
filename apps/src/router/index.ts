@@ -8,6 +8,8 @@ const router = createRouter({
 })
 
 router.beforeEach(async (to) => {
+  to.meta.performance = performance.now()
+
   await loadPageTranslations(to.path)
 
   const appTitle = 'Bullshit Bingo'
@@ -24,6 +26,14 @@ router.beforeEach(async (to) => {
     uiStore.setError('You are not allowed to access this page')
   }
   return result === '/login' ? { path: result, query: { redirect: to.path } } : result
+})
+
+router.afterEach((to) => {
+  const duration: number = performance.now() - (to.meta.performance as number)
+  if (duration >= import.meta.env.VITE_PERFORMANCE_PAGE_LOAD_THRESHOLD_IN_MS) {
+    const appAudit = useAuditStore()
+    appAudit.wrn('Page load time threshold exceeded', `Route ${to.path} took ${duration}ms`)
+  }
 })
 
 if (import.meta.hot) {

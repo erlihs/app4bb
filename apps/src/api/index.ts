@@ -21,6 +21,13 @@ export type AuthResponse = {
   error?: string
 }
 
+export type AuditData = {
+  severity: string
+  action: string
+  details?: string
+  created?: string
+}
+
 export const appApi = {
   async version(): Promise<HttpResponse<{ version: string }>> {
     return await http.get('version/')
@@ -40,5 +47,9 @@ export const appApi = {
 
   async heartbeat(): Promise<HttpResponse<void>> {
     return await http.get('heartbeat/', { random: Math.random() })
+  },
+
+  async audit(data: AuditData[]): Promise<HttpResponse<void>> {
+    return await http.post('audit/', { data: JSON.stringify(data) })
   },
 }

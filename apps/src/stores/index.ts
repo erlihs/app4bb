@@ -4,6 +4,7 @@ import { appApi } from '@/api'
 
 export const useAppStore = defineStore('app', () => {
   const auth = useAuthStore()
+  const audit = useAuditStore()
   const settings = useSettingsStore()
   const navigation = useNavigationStore()
   const ui = useUiStore()
@@ -18,7 +19,7 @@ export const useAppStore = defineStore('app', () => {
     settings.init()
   }
 
-  return { auth, settings, navigation, ui, version, init }
+  return { auth, audit, settings, navigation, ui, version, init }
 })
 
 if (import.meta.hot) {

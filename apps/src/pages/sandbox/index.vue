@@ -21,6 +21,28 @@
     </v-card-actions>
   </v-card>
 
+  <v-card>
+    <v-card-title>Test audit</v-card-title>
+    <v-card-text
+      >Test audit capabilities. In stash: <strong>{{ appStore.audit.count }}</strong></v-card-text
+    >
+    <v-card-actions>
+      <v-btn
+        color="info"
+        @click="appStore.audit.inf('This is info message', 'This is info message details')"
+        >Test info</v-btn
+      >
+      <v-btn
+        color="warning"
+        @click="appStore.audit.wrn('This is warning message', 'This is warning message details')"
+        >Test warning</v-btn
+      >
+      <v-btn color="error" @click="error()">Test error</v-btn>
+      <v-spacer></v-spacer>
+      <v-btn @click="appStore.audit.save()">Save</v-btn>
+    </v-card-actions>
+  </v-card>
+
   <v-container fluid>
     <h1 class="mb-4">Components</h1>
     <v-row>
@@ -54,5 +76,10 @@ import { appApi } from '@/api'
 const responseStatus = ref(200)
 async function heartbeat() {
   responseStatus.value = (await appApi.heartbeat()).status ?? 200
+}
+// AUDIT
+const appStore = useAppStore()
+function error() {
+  throw new Error('This is an error')
 }
 </script>
