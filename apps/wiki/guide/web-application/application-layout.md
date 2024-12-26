@@ -325,7 +325,10 @@ export const useNavigationStore = defineStore('navigation', () => {
   })
 
   const breadcrumbs = computed(() => {
+    const paths = ['', ...route.path.split('/').filter(Boolean)]
     const crumbs = allPages
+      .filter((page) => page.path !== '/:path(.*)')
+      .filter((page) => paths.includes(page.path.split('/').at(-1) ?? ''))
       .sort((a, b) => a.level - b.level)
       .map((page) => {
         return {
