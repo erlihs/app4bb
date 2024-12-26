@@ -27,14 +27,14 @@ Create self registration feature.
 
 ```plsql
 ...
-    PROCEDURE post_signup( 
-        p_username APP_USERS.USERNAME%TYPE, 
-        p_password APP_USERS.PASSWORD%TYPE, 
-        p_fullname APP_USERS.FULLNAME%TYPE, 
-        r_access_token OUT APP_TOKENS.TOKEN%TYPE, 
-        r_refresh_token OUT APP_TOKENS.TOKEN%TYPE, 
+    PROCEDURE post_signup(
+        p_username APP_USERS.USERNAME%TYPE,
+        p_password APP_USERS.PASSWORD%TYPE,
+        p_fullname APP_USERS.FULLNAME%TYPE,
+        r_access_token OUT APP_TOKENS.TOKEN%TYPE,
+        r_refresh_token OUT APP_TOKENS.TOKEN%TYPE,
         r_user OUT SYS_REFCURSOR,
-        r_error OUT VARCHAR2 
+        r_error OUT VARCHAR2
     ) AS
         v_uuid APP_USERS.UUID%TYPE;
         v_password app_users.password%TYPE := pck_api_auth.pwd(p_password);
@@ -44,7 +44,7 @@ Create self registration feature.
 
        BEGIN
 
-            SELECT uuid 
+            SELECT uuid
             INTO v_uuid
             FROM app_users
             WHERE username = UPPER(TRIM(p_username));
@@ -55,7 +55,7 @@ Create self registration feature.
                 NULL;
 
         END;
-        
+
         IF NOT REGEXP_LIKE (p_username,'^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,4}$') THEN
 
             r_error := 'Username must be a valid email address';
@@ -63,48 +63,48 @@ Create self registration feature.
 
         ELSIF p_username IS NULL OR p_password IS NULL OR p_fullname IS NULL THEN
 
-            r_error := 'Missing parameters';       
+            r_error := 'Missing parameters';
             pck_api_audit.wrn('Signup failed - missing parameters', pck_api_audit.mrg('username', p_username, 'fullname', p_fullname, 'password', '********'), v_uuid);
 
         ELSIF v_uuid IS NOT NULL THEN
 
-            r_error := 'Such username already exists'; 
+            r_error := 'Such username already exists';
             pck_api_audit.wrn('Signup failed - user already exists', pck_api_audit.mrg('username', p_username, 'fullname', p_fullname, 'password', '********'), v_uuid);
-            
+
         ELSE -- success
-        
+
             INSERT INTO app_users (id, status, username, password, fullname, accessed)
             VALUES (
-                seq_app_users.NEXTVAL, 
-                'N', 
-                UPPER(TRIM(p_username)), 
-                v_password, 
+                seq_app_users.NEXTVAL,
+                'N',
+                UPPER(TRIM(p_username)),
+                v_password,
                 p_fullname,
                 SYSTIMESTAMP
             ) RETURNING uuid INTO v_uuid;
-            
+
             COMMIT;
 
             pck_api_auth.reset(v_uuid, 'A');
             pck_api_auth.reset(v_uuid, 'R');
             r_access_token := pck_api_auth.token(v_uuid, 'A');
             r_refresh_token := pck_api_auth.token(v_uuid, 'R');
-            
+
             user(v_uuid, r_user);
 
             v_confirm_token := pck_api_auth.token(v_uuid, 'E');
-            
-            pck_api_emails.mail(v_id_email,TRIM(p_username),p_fullname,'Confirm email address!','<h1>Confirm email!</h1><p>Please, confirm your email address by pressing this <a href="' || pck_api_settings.read('APP_DOMAIN') || '/confirm-email/' || v_confirm_token || '">link</a></p>');            
+
+            pck_api_emails.mail(v_id_email,TRIM(p_username),p_fullname,'Confirm email address!','<h1>Confirm email!</h1><p>Please, confirm your email address by pressing this <a href="' || pck_api_settings.read('APP_DOMAIN') || '/confirm-email/' || v_confirm_token || '">link</a></p>');
             BEGIN
                 pck_api_emails.send(v_id_email);
-            EXCEPTION 
+            EXCEPTION
                 WHEN OTHERS THEN
                     NULL;
-            END;   
+            END;
 
             pck_api_audit.inf('Signup successful', pck_api_audit.mrg('username', p_username, 'fullname', p_fullname, 'password', '********'), v_uuid);
 
-        END IF;                
+        END IF;
 
      EXCEPTION
         WHEN OTHERS THEN
@@ -112,7 +112,7 @@ Create self registration feature.
             r_access_token := NULL;
             r_refresh_token := NULL;
             pck_api_audit.err('Signup error', pck_api_audit.mrg('username', p_username, 'fullname', p_fullname, 'password', '********'), v_uuid);
-    END;  
+    END;
 
 ...
 ```
