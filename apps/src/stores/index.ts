@@ -1,5 +1,6 @@
 import { defineStore, acceptHMRUpdate } from 'pinia'
 import { version as packageVersion } from '../../package.json'
+import { appApi } from '@/api'
 
 export const useAppStore = defineStore('app', () => {
   const settings = useSettingsStore()
@@ -7,8 +8,12 @@ export const useAppStore = defineStore('app', () => {
   const ui = useUiStore()
   const version = ref('...')
 
-  function init() {
-    version.value = 'v' + packageVersion + (import.meta.env.DEV ? '-dev' : '')
+  async function init() {
+    const { data, error } = await appApi.version()
+    if (error) ui.setWarning(error.message)
+    const dbVersion = data ? data.version : '...'
+    const devVersion = import.meta.env.DEV ? '-dev' : ''
+    version.value = `v${packageVersion}-${dbVersion}${devVersion}`
     settings.init()
   }
 

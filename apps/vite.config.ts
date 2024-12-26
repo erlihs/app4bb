@@ -1,7 +1,7 @@
 import { fileURLToPath, URL } from 'node:url'
 import { promises as fs } from 'node:fs'
 
-import { defineConfig } from 'vite'
+import { defineConfig, loadEnv } from 'vite'
 import vue from '@vitejs/plugin-vue'
 import vueDevTools from 'vite-plugin-vue-devtools'
 import VueRouter from 'unplugin-vue-router/vite'
@@ -40,53 +40,66 @@ async function extractMetaFromMarkdown(absolutePath: string): Promise<Record<str
   }
 }
 
-// https://vite.dev/config/
-export default defineConfig({
-  plugins: [
-    Markdown({}),
-    VueRouter({
-      extensions: ['.vue', '.md'], async extendRoute(route) {
-        if (route.component?.endsWith('.md')) {
-          const meta = await extractMetaFromMarkdown(route.component)
-          if (meta) route.meta = { ...route.meta, ...meta }
+export default defineConfig(({ mode }) => {
+  const env = loadEnv(mode, process.cwd())
+
+  return {
+    plugins: [
+      Markdown({}),
+      VueRouter({
+        extensions: ['.vue', '.md'], async extendRoute(route) {
+          if (route.component?.endsWith('.md')) {
+            const meta = await extractMetaFromMarkdown(route.component)
+            if (meta) route.meta = { ...route.meta, ...meta }
+          }
+        }
+      }),
+      vue({
+        include: [/\.vue$/, /\.md$/]
+      }),
+      Vuetify(),
+      VueI18nPlugin({}),
+      AutoImport({
+        imports: [
+          'vue',
+          'vue-router',
+          'vue-i18n',
+          {
+            from: 'vuetify',
+            imports: [
+              'useDisplay',
+              'useDate',
+              'useDefaults',
+              'useDisplay',
+              'useGoTo',
+              'useLayout',
+              'useLocale',
+              'useRtl',
+              'useTheme'
+            ]
+          },
+          unheadComposablesImports[0],
+        ],
+        dirs: ['./src/composables/**', './src/stores/**']
+      }),
+      Components({}),
+      AutoImportMdiIcons({}),
+      vueDevTools(),
+    ],
+    resolve: {
+      alias: {
+        '@': fileURLToPath(new URL('./src', import.meta.url))
+      },
+    },
+    server: {
+      proxy: {
+        '/api': {
+          target: env.VITE_API_URI,
+          changeOrigin: true,
+          secure: env.VITE_PROJECT_ENV == 'production' ? true : false,
+          rewrite: (path) => path.replace(/^\/api/, '')
         }
       }
-    }),
-    vue({
-      include: [/\.vue$/, /\.md$/]
-    }),
-    Vuetify(),
-    VueI18nPlugin({}),
-    AutoImport({
-      imports: [
-        'vue',
-        'vue-router',
-        'vue-i18n',
-        {
-          from: 'vuetify',
-          imports: [
-            'useDisplay',
-            'useDate',
-            'useDefaults',
-            'useDisplay',
-            'useGoTo',
-            'useLayout',
-            'useLocale',
-            'useRtl',
-            'useTheme'
-          ]
-        },
-        unheadComposablesImports[0],
-      ],
-      dirs: ['./src/composables/**', './src/stores/**']
-    }),
-    Components({}),
-    AutoImportMdiIcons({}),
-    vueDevTools(),
-  ],
-  resolve: {
-    alias: {
-      '@': fileURLToPath(new URL('./src', import.meta.url))
     },
-  },
+  }
 })

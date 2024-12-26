@@ -98,6 +98,10 @@ export default defineConfig({
                 { text: 'Advanced tips', link: '/guide/web-application/back-end/oci-advanced' },
               ],
             },
+            {
+              text: 'Consuming Web Services',
+              link: '/guide/web-application/consuming-web-services',
+            },
           ],
         },
         {
