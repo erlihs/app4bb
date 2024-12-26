@@ -135,6 +135,7 @@ export default defineConfig({
                 },
               ],
             },
+            { text: 'Testing', link: '/guide/web-application/testing' },
           ],
         },
         {
