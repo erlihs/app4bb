@@ -4,6 +4,13 @@
       <v-col cols="12" :md="4">
         <h1 class="mb-4">{{ t('app.login.title') }}</h1>
         <v-bsb-form :options :data @submit="submit" @action="dev" />
+        <br />
+        <br />
+        {{ t('app.login.not_registered') }} <a href="/signup">{{ t('app.login.sign_up') }}</a> |
+        <a href="/recover-password">{{ t('app.login.forgot_password') }}</a>
+        <br />
+        <br />
+        <GoogleLogin :clientId="googleClientId" :callback="callback" />
       </v-col>
     </v-row>
   </v-container>
@@ -66,6 +73,20 @@ const data = ref({
 
 const submit = async (newData: typeof data.value) => {
   if (await appStore.auth.login(newData.username, newData.password))
+    router.push((route.query.redirect as string) || '/')
+}
+
+import { GoogleLogin } from 'vue3-google-login'
+const googleClientId = import.meta.env.VITE_GOOGLE_CLIENT_ID
+import { decodeCredential, type CallbackTypes } from 'vue3-google-login'
+
+const callback = async (response: CallbackTypes.CredentialPopupResponse) => {
+  const userData = decodeCredential(response.credential) as {
+    email: string
+    sub: string
+    name: string
+  }
+  if (await appStore.auth.signupSocial(userData.email, userData.sub, userData.name))
     router.push((route.query.redirect as string) || '/')
 }
 

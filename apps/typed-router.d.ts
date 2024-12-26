@@ -22,7 +22,10 @@ declare module 'vue-router/auto-routes' {
     '/[...path]': RouteRecordInfo<'/[...path]', '/:path(.*)', { path: ParamValue<true> }, { path: ParamValue<false> }>,
     '/about': RouteRecordInfo<'/about', '/about', Record<never, never>, Record<never, never>>,
     '/admin/': RouteRecordInfo<'/admin/', '/admin', Record<never, never>, Record<never, never>>,
+    '/confirm-email/[id]': RouteRecordInfo<'/confirm-email/[id]', '/confirm-email/:id', { id: ParamValue<true> }, { id: ParamValue<false> }>,
     '/login': RouteRecordInfo<'/login', '/login', Record<never, never>, Record<never, never>>,
+    '/recover-password': RouteRecordInfo<'/recover-password', '/recover-password', Record<never, never>, Record<never, never>>,
+    '/reset-password/[token]': RouteRecordInfo<'/reset-password/[token]', '/reset-password/:token', { token: ParamValue<true> }, { token: ParamValue<false> }>,
     '/sandbox/': RouteRecordInfo<'/sandbox/', '/sandbox', Record<never, never>, Record<never, never>>,
     '/sandbox/sandbox-chart': RouteRecordInfo<'/sandbox/sandbox-chart', '/sandbox/sandbox-chart', Record<never, never>, Record<never, never>>,
     '/sandbox/sandbox-editor': RouteRecordInfo<'/sandbox/sandbox-editor', '/sandbox/sandbox-editor', Record<never, never>, Record<never, never>>,
@@ -32,5 +35,6 @@ declare module 'vue-router/auto-routes' {
     '/sandbox/sandbox-pad': RouteRecordInfo<'/sandbox/sandbox-pad', '/sandbox/sandbox-pad', Record<never, never>, Record<never, never>>,
     '/sandbox/sandbox-share': RouteRecordInfo<'/sandbox/sandbox-share', '/sandbox/sandbox-share', Record<never, never>, Record<never, never>>,
     '/sandbox/sandbox-table': RouteRecordInfo<'/sandbox/sandbox-table', '/sandbox/sandbox-table', Record<never, never>, Record<never, never>>,
+    '/signup': RouteRecordInfo<'/signup', '/signup', Record<never, never>, Record<never, never>>,
   }
 }

@@ -156,6 +156,28 @@ export default defineConfig({
             },
             { text: 'Authorization', link: '/guide/web-application/authorization' },
             { text: 'Auditing', link: '/guide/web-application/auditing' },
+            {
+              text: 'Sign up',
+              collapsed: true,
+              items: [
+                {
+                  text: 'Sign up',
+                  link: '/guide/web-application/signup/signup',
+                },
+                {
+                  text: 'Confirm email',
+                  link: '/guide/web-application/signup/confirm-email',
+                },
+                {
+                  text: 'Recover password',
+                  link: '/guide/web-application/signup/recover-password',
+                },
+                {
+                  text: 'Social signup',
+                  link: '/guide/web-application/signup/social-signup',
+                },
+              ],
+            },
           ],
         },
         {

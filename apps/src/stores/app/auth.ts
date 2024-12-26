@@ -5,7 +5,7 @@ import { appApi } from '@/api'
 export const useAuthStore = defineStore(
   'auth',
   () => {
-    const { startLoading, stopLoading, setError, setWarning } = useUiStore()
+    const { startLoading, stopLoading, setInfo, setError, setWarning } = useUiStore()
 
     const refreshCookieOptions = {
       path: '/',
@@ -91,6 +91,92 @@ export const useAuthStore = defineStore(
       }
     }
 
+    async function signup(username: string, password: string, fullname: string): Promise<boolean> {
+      startLoading()
+      const { data, error } = await appApi.signup(username, password, fullname)
+      if (error || data?.error) {
+        setError(error?.message || data?.error || 'An unknown error occurred')
+      } else if (data) {
+        accessToken.value = data.accessToken
+        Cookies.set('refresh_token', data.refreshToken, refreshCookieOptions)
+        isAuthenticated.value = !!accessToken.value
+        user.value = {
+          ...defaultUser,
+          ...data.user?.[0],
+          privileges: data.user?.[0]?.privileges || [],
+        }
+      }
+      stopLoading()
+      return isAuthenticated.value
+    }
+
+    async function confirmEmail(confirmToken: string): Promise<boolean> {
+      startLoading()
+      const { data } = await appApi.confirmEmail(confirmToken)
+      if (data?.error) {
+        setError('Email confirmation failed')
+      } else {
+        setInfo('Email confirmed')
+      }
+      stopLoading()
+      return !data?.error
+    }
+
+    async function recoverPassword(username: string): Promise<boolean> {
+      startLoading()
+      const { data } = await appApi.recoverPassword(username)
+      if (data?.error) {
+        setError('Password recovery failed')
+      } else {
+        setInfo('Password recovery email sent')
+      }
+      stopLoading()
+      return !data?.error
+    }
+
+    async function resetPassword(
+      username: string,
+      password: string,
+      recoverToken: string,
+    ): Promise<boolean> {
+      startLoading()
+      const { data, status, error } = await appApi.resetPassword(username, password, recoverToken)
+      if (error) {
+        accessToken.value = ''
+        Cookies.remove('refresh_token', refreshCookieOptions)
+        isAuthenticated.value = false
+        if (status == 401) {
+          setError('Invalid username or password')
+        } else {
+          setWarning(error.message)
+        }
+      } else if (data) {
+        accessToken.value = data.accessToken
+        Cookies.set('refresh_token', data.refreshToken, refreshCookieOptions)
+        isAuthenticated.value = !!accessToken.value
+        user.value = {
+          ...defaultUser,
+          ...data.user?.[0],
+          privileges: data.user?.[0]?.privileges || [],
+        }
+        setInfo('Password reset')
+      }
+      stopLoading()
+      return isAuthenticated.value
+    }
+
+    async function signupSocial(
+      username: string,
+      password: string,
+      fullname: string,
+    ): Promise<boolean> {
+      startLoading()
+      const logged = await login(username, password)
+      if (!logged) await signup(username, password, fullname)
+      stopLoading()
+      return isAuthenticated.value
+    }
+
     return {
       accessToken,
       isAuthenticated,
@@ -98,6 +184,11 @@ export const useAuthStore = defineStore(
       login,
       logout,
       refresh,
+      signup,
+      confirmEmail,
+      recoverPassword,
+      resetPassword,
+      signupSocial,
     }
   },
   {

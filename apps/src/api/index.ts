@@ -28,6 +28,10 @@ export type AuditData = {
   created?: string
 }
 
+export type VoidResponse = {
+  error?: string
+}
+
 export const appApi = {
   async version(): Promise<HttpResponse<{ version: string }>> {
     return await http.get('version/')
@@ -51,5 +55,29 @@ export const appApi = {
 
   async audit(data: AuditData[]): Promise<HttpResponse<void>> {
     return await http.post('audit/', { data: JSON.stringify(data) })
+  },
+
+  async signup(
+    username: string,
+    password: string,
+    fullname: string,
+  ): Promise<HttpResponse<AuthResponse>> {
+    return await http.post('signup/', { username, password, fullname })
+  },
+
+  async confirmEmail(confirmtoken: string): Promise<HttpResponse<VoidResponse>> {
+    return await http.post('confirmemail/', { confirmtoken })
+  },
+
+  async recoverPassword(username: string): Promise<HttpResponse<VoidResponse>> {
+    return await http.post('recoverpassword/', { username })
+  },
+
+  async resetPassword(
+    username: string,
+    password: string,
+    recovertoken: string,
+  ): Promise<HttpResponse<AuthResponse>> {
+    return await http.post('resetpassword/', { username, password, recovertoken })
   },
 }
