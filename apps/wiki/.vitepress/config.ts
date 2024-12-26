@@ -102,6 +102,39 @@ export default defineConfig({
               text: 'Consuming Web Services',
               link: '/guide/web-application/consuming-web-services',
             },
+            {
+              text: 'Advanced UI Components',
+              collapsed: true,
+              items: [
+                {
+                  text: 'Overview',
+                  link: '/guide/web-application/advanced-ui-components/',
+                },
+                {
+                  text: 'Chart',
+                  link: '/guide/web-application/advanced-ui-components/chart',
+                },
+                {
+                  text: 'Editor',
+                  link: '/guide/web-application/advanced-ui-components/editor',
+                },
+                { text: 'Map', link: '/guide/web-application/advanced-ui-components/map' },
+                {
+                  text: 'Media',
+                  link: '/guide/web-application/advanced-ui-components/media',
+                },
+                { text: 'Form', link: '/guide/web-application/advanced-ui-components/form' },
+                { text: 'Pad', link: '/guide/web-application/advanced-ui-components/pad' },
+                {
+                  text: 'Table',
+                  link: '/guide/web-application/advanced-ui-components/table',
+                },
+                {
+                  text: 'Share',
+                  link: '/guide/web-application/advanced-ui-components/share',
+                },
+              ],
+            },
           ],
         },
         {

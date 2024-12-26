@@ -7,15 +7,16 @@ export {}
 /* prettier-ignore */
 declare module 'vue' {
   export interface GlobalComponents {
-    HelloWorld: typeof import('./src/components/HelloWorld.vue')['default']
-    IconCommunity: typeof import('./src/components/icons/IconCommunity.vue')['default']
-    IconDocumentation: typeof import('./src/components/icons/IconDocumentation.vue')['default']
-    IconEcosystem: typeof import('./src/components/icons/IconEcosystem.vue')['default']
-    IconSupport: typeof import('./src/components/icons/IconSupport.vue')['default']
-    IconTooling: typeof import('./src/components/icons/IconTooling.vue')['default']
     RouterLink: typeof import('vue-router')['RouterLink']
     RouterView: typeof import('vue-router')['RouterView']
-    TheWelcome: typeof import('./src/components/TheWelcome.vue')['default']
-    WelcomeItem: typeof import('./src/components/WelcomeItem.vue')['default']
+    VBsbChart: typeof import('./src/components/VBsbChart.vue')['default']
+    VBsbEditor: typeof import('./src/components/VBsbEditor.vue')['default']
+    VBsbForm: typeof import('./src/components/VBsbForm.vue')['default']
+    VBsbMap: typeof import('./src/components/VBsbMap.vue')['default']
+    VBsbMedia: typeof import('./src/components/VBsbMedia.vue')['default']
+    VBsbPad: typeof import('./src/components/VBsbPad.vue')['default']
+    VBsbShare: typeof import('./src/components/VBsbShare.vue')['default']
+    VBsbTable: typeof import('./src/components/VBsbTable.vue')['default']
+    VBsbTableCell: typeof import('./src/components/VBsbTableCell.vue')['default']
   }
 }

@@ -22,5 +22,13 @@ declare module 'vue-router/auto-routes' {
     '/[...path]': RouteRecordInfo<'/[...path]', '/:path(.*)', { path: ParamValue<true> }, { path: ParamValue<false> }>,
     '/about': RouteRecordInfo<'/about', '/about', Record<never, never>, Record<never, never>>,
     '/sandbox/': RouteRecordInfo<'/sandbox/', '/sandbox', Record<never, never>, Record<never, never>>,
+    '/sandbox/sandbox-chart': RouteRecordInfo<'/sandbox/sandbox-chart', '/sandbox/sandbox-chart', Record<never, never>, Record<never, never>>,
+    '/sandbox/sandbox-editor': RouteRecordInfo<'/sandbox/sandbox-editor', '/sandbox/sandbox-editor', Record<never, never>, Record<never, never>>,
+    '/sandbox/sandbox-form': RouteRecordInfo<'/sandbox/sandbox-form', '/sandbox/sandbox-form', Record<never, never>, Record<never, never>>,
+    '/sandbox/sandbox-map': RouteRecordInfo<'/sandbox/sandbox-map', '/sandbox/sandbox-map', Record<never, never>, Record<never, never>>,
+    '/sandbox/sandbox-media': RouteRecordInfo<'/sandbox/sandbox-media', '/sandbox/sandbox-media', Record<never, never>, Record<never, never>>,
+    '/sandbox/sandbox-pad': RouteRecordInfo<'/sandbox/sandbox-pad', '/sandbox/sandbox-pad', Record<never, never>, Record<never, never>>,
+    '/sandbox/sandbox-share': RouteRecordInfo<'/sandbox/sandbox-share', '/sandbox/sandbox-share', Record<never, never>, Record<never, never>>,
+    '/sandbox/sandbox-table': RouteRecordInfo<'/sandbox/sandbox-table', '/sandbox/sandbox-table', Record<never, never>, Record<never, never>>,
   }
 }

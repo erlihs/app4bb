@@ -19,6 +19,17 @@
       <v-btn v-else @click="ui.stopLoading()">Loading</v-btn>
     </v-card-actions>
   </v-card>
+
+  <v-container fluid>
+    <h1 class="mb-4">Components</h1>
+    <v-row>
+      <v-col cols="12" md="6" lg="4" v-for="comp in compontents" :key="comp.to">
+        <v-card :to="comp.to">
+          <v-card-title><v-icon :icon="comp.icon" />{{ comp.text }}</v-card-title>
+        </v-card>
+      </v-col>
+    </v-row>
+  </v-container>
 </template>
 
 <script setup lang="ts">
@@ -26,4 +37,14 @@ const cardBackground = useCardBackground
 const { t } = useI18n()
 const settings = useSettingsStore()
 const ui = useUiStore()
+const compontents = ref([
+  { icon: '$mdiChartLine', to: '/sandbox/sandbox-chart', text: 'Chart' },
+  { icon: '$mdiPen', to: '/sandbox/sandbox-editor', text: 'Editor' },
+  { icon: '$mdiMap', to: '/sandbox/sandbox-map', text: 'Map' },
+  { icon: '$mdiWebcam', to: '/sandbox/sandbox-media', text: 'Media' },
+  { icon: '$mdiFormTextarea', to: '/sandbox/sandbox-form', text: 'Form' },
+  { icon: '$mdiDraw', to: '/sandbox/sandbox-pad', text: 'Pad' },
+  { icon: '$mdiTable', to: '/sandbox/sandbox-table', text: 'Table' },
+  { icon: '$mdiShare', to: '/sandbox/sandbox-share', text: 'Share' },
+])
 </script>
