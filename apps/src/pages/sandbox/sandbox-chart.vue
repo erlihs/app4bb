@@ -10,6 +10,7 @@
 </template>
 
 <script setup lang="ts">
+definePage({ meta: { role: 'restricted' } })
 const chartData1 = ref({
   datasets: [
     {

@@ -24,6 +24,7 @@
 </template>
 
 <script setup lang="ts">
+definePage({ meta: { role: 'restricted' } })
 const text = ref(
   '<h1>What is Lorem Ipsum?</h1><p><strong>Lorem Ipsum</strong>is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry standard dummy text ever since the 1500s.</p>',
 )

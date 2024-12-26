@@ -43,6 +43,7 @@
 </template>
 
 <script setup lang="ts">
+definePage({ meta: { role: 'restricted' } })
 import VBsbMap, { type TBsbMapMarker } from '@/components/VBsbMap.vue'
 const map = ref<typeof VBsbMap | null>(null)
 

@@ -4,6 +4,7 @@ import { useRouter, useRoute } from 'vue-router'
 export const useNavigationStore = defineStore('navigation', () => {
   const routes = useRouter().getRoutes()
   const route = useRoute()
+  const auth = useAuthStore()
 
   const allPages = routes.map((route) => {
     return {
@@ -54,12 +55,36 @@ export const useNavigationStore = defineStore('navigation', () => {
       .filter((page) => page.level < 2)
       .filter((page) => page.path !== '/:path(.*)')
       .filter((page) => page.role !== 'guest')
+      .filter(
+        (page) =>
+          (!auth.isAuthenticated && ['restricted', 'public'].includes(page.role)) ||
+          auth.isAuthenticated,
+      )
+  })
+
+  const guard = computed(() => (path: string): boolean | string => {
+    const page = allPages.find((page) => {
+      const regexPath = new RegExp('^' + page.path.replace(/:[^/]+/g, '[^/]+') + '$')
+      return regexPath.test(path)
+    })
+    if (!page) return false
+    if (page.role === 'public') return true
+    if (!auth.isAuthenticated && page.role == 'guest') return true
+    if (auth.isAuthenticated && page.role == 'restricted') return true
+    if (
+      auth.isAuthenticated &&
+      auth.user.privileges.some((privilege) => privilege.role == page.role)
+    )
+      return true
+    if (!auth.isAuthenticated && page.role == 'restricted') return '/login'
+    return false
   })
 
   return {
     pages,
     title,
     breadcrumbs,
+    guard,
   }
 })
 

@@ -11,11 +11,19 @@ router.beforeEach(async (to) => {
   await loadPageTranslations(to.path)
 
   const appTitle = 'Bullshit Bingo'
-  const pageTitle = useNavigationStore().title(to.path)
+  const navigationStore = useNavigationStore()
+  const pageTitle = navigationStore.title(to.path)
   const title = pageTitle ? `${appTitle} - ${pageTitle}` : appTitle
   useHead({ title })
 
-  return true
+  const uiStore = useUiStore()
+  const result: string | boolean = navigationStore.guard(to.path)
+  if (result) {
+    uiStore.clearMessages()
+  } else {
+    uiStore.setError('You are not allowed to access this page')
+  }
+  return result === '/login' ? { path: result, query: { redirect: to.path } } : result
 })
 
 if (import.meta.hot) {

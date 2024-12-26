@@ -3,6 +3,7 @@
 </template>
 
 <script setup lang="ts">
+definePage({ meta: { role: 'restricted' } })
 const data = ref({
   text1: 'Hello World!',
   text2: 'Hello World, again!',

@@ -27,6 +27,7 @@ definePage({
     description: 'Welcome to the home page',
     icon: '$mdiHome',
     color: '#ABCDEF',
+    role: 'public',
   },
 })
 const navigation = useNavigationStore()

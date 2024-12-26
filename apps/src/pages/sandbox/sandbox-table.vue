@@ -11,7 +11,7 @@
 </template>
 
 <script setup lang="ts">
-definePage({ meta: { title: 'Sandbox Table', role: 'ADMIN' } })
+definePage({ meta: { role: 'restricted' } })
 function action(action: unknown) {
   console.log('action', action)
 }

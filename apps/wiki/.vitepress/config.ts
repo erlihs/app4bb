@@ -154,6 +154,7 @@ export default defineConfig({
                 },
               ],
             },
+            { text: 'Authorization', link: '/guide/web-application/authorization' },
           ],
         },
         {

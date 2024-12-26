@@ -11,6 +11,12 @@ export type AuthResponse = {
     username: string
     fullname: string
     created: string
+    privileges?: {
+      role: string
+      permission: string
+      validfrom: string
+      validto: string
+    }[]
   }[]
   error?: string
 }

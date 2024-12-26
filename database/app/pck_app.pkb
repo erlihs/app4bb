@@ -7,6 +7,40 @@ CREATE OR REPLACE PACKAGE BODY pck_app AS
         pck_api_settings.read('APP_VERSION', r_version);
     END;
 
+    PROCEDURE user(
+        p_uuid APP_USERS.UUID%TYPE,
+        r_user OUT SYS_REFCURSOR
+    ) AS
+        v_privileges CLOB;
+    BEGIN
+
+        SELECT JSON_ARRAYAGG(
+                JSON_OBJECT(
+                    'role' VALUE r.role,
+                    'permission' VALUE p.permission,
+                    'validfrom' VALUE p.valid_from,
+                    'validto' VALUE p.valid_to
+                )
+            )
+        INTO v_privileges
+        FROM app_permissions p
+        JOIN app_roles r ON r.id = p.id_role
+        JOIN app_users u ON u.id = p.id_user
+        WHERE u.uuid = p_uuid;
+
+        OPEN r_user FOR
+        SELECT
+            u.uuid AS "uuid",
+            u.username AS "username",
+            u.fullname AS "fullname",
+            TO_CHAR(u.created, 'YYYY-MM-DD HH24:MI') AS "created",
+            v_privileges AS "{}privileges"
+        FROM
+            app_users u
+        WHERE
+            u.uuid = p_uuid;
+    END;
+
     PROCEDURE post_login(
         p_username APP_USERS.USERNAME%TYPE,
         p_password APP_USERS.PASSWORD%TYPE,
@@ -28,16 +62,7 @@ CREATE OR REPLACE PACKAGE BODY pck_app AS
         r_access_token := pck_api_auth.token(v_uuid, 'A');
         r_refresh_token := pck_api_auth.token(v_uuid, 'R');
 
-        OPEN r_user FOR
-        SELECT
-            u.uuid AS "uuid",
-            u.username AS "username",
-            u.fullname AS "fullname",
-            TO_CHAR(u.created, 'YYYY-MM-DD HH24:MI') AS "created"
-        FROM
-            app_users u
-        WHERE
-            u.uuid = v_uuid;
+        user(v_uuid, r_user);
 
      EXCEPTION
         WHEN OTHERS THEN

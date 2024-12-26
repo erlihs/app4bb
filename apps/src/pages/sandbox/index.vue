@@ -34,6 +34,7 @@
 </template>
 
 <script setup lang="ts">
+definePage({ meta: { role: 'restricted' } })
 const cardBackground = useCardBackground
 const { t } = useI18n()
 const settings = useSettingsStore()

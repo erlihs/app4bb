@@ -442,9 +442,9 @@ Add Heartbeat feature to `@/pages/sandbox/index.vue` to test how tokens are rene
 
 ```vue
 <template>
-<!-- ... -->
- <v-btn @click="heartbeat()">Heartbeat: {{ responseStatus }}</v-btn>
-<!-- ... -->
+  <!-- ... -->
+  <v-btn @click="heartbeat()">Heartbeat: {{ responseStatus }}</v-btn>
+  <!-- ... -->
 </template>
 
 <script setup lang="ts">

@@ -24,6 +24,7 @@
 </template>
 
 <script setup lang="ts">
+definePage({ meta: { role: 'restricted' } })
 import VBsbPad from '@/components/VBsbPad.vue'
 
 const pad = ref<typeof VBsbPad | null>(null)

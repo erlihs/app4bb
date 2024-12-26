@@ -20,6 +20,12 @@ export const useAuthStore = defineStore(
       username: '',
       fullname: '',
       created: '',
+      privileges: [] as {
+        role: string
+        permission: string
+        validfrom: string
+        validto: string
+      }[],
     }
 
     const accessToken = ref('')
@@ -45,6 +51,7 @@ export const useAuthStore = defineStore(
         user.value = {
           ...defaultUser,
           ...data.user?.[0],
+          privileges: data.user?.[0]?.privileges || [],
         }
       }
       stopLoading()

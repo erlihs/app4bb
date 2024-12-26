@@ -117,6 +117,7 @@
 </template>
 
 <script setup lang="ts">
+definePage({ meta: { role: 'restricted' } })
 function cameraLoading(loading: boolean) {
   console.log('camera loading', loading)
 }
