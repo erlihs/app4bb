@@ -1,6 +1,25 @@
 <template>
   <v-app>
     <v-navigation-drawer v-model="drawer" app>
+      <v-container>
+        <v-row>
+          <v-col cols="4">
+            <v-img
+              eager
+              class="rounded-lg border-thin"
+              alt="Bullshit Bingo"
+              src="/logo.svg"
+              aspect-ratio="1/1"
+            >
+              <div
+                class="fill-height"
+                :class="app.settings.theme == 'dark' ? 'dark-image' : ''"
+              ></div>
+            </v-img>
+          </v-col>
+        </v-row>
+      </v-container>
+      <v-divider />
       <v-list>
         <v-list-item
           v-for="page in app.navigation.pages"
@@ -11,10 +30,31 @@
           <v-list-item-title>{{ page.title }}</v-list-item-title>
         </v-list-item>
       </v-list>
+      <v-divider v-if="app.auth.isAuthenticated" />
+      <v-list v-if="app.auth.isAuthenticated">
+        <v-list-item>
+          {{ t('app.messages.welcome') }}, <br />
+          <strong>{{ app.auth.user?.fullname }}</strong>
+        </v-list-item>
+        <v-list-item @click="app.auth.logout()">
+          <template #prepend>
+            <v-icon icon="$mdiLogout"></v-icon>
+          </template>
+          <v-list-item-title>{{ t('app.actions.logout') }}</v-list-item-title>
+        </v-list-item>
+      </v-list>
     </v-navigation-drawer>
     <v-app-bar>
       <v-app-bar-nav-icon @click="drawer = !drawer"></v-app-bar-nav-icon>
       <v-toolbar-title>Bullshit Bingo</v-toolbar-title>
+      <v-btn v-show="!app.auth.isAuthenticated" to="/login" class="mr-2">
+        <v-icon icon="$mdiAccount"></v-icon>
+        {{ t('app.actions.login') }}
+      </v-btn>
+      <v-btn v-show="app.auth.isAuthenticated" @click="app.auth.logout()" class="mr-2">
+        <v-icon icon="$mdiLogout"></v-icon>
+        {{ t('app.actions.logout') }}
+      </v-btn>
       <v-menu v-if="mobile">
         <template #activator="{ props }">
           <v-btn icon v-bind="props">
@@ -153,3 +193,10 @@ onMounted(() => {
   app.init()
 })
 </script>
+
+<style>
+.dark-image {
+  background-color: black;
+  opacity: 0.6;
+}
+</style>

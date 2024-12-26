@@ -3,6 +3,7 @@ import { version as packageVersion } from '../../package.json'
 import { appApi } from '@/api'
 
 export const useAppStore = defineStore('app', () => {
+  const auth = useAuthStore()
   const settings = useSettingsStore()
   const navigation = useNavigationStore()
   const ui = useUiStore()
@@ -17,7 +18,7 @@ export const useAppStore = defineStore('app', () => {
     settings.init()
   }
 
-  return { settings, navigation, ui, version, init }
+  return { auth, settings, navigation, ui, version, init }
 })
 
 if (import.meta.hot) {

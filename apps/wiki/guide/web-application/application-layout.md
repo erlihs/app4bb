@@ -117,7 +117,6 @@ const pages = ref([
   opacity: 0.6;
 }
 </style>
-
 ```
 
 As a result - new and clean layout with navigation drawer, header and footer.

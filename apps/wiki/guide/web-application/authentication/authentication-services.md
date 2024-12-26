@@ -1,3 +1,46 @@
+# Authentication services
+
+In this section the services needed for authentication will be created.
+
+## Authentication methods
+
+Create methods for login with username and password, logout and obtaining refresh token.
+
+::: details `/database/app/pck_app.pks`
+
+```plsql
+CREATE OR REPLACE PACKAGE pck_app AS -- Package provides methods for the application
+
+    PROCEDURE get_version( -- Procedure returns current version
+        r_version OUT VARCHAR2 -- Version number
+    );
+
+    PROCEDURE post_login( -- Procedure authenticates user and returns tokens
+        p_username APP_USERS.USERNAME%TYPE, -- User name (e-mail address)
+        p_password APP_USERS.PASSWORD%TYPE, -- Password
+        r_access_token OUT APP_TOKENS.TOKEN%TYPE, -- Token
+        r_refresh_token OUT APP_TOKENS.TOKEN%TYPE, -- Refresh token
+        r_user OUT SYS_REFCURSOR -- User data
+    );
+
+    PROCEDURE post_logout; -- Procedure invalidates access and refresh tokens
+
+    PROCEDURE post_refresh( -- Procedure re-issues access and refresh tokens
+        r_access_token OUT APP_TOKENS.TOKEN%TYPE, -- Token
+        r_refresh_token OUT APP_TOKENS.TOKEN%TYPE -- Refresh token
+    );
+
+    PROCEDURE get_heartbeat;
+
+END;
+/
+```
+
+:::
+
+::: details `/database/app/pck_app.pkb`
+
+```plsql
 CREATE OR REPLACE PACKAGE BODY pck_app AS
 
     PROCEDURE get_version(
@@ -95,3 +138,14 @@ CREATE OR REPLACE PACKAGE BODY pck_app AS
 
 END;
 /
+```
+
+:::
+
+## Test
+
+Test with Postmnan `POST login` to get access and refresh tokens, `POST logout` to revoke tokens, `POST refresh` and `GET heartbeat` with and without tokens to see the difference - check audit records.
+
+```sql
+SELECT * FROM app_audit ORDER BY created DESC;
+```

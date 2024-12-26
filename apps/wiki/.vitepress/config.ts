@@ -136,6 +136,24 @@ export default defineConfig({
               ],
             },
             { text: 'Testing', link: '/guide/web-application/testing' },
+            {
+              text: 'Authentication',
+              collapsed: true,
+              items: [
+                {
+                  text: 'Concepts',
+                  link: '/guide/web-application/authentication/authentication-concepts',
+                },
+                {
+                  text: 'Services',
+                  link: '/guide/web-application/authentication/authentication-services',
+                },
+                {
+                  text: 'Application',
+                  link: '/guide/web-application/authentication/authentication-in-app',
+                },
+              ],
+            },
           ],
         },
         {

@@ -8,6 +8,7 @@
       <v-btn color="secondary">Secondary</v-btn>
       <v-spacer></v-spacer>
       <v-btn :prepend-icon="settings.themeIcon" @click="settings.themeToggle()">Toggle theme</v-btn>
+      <v-btn @click="heartbeat()">Heartbeat: {{ responseStatus }}</v-btn>
     </v-card-actions>
     <v-card-actions>
       <v-btn color="info" @click="ui.setInfo('This is info')">Info</v-btn>
@@ -47,4 +48,10 @@ const compontents = ref([
   { icon: '$mdiTable', to: '/sandbox/sandbox-table', text: 'Table' },
   { icon: '$mdiShare', to: '/sandbox/sandbox-share', text: 'Share' },
 ])
+
+import { appApi } from '@/api'
+const responseStatus = ref(200)
+async function heartbeat() {
+  responseStatus.value = (await appApi.heartbeat()).status ?? 200
+}
 </script>
