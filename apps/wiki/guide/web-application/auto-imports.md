@@ -122,8 +122,8 @@ As on moment there is no native support yet - see [Feature request](https://gith
 
 1. Create a plugin file
 
-::: details `@/plugins/AutoImportMdiIcons.ts`
-<<< ../../../src/plugins/AutoImportMdiIcons.ts
+::: details `@/plugins/icons.ts`
+<<< ../../../src/plugins/icons.ts
 :::
 
 ### Options (`AutoImportMdiIconsOptions`):
@@ -170,7 +170,7 @@ As on moment there is no native support yet - see [Feature request](https://gith
   "extends": "@tsconfig/node20/tsconfig.json",
   "include": [
 // ...
-    "./src/plugins/AutoImportMdiIcons.ts"
+    "./src/plugins/icons.ts"
   ],
 // ...
 }
@@ -180,7 +180,7 @@ As on moment there is no native support yet - see [Feature request](https://gith
 
 ```ts{2,7}
 // ...
-import { AutoImportMdiIcons } from './src/plugins/AutoImportMdiIcons'
+import { AutoImportMdiIcons } from './src/plugins/icons'
 // ...
 export default defineConfig({
   plugins: [

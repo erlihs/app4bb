@@ -80,7 +80,7 @@ definePage({ meta: { title: 'Home', icon: '$mdiHome' } })
         <v-list-item
           v-for="page in pages"
           :key="page.path"
-          :prepend-icon="page.icon"
+          :prepend-icon="page.icon || '$mdiCircleSmall'"
           :to="page.path"
         >
           <v-list-item-title>{{ page.title }}</v-list-item-title>

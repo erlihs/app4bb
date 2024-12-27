@@ -13,7 +13,7 @@ type AutoImportMdiIconsOptions = {
 export default function AutoImportMdiIcons(options?: AutoImportMdiIconsOptions): Plugin | Plugin[] {
   let config: ResolvedConfig
   const dirs: string[] = options?.dirs || ['./src']
-  const exts: string[] = options?.exts || ['.vue', '.ts']
+  const exts: string[] = options?.exts || ['.vue', '.ts', '.md']
   const pattern = options?.pattern || '$mdi'
   const outputPath = options?.outputPath || './src/themes/'
   const outputFile = options?.outputFile || 'icons.ts'

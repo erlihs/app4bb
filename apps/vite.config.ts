@@ -10,7 +10,7 @@ import Vuetify from 'vite-plugin-vuetify'
 import VueI18nPlugin from '@intlify/unplugin-vue-i18n/vite'
 import AutoImport from 'unplugin-auto-import/vite'
 import Components from 'unplugin-vue-components/vite'
-import AutoImportMdiIcons from './src/plugins/AutoImportMdiIcons'
+import AutoImportMdiIcons from './src/plugins/icons'
 import { unheadComposablesImports } from 'unhead'
 import { VitePWA } from 'vite-plugin-pwa'
 
