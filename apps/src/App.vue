@@ -24,7 +24,7 @@
         <v-list-item
           v-for="page in app.navigation.pages"
           :key="page.path"
-          :prepend-icon="page.icon || '$mdiCircleSmall'"
+          :prepend-icon="page.icon || '$mdiMinus'"
           :to="page.path"
         >
           <v-list-item-title>{{ page.title }}</v-list-item-title>
