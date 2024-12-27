@@ -5,7 +5,21 @@ import videoPlugin from './markdown-it-video'
 export default defineConfig({
   title: 'Bullshit Bingo',
   description: 'Release the energy to focus on business',
-  head: [['link', { rel: 'icon', href: '/favicon.ico' }]],
+  head: [
+    ['link', { rel: 'icon', href: '/favicon.ico' }],
+    [
+      'script',
+      {
+        async: '',
+        src: 'https://www.googletagmanager.com/gtag/js?id=G-N0KY026CJS',
+      },
+    ],
+    [
+      'script',
+      {},
+      "window.dataLayer = window.dataLayer || [];\nfunction gtag(){dataLayer.push(arguments);}\ngtag('js', new Date());\ngtag('config', 'G-N0KY026CJS');",
+    ],
+  ],
   markdown: {
     config: (md) => {
       // use more markdown-it plugins!
@@ -187,6 +201,17 @@ export default defineConfig({
             { text: 'Setting up VitePress', link: '/guide/wiki/setting-up-vitepress' },
             { text: 'VitePress configuration', link: '/guide/wiki/vitepress-configuration' },
             { text: 'Custom markdown', link: '/guide/wiki/custom-markdown' },
+          ],
+        },
+        {
+          text: 'Host and deploy',
+          items: [
+            { text: 'Domain name', link: '/guide/hosting/domain-name' },
+            { text: 'Hosting', link: '/guide/hosting/hosting' },
+            { text: 'Web Server Configuration', link: '/guide/hosting/web-server-configuration' },
+            { text: 'Analytics', link: '/guide/hosting/analytics' },
+            { text: 'Deployment', link: '/guide/hosting/deployment' },
+            { text: 'Local DB Environment', link: '/guide/hosting/local-db-environment' },
           ],
         },
       ],

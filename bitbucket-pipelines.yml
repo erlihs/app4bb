@@ -1,0 +1,48 @@
+#  Build and deploy BullshitBingo application
+
+image: node:16
+
+pipelines:
+  branches:
+    release:
+      - step:
+          name: Build & deploy
+          deployment: production
+          script: 
+            - cd apps
+            - npm install
+            - npm run build
+            - npm run docs:build
+            - pipe: atlassian/ssh-run:0.2.4
+              variables:
+                SSH_USER: opc
+                SERVER: 130.61.61.103
+                COMMAND: 'rm -rf /var/www/apps/*'
+            - pipe: atlassian/scp-deploy:0.3.3
+              variables:
+                USER: opc
+                SERVER: 130.61.61.103
+                REMOTE_PATH: '/var/www/apps'
+                LOCAL_PATH: 'dist/*'
+            - pipe: atlassian/ssh-run:0.2.4
+              variables:
+                SSH_USER: opc
+                SERVER: 130.61.61.103
+                COMMAND: 'rm -rf /var/www/wiki/*'
+            - pipe: atlassian/scp-deploy:0.3.3
+              variables:
+                USER: opc
+                SERVER: 130.61.61.103
+                REMOTE_PATH: '/var/www/wiki'
+                LOCAL_PATH: 'wiki/.vitepress/dist/*'
+            - pipe: atlassian/ssh-run:0.2.4
+              variables:
+                SSH_USER: opc
+                SERVER: 130.61.61.103
+                COMMAND: 'rm -rf /var/www/html/*'
+            - pipe: atlassian/scp-deploy:0.3.3
+              variables:
+                USER: opc
+                SERVER: 130.61.61.103
+                REMOTE_PATH: '/var/www/html'
+                LOCAL_PATH: '../index.html'
