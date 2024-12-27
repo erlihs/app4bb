@@ -97,6 +97,20 @@ definePage({ meta: { title: 'Home', icon: '$mdiHome' } })
     <v-footer app>
       <v-row>
         <v-col> v0.3 </v-col>
+        <v-col class="text-right">
+          <v-btn
+            icon
+            href="https://github.com/your_repo"
+            target="_blank"
+            rel="noopener"
+            title="GitHub"
+            size="xx-small"
+            color="secondary"
+            variant="flat"
+          >
+            <v-icon icon="$mdiGithub"></v-icon>
+          </v-btn>
+        </v-col>
       </v-row>
     </v-footer>
   </v-app>

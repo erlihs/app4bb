@@ -174,6 +174,13 @@
           </v-btn>
         </template>
       </v-snackbar>
+      <v-snackbar v-model="refresh" multi-line vertical>
+        New version is available, click OK to upgrade now.
+        <template v-slot:actions>
+          <v-btn color="primary" variant="text" @click="updateServiceWorker()"> Ok </v-btn>
+          <v-btn color="secondary" variant="text" @click="refresh = false"> Cancel </v-btn>
+        </template>
+      </v-snackbar>
       <v-overlay v-model="app.ui.loading" contained></v-overlay>
     </v-main>
     <v-footer app>
@@ -189,13 +196,20 @@
           >
             Upgrade
           </v-btn>
-          <v-snackbar v-model="refresh" multi-line vertical>
-            New version is available, click OK to upgrade now.
-            <template v-slot:actions>
-              <v-btn color="primary" variant="text" @click="updateServiceWorker()"> Ok </v-btn>
-              <v-btn color="secondary" variant="text" @click="refresh = false"> Cancel </v-btn>
-            </template>
-          </v-snackbar>
+        </v-col>
+        <v-col class="text-right">
+          <v-btn
+            icon
+            href="https://github.com/erlihs"
+            target="_blank"
+            rel="noopener"
+            title="GitHub"
+            size="xx-small"
+            color="secondary"
+            variant="flat"
+          >
+            <v-icon icon="$mdiGithub"></v-icon>
+          </v-btn>
         </v-col>
       </v-row>
     </v-footer>
