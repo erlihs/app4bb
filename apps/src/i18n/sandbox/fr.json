@@ -1,6 +1,5 @@
 {
-  "sandbox": {
-    "title": "Titre",
-    "content": "Contenu"
-  }
+  "sandbox.title": "\"Titre de bac à sable\"",
+  "sandbox.content": "Contenu de la bac à sable",
+  "sandbox.missing": "\"Bac à sable manquant\""
 }

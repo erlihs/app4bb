@@ -1,0 +1,15 @@
+{
+  "app.login.title": "App login title",
+  "app.login.not_registered": "App login not_registered",
+  "app.login.sign_up": "App login sign_up",
+  "app.login.forgot_password": "App login forgot_password",
+  "app.login.username.label": "App login username label",
+  "app.login.username.placeholder": "App login username placeholder",
+  "app.login.password.label": "App login password label",
+  "app.login.password.placeholder": "App login password placeholder",
+  "app.login.submit": "App login submit",
+  "app.login.dev": "App login dev",
+  "app.login.username.required": "App login username required",
+  "app.login.password.required": "App login password required",
+  "app.messages.welcome": "App messages welcome"
+}

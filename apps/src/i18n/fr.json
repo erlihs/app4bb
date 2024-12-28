@@ -1,6 +1,6 @@
 {
-  "app": {
-    "home": "Accueil",
-    "about": "À propos"
-  }
+  "en": "Dans",
+  "app.actions.login": "\"Actions de l'application connexion\"",
+  "app.actions.logout": "\"Actions de l'application déconnexion\"",
+  "app.messages.welcome": "\"Messages de l'application bienvenus\""
 }

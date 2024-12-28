@@ -51,7 +51,7 @@ export function createPiniaLocalStoragePlugin(): PiniaPlugin {
       try {
         const filteredState = filterState(state)
         localStorage.setItem(key, JSON.stringify(filteredState))
-        console.log(`Saved ${store.$id} to localStorage:`, filteredState)
+        if (debug) console.log(`Saved ${store.$id} to localStorage:`, filteredState)
       } catch (error) {
         console.error(`Error saving ${key} to localStorage:`, error)
       }

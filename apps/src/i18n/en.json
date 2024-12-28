@@ -1,6 +1,6 @@
 {
-  "app": {
-    "home": "Home",
-    "about": "About"
-  }
+  "app.actions.login": "App actions login",
+  "app.actions.logout": "App actions logout",
+  "en": "En",
+  "app.messages.welcome": "App messages welcome"
 }

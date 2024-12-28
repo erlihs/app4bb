@@ -1,6 +1,5 @@
 {
-  "sandbox": {
-    "title": "Title",
-    "content": "Content"
-  }
+  "sandbox.title": "Sandbox title",
+  "sandbox.content": "Sandbox content",
+  "sandbox.missing": "Sandbox missing"
 }
