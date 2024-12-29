@@ -43,6 +43,45 @@ export default defineConfig({
 
 ```
 
+Markdown style can be adjusted by modifying main css:
+
+::: details `@/assets/main.css`
+
+```css
+div.markdown-body h1 {
+  margin-bottom: 24px;
+}
+
+div.markdown-body h2 {
+  margin-top: 8px;
+  margin-bottom: 16px;
+}
+
+div.markdown-body h3 {
+  margin-top: 8px;
+  margin-bottom: 12px;
+}
+
+div.markdown-body ul {
+  margin-bottom: 8px;
+}
+
+div.markdown-body li {
+  margin-left: 24px;
+}
+
+div.markdown-body p {
+  margin-bottom: 8px;
+}
+
+div.markdown-body hr {
+  margin-top: 8px;
+  margin-bottom: 8px;
+}
+```
+
+:::
+
 3. Add auto-generated route file and compiler option to `./tsconfig.app.json`
 
 ```json{3,8}
