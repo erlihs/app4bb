@@ -138,8 +138,8 @@ Create view for confirming emails `@/pages/confirm-email/[id].vue`
   <v-container>
     <v-row justify="center">
       <v-col cols="12" :md="4">
-        <h1 class="mb-4">{{ t('Confirm email') }}</h1>
-        <v-btn @click="router.push('/')">{{ t('Ok') }}</v-btn>
+        <h1 class="mb-4">{{ t('confirm.email') }}</h1>
+        <v-btn @click="router.push('/')">{{ t('ok') }}</v-btn>
       </v-col>
     </v-row>
   </v-container>

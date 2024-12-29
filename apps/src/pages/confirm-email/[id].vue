@@ -2,8 +2,8 @@
   <v-container>
     <v-row justify="center">
       <v-col cols="12" :md="4">
-        <h1 class="mb-4">{{ t('app.confirm_email.title') }}</h1>
-        <v-btn @click="router.push('/')">{{ t('app.actions.ok') }}</v-btn>
+        <h1 class="mb-4">{{ t('confirm.email.title') }}</h1>
+        <v-btn @click="router.push('/')">{{ t('ok') }}</v-btn>
       </v-col>
     </v-row>
   </v-container>

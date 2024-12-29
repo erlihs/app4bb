@@ -26,7 +26,7 @@
       <v-table v-if="currentItems.length == 0">
         <tbody>
           <tr>
-            <td>{{ t('No data') }}</td>
+            <td>{{ t('no.data') }}</td>
           </tr>
         </tbody>
       </v-table>

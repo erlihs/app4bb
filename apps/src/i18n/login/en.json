@@ -11,5 +11,15 @@
   "app.login.dev": "App login dev",
   "app.login.username.required": "App login username required",
   "app.login.password.required": "App login password required",
-  "app.messages.welcome": "App messages welcome"
+  "app.messages.welcome": "App messages welcome",
+  "not.registered.yet": "Not registered yet",
+  "sign.up": "Sign up",
+  "forgot.password": "Forgot password",
+  "username": "Username",
+  "password": "Password",
+  "submit": "Submit",
+  "dev": "Dev",
+  "username.is.required": "Username is required",
+  "password.is.required": "Password is required",
+  "unauthorized": "Unauthorized"
 }

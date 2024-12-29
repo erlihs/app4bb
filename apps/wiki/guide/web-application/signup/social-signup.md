@@ -42,12 +42,12 @@ VITE_GOOGLE_CLIENT_ID = ********-********.apps.googleusercontent.com
   <v-container>
     <v-row justify="center">
       <v-col cols="12" :md="4">
-        <h1 class="mb-4">{{ t('app.login.title') }}</h1>
+        <h1 class="mb-4">{{ t('login') }}</h1>
         <v-bsb-form :options :data @submit="submit" @action="dev" />
         <br />
         <br />
-        {{ t('app.login.not_registered') }} <a href="/signup">{{ t('app.login.sign_up') }}</a> |
-        <a href="/recover-password">{{ t('app.login.forgot_password') }}</a>
+        {{ t('not.registered.yet') }} <a href="/signup">{{ t('sign.up') }}</a> |
+        <a href="/recover-password">{{ t('forgot.password') }}</a>
         <br />
         <br />
         <GoogleLogin :clientId="googleClientId" :callback="callback" />

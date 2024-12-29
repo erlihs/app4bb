@@ -311,14 +311,14 @@ Add login / logout button in app bar
       <v-divider v-if="app.auth.isAuthenticated" />
       <v-list v-if="app.auth.isAuthenticated">
         <v-list-item>
-          {{ t('app.messages.welcome') }}, <br />
+          {{ t('welcome') }}, <br />
           <strong>{{ app.auth.user?.fullname }}</strong>
         </v-list-item>
         <v-list-item @click="app.auth.logout()">
           <template #prepend>
             <v-icon icon="$mdiLogout"></v-icon>
           </template>
-          <v-list-item-title>{{ t('app.actions.logout') }}</v-list-item-title>
+          <v-list-item-title>{{ t('logout') }}</v-list-item-title>
         </v-list-item>
       </v-list>
       <!-- ... -->
@@ -327,11 +327,11 @@ Add login / logout button in app bar
       <!-- ... -->
       <v-btn v-show="!app.auth.isAuthenticated" to="/login" class="mr-2">
         <v-icon icon="$mdiAccount"></v-icon>
-        {{ t('app.actions.login') }}
+        {{ t('login') }}
       </v-btn>
       <v-btn v-show="app.auth.isAuthenticated" @click="app.auth.logout()" class="mr-2">
         <v-icon icon="$mdiLogout"></v-icon>
-        {{ t('app.actions.logout') }}
+        {{ t('logout') }}
       </v-btn>
       <!-- ... -->
     </v-app-bar>
@@ -356,7 +356,7 @@ Add login / logout button in app bar
   <v-container>
     <v-row justify="center">
       <v-col cols="12" :md="4">
-        <h1 class="mb-4">{{ t('app.login.title') }}</h1>
+        <h1 class="mb-4">{{ t('login') }}</h1>
         <v-bsb-form :options :data @submit="submit" @action="dev" />
       </v-col>
     </v-row>
@@ -375,7 +375,7 @@ const devAction = import.meta.env.DEV
   ? [
       {
         type: 'dev',
-        title: 'app.login.dev',
+        title: 'dev',
         variant: 'outlined',
       },
     ]
@@ -386,25 +386,25 @@ const options = {
     {
       type: 'text',
       name: 'username',
-      label: 'app.login.username.label',
-      placeholder: 'app.login.username.placeholder',
+      label: 'username',
+      placeholder: 'username',
       rules: [
-        { type: 'required', value: true, message: 'app.login.username.required' },
-        { type: 'email', value: true, message: 'app.login.username.invalid_email' },
+        { type: 'required', value: true, message: 'username.is.required' },
+        { type: 'email', value: true, message: 'username.must.be.a.valid.email.address' },
       ],
     },
     {
       type: 'password',
       name: 'password',
-      label: 'app.login.password.label',
-      placeholder: 'app.login.password.placeholder',
-      rules: [{ type: 'required', value: true, message: 'app.login.password.required' }],
+      label: 'password',
+      placeholder: 'password',
+      rules: [{ type: 'required', value: true, message: 'password.is.required' }],
     },
   ],
   actions: [
     {
       type: 'submit',
-      title: 'app.login.submit',
+      title: 'submit',
       color: 'primary',
     },
     ...devAction,

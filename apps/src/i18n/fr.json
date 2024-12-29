@@ -1,6 +1,5 @@
 {
-  "en": "Dans",
-  "app.actions.login": "\"Actions de l'application connexion\"",
-  "app.actions.logout": "\"Actions de l'application déconnexion\"",
-  "app.messages.welcome": "\"Messages de l'application bienvenus\""
+  "welcome": "Bienvenue",
+  "logout": "Déconnexion",
+  "login": "Connexion"
 }

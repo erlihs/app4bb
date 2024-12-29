@@ -304,7 +304,7 @@ router.beforeEach(async (to) => {
   if (result) {
     uiStore.clearMessages()
   } else {
-    uiStore.setError('You are not allowed to access this page')
+    uiStore.setError('you.are.not.allowed.to.access.this.page')
   }
   return result === '/login' ? { path: result, query: { redirect: to.path } } : result
 })

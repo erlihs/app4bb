@@ -2,12 +2,12 @@
   <v-container>
     <v-row justify="center">
       <v-col cols="12" :md="4">
-        <h1 class="mb-4">{{ t('app.login.title') }}</h1>
+        <h1 class="mb-4">{{ t('login') }}</h1>
         <v-bsb-form :options :data @submit="submit" @action="dev" />
         <br />
         <br />
-        {{ t('app.login.not_registered') }} <a href="/signup">{{ t('app.login.sign_up') }}</a> |
-        <a href="/recover-password">{{ t('app.login.forgot_password') }}</a>
+        {{ t('not.registered.yet') }} <a href="/signup">{{ t('sign.up') }}</a> |
+        <a href="/recover-password">{{ t('forgot.password') }}</a>
         <br />
         <br />
         <GoogleLogin :clientId="googleClientId" :callback="callback" />
@@ -28,7 +28,7 @@ const devAction = import.meta.env.DEV
   ? [
       {
         type: 'dev',
-        title: 'app.login.dev',
+        title: 'dev',
         variant: 'outlined',
       },
     ]
@@ -39,25 +39,25 @@ const options = {
     {
       type: 'text',
       name: 'username',
-      label: 'app.login.username.label',
-      placeholder: 'app.login.username.placeholder',
+      label: 'username',
+      placeholder: 'username',
       rules: [
-        { type: 'required', value: true, message: 'app.login.username.required' },
-        { type: 'email', value: true, message: 'app.login.username.invalid_email' },
+        { type: 'required', value: true, message: 'username.is.required' },
+        { type: 'email', value: true, message: 'username.must.be.a.valid.email.address' },
       ],
     },
     {
       type: 'password',
       name: 'password',
-      label: 'app.login.password.label',
-      placeholder: 'app.login.password.placeholder',
-      rules: [{ type: 'required', value: true, message: 'app.login.password.required' }],
+      label: 'password',
+      placeholder: 'password',
+      rules: [{ type: 'required', value: true, message: 'password.is.required' }],
     },
   ],
   actions: [
     {
       type: 'submit',
-      title: 'app.login.submit',
+      title: 'submit',
       color: 'primary',
     },
     ...devAction,

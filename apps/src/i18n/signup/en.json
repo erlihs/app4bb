@@ -1,0 +1,12 @@
+{
+  "sign.up": "Sign up",
+  "username": "Username",
+  "fullname": "Fullname",
+  "password": "Password",
+  "Password": "Password",
+  "password.repeat": "Password repeat",
+  "username.is.required": "Username is required",
+  "fullname.is.required": "Fullname is required",
+  "password.is.required": "Password is required",
+  "signup": "Signup"
+}

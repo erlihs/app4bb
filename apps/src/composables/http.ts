@@ -6,7 +6,7 @@ const useHttpOptions = {
   timeout: 5000,
   headers: {},
   retries: 5,
-  errorMessage: 'app.errors.http',
+  errorMessage: 'error.when.sending.data.over.the.internet',
   convertKeys: '',
 }
 

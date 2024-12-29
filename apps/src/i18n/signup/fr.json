@@ -1,0 +1,12 @@
+{
+  "sign.up": "Inscrivez-vous",
+  "username": "\"Nom d'utilisateur\"",
+  "fullname": "\"Nom complet\"",
+  "password": "Mot de passe",
+  "Password": "Mot de passe",
+  "password.repeat": "Répétition du mot de passe",
+  "username.is.required": "\"Nom d'utilisateur est requis\"",
+  "fullname.is.required": "\"Nom complet est requis\"",
+  "password.is.required": "\"Mot de passe est requis\"",
+  "signup": "Inscription"
+}

@@ -176,7 +176,7 @@ Add link to `@/pages/login.vue`
 ...
 <br />
 <br />
-{{ t('Not registered yet?') }}
-<a href="/signup">{{t('Sign up')}}</a>
+{{ t('not.registered.yet') }}
+<a href="/signup">{{t('sign.up')}}</a>
 ...
 ```

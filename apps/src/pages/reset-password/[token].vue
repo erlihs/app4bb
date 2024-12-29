@@ -2,9 +2,9 @@
   <v-container>
     <v-row justify="center">
       <v-col cols="12" :md="4">
-        <h1 class="mb-4">{{ t('Reset password') }}</h1>
+        <h1 class="mb-4">{{ t('reset.password') }}</h1>
         <v-bsb-form v-if="!done" :options :data @submit="submit" @action="dev" />
-        <v-btn v-if="done" @click="router.push('/')" class="mt-4">{{ t('Continue') }}</v-btn>
+        <v-btn v-if="done" @click="router.push('/')" class="mt-4">{{ t('continue') }}</v-btn>
       </v-col>
     </v-row>
   </v-container>
@@ -34,35 +34,35 @@ const options = {
     {
       type: 'text',
       name: 'username',
-      label: t('Username'),
-      placeholder: t('Username'),
+      label: 'username',
+      placeholder: 'username',
       rules: [
-        { type: 'required', value: true, message: t('Username is required') },
-        { type: 'email', value: true, message: t('Username must be a valid e-mail address') },
+        { type: 'required', value: true, message: 'username.is.required' },
+        { type: 'email', value: true, message: 'username.must.be.a.valid.e-mail.address' },
       ],
     },
     {
       type: 'password',
       name: 'password',
-      label: t('Password'),
-      placeholder: t('Password'),
-      rules: [{ type: 'required', value: true, message: t('Password is required') }],
+      label: 'password',
+      placeholder: 'password',
+      rules: [{ type: 'required', value: true, message: 'password.is.required' }],
     },
     {
       type: 'password',
       name: 'password2',
-      label: t('Password (repeat)'),
-      placeholder: t('Password (repeat)'),
+      label: 'password.repeat',
+      placeholder: 'password.repeat',
       rules: [
-        { type: 'required', value: true, message: t('Password is required') },
-        { type: 'same-as', value: 'password', message: t('Passwords must match') },
+        { type: 'required', value: true, message: 'password.is.required' },
+        { type: 'same-as', value: 'password', message: 'passwords.must.match' },
       ],
     },
   ],
   actions: [
     {
       type: 'submit',
-      title: t('Reset password'),
+      title: 'reset.password',
       color: 'primary',
     },
     ...devAction,

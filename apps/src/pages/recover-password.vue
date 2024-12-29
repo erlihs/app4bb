@@ -2,9 +2,9 @@
   <v-container>
     <v-row justify="center">
       <v-col cols="12" :md="4">
-        <h1 class="mb-4">{{ t('Recover password') }}</h1>
+        <h1 class="mb-4">{{ t('recover.password') }}</h1>
         <v-bsb-form v-if="!sent" :options :data @submit="submit" />
-        <v-btn v-if="sent" @click="router.push('/')" class="mt-4">{{ t('Ok') }}</v-btn>
+        <v-btn v-if="sent" @click="router.push('/')" class="mt-4">{{ t('ok') }}</v-btn>
       </v-col>
     </v-row>
   </v-container>
@@ -27,15 +27,15 @@ const options = {
       label: 'Username',
       placeholder: 'Username',
       rules: [
-        { type: 'required', value: true, message: 'Username is required' },
-        { type: 'email', value: true, message: 'Username must be a valid e-mail address' },
+        { type: 'required', value: true, message: 'username.is.required' },
+        { type: 'email', value: true, message: 'username.must.be.a.valid.e-mail.address' },
       ],
     },
   ],
   actions: [
     {
       type: 'submit',
-      title: 'Send',
+      title: 'send',
       color: 'primary',
     },
   ],

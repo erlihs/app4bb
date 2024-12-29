@@ -157,9 +157,9 @@ async function recoverPassword(username: string): Promise<boolean> {
   startLoading()
   const { data } = await appApi.recoverPassword(username)
   if (data?.error) {
-    setError('Password recovery failed')
+    setError('password.recovery.failed')
   } else {
-    setInfo('Password recovery email sent')
+    setInfo('password.recovery.email.sent')
   }
   stopLoading()
   return !data?.error
@@ -177,7 +177,7 @@ async function resetPassword(
     Cookies.remove('refresh_token', refreshCookieOptions)
     isAuthenticated.value = false
     if (status == 401) {
-      setError('Invalid username or password')
+      setError('invalid.username.or.password')
     } else {
       setWarning(error.message)
     }
@@ -190,7 +190,7 @@ async function resetPassword(
       ...data.user?.[0],
       privileges: data.user?.[0]?.privileges || [],
     }
-    setInfo('Password reset')
+    setInfo('password.reset')
   }
   stopLoading()
   return isAuthenticated.value
@@ -212,8 +212,8 @@ async function resetPassword(
 Add link to start password recovery in `@/src/pages/login.vue`
 
 ```vue
-{{ t('Not registered yet?') }}
-<a href="/signup">{{ t('Sign up') }}</a>
+{{ t('not.registered.yet') }}
+<a href="/signup">{{ t('sign.up') }}</a>
 |
-<a href="/recover-password">{{ t('Forgot password') }}</a>
+<a href="/recover-password">{{ t('forgot.password') }}</a>
 ```

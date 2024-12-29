@@ -196,6 +196,6 @@ export default defineConfig({
 
 ```vue
 <!-- ... -->
-<v-card-title><v-icon icon="$mdiHome" /><v-icon icon="$mdiHeart" />{{ t('Title') }}</v-card-title>
+<v-card-title><v-icon icon="$mdiHome" /><v-icon icon="$mdiHeart" />{{ t('sandbox.title') }}</v-card-title>
 <!-- ... -->
 ```

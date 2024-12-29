@@ -1,6 +1,5 @@
 {
-  "app.actions.login": "App actions login",
-  "app.actions.logout": "App actions logout",
-  "en": "En",
-  "app.messages.welcome": "App messages welcome"
+  "welcome": "Welcome",
+  "logout": "Logout",
+  "login": "Login"
 }

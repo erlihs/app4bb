@@ -2,7 +2,7 @@
   <v-container>
     <v-row justify="center">
       <v-col cols="12" :md="4">
-        <h1 class="mb-4">{{ t('Signup') }}</h1>
+        <h1 class="mb-4">{{ t('sign.up') }}</h1>
         <v-bsb-form :options :data @submit="submit" />
       </v-col>
     </v-row>
@@ -22,42 +22,42 @@ const options = {
     {
       type: 'text',
       name: 'username',
-      label: 'Username',
-      placeholder: 'Username',
+      label: 'username',
+      placeholder: 'username',
       rules: [
-        { type: 'required', value: true, message: 'Username is required' },
-        { type: 'email', value: true, message: 'Username must be a valid e-mail address' },
+        { type: 'required', value: true, message: 'username.is.required' },
+        { type: 'email', value: true, message: 'username.must.be.a.valid.email.address' },
       ],
     },
     {
       type: 'text',
       name: 'fullname',
-      label: 'Fullname',
-      placeholder: 'Fullname',
-      rules: [{ type: 'required', value: true, message: 'Fullname is required' }],
+      label: 'fullname',
+      placeholder: 'fullname',
+      rules: [{ type: 'required', value: true, message: 'fullname.is.required' }],
     },
     {
       type: 'password',
       name: 'password',
-      label: 'Password',
+      label: 'password',
       placeholder: 'Password',
-      rules: [{ type: 'required', value: true, message: 'Password is required' }],
+      rules: [{ type: 'required', value: true, message: 'password.is.required' }],
     },
     {
       type: 'password',
       name: 'password2',
-      label: 'Password (repeat)',
-      placeholder: 'Password (repeat)',
+      label: 'password.repeat',
+      placeholder: 'password.repeat',
       rules: [
-        { type: 'required', value: true, message: 'Password is required' },
-        { type: 'same-as', value: 'password', message: 'Passwords must match' },
+        { type: 'required', value: true, message: 'password.is.required' },
+        { type: 'same-as', value: 'password', message: 'passwords.must.match' },
       ],
     },
   ],
   actions: [
     {
       type: 'submit',
-      title: 'Signup',
+      title: 'sign.up',
       color: 'primary',
     },
   ],

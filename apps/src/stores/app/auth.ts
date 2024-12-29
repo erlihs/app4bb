@@ -40,7 +40,7 @@ export const useAuthStore = defineStore(
         Cookies.remove('refresh_token', refreshCookieOptions)
         isAuthenticated.value = false
         if (status == 401) {
-          setError(data?.error || 'Unauthorized')
+          setError(data?.error || 'unauthorized')
         } else {
           setWarning(error.message)
         }
@@ -80,7 +80,7 @@ export const useAuthStore = defineStore(
       if (error) {
         _logout()
         if (status == 401) {
-          setError(data?.error || 'Unauthorized')
+          setError(data?.error || 'unauthorized')
         } else {
           setWarning(error.message)
         }
@@ -114,9 +114,9 @@ export const useAuthStore = defineStore(
       startLoading()
       const { data } = await appApi.confirmEmail(confirmToken)
       if (data?.error) {
-        setError('Email confirmation failed')
+        setError('email.confirmation.failed')
       } else {
-        setInfo('Email confirmed')
+        setInfo('email.confirmed')
       }
       stopLoading()
       return !data?.error
@@ -126,9 +126,9 @@ export const useAuthStore = defineStore(
       startLoading()
       const { data } = await appApi.recoverPassword(username)
       if (data?.error) {
-        setError('Password recovery failed')
+        setError('password.recovery.failed')
       } else {
-        setInfo('Password recovery email sent')
+        setInfo('password.recovery.email.sent')
       }
       stopLoading()
       return !data?.error
@@ -146,7 +146,7 @@ export const useAuthStore = defineStore(
         Cookies.remove('refresh_token', refreshCookieOptions)
         isAuthenticated.value = false
         if (status == 401) {
-          setError('Invalid username or password')
+          setError('invalid.username.or.password')
         } else {
           setWarning(error.message)
         }
@@ -159,7 +159,7 @@ export const useAuthStore = defineStore(
           ...data.user?.[0],
           privileges: data.user?.[0]?.privileges || [],
         }
-        setInfo('Password reset')
+        setInfo('password.reset')
       }
       stopLoading()
       return isAuthenticated.value
