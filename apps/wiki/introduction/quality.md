@@ -1,5 +1,11 @@
 # Simplicity, Scalability, and Security
 
+It is more of a mindset than processes and techniques. Always:
+
+- "do you really need this" instead of "how you need this"
+- only the bare minimum of traffic between user's device and server
+- navigation guards on the firs line
+
 ## Simplicity
 
 Focus on creating intuitive, efficient, and maintainable systems that meet user and stakeholder needs:
