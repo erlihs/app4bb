@@ -35,6 +35,7 @@ export default defineConfig({
       { text: 'Apps', link: 'https://apps.bsbingo.me' },
       { text: 'Introduction', link: '/introduction/' },
       { text: 'Guide', link: '/guide/' },
+      { text: 'Features', link: '/features/' },
     ],
     search: {
       provider: 'local',
@@ -214,6 +215,30 @@ export default defineConfig({
             { text: 'Local DB Environment', link: '/guide/hosting/local-db-environment' },
           ],
         },
+      ],
+      '/features/': [
+        {
+          text: 'Application',
+          items: [
+            { text: 'Application', link: '/features/' },
+            { text: 'Administration', link: '/introduction/administration' },
+          ],
+        },
+        {
+          text: 'Fun & Leisure',
+          items: [
+            { text: 'Chuck Norris', link: '/features/chuck-norris' },
+            { text: 'Bullshit Bingo', link: '/introduction/bullshit-bingo' },
+          ],
+        },
+        {
+          text: 'Productivity',
+          items: [
+            { text: 'Property Agent', link: '/features/property-agent' },
+            { text: 'Sign It', link: '/introduction/sign-it' },
+          ],
+        },
+        { text: 'Building New Features', link: '/introduction/building-new-features' },
       ],
     },
 

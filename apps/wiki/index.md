@@ -15,6 +15,9 @@ hero:
     - theme: alt
       text: Guide
       link: /guide/
+    - theme: alt
+      text: Features
+      link: /features/
 
 features:
   - title: Why?
@@ -42,5 +45,5 @@ features:
 
 ### Built on the top of amazing technologies, connecting
 
-- as enterprise as it can get [Oracle Data base](https://www.oracle.com/database/) 
+- as enterprise as it can get [Oracle Data base](https://www.oracle.com/database/)
 - true open source community driven [Vue Ecosystem](https://vuejs.org/)
