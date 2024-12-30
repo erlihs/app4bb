@@ -1,5 +1,10 @@
 {
-  "sandbox.title": "\"Titre de la bac à sable\"",
-  "sandbox.content": "Contenu de la sandbox",
-  "sandbox.missing": "\"Bac à sable manquant\""
+  "sandbox.title": "\"Titre du bac à sable\"",
+  "sandbox.content": "\"Content of the sandbox\"",
+  "sandbox.missing": "\"Bac à sable manquant\"",
+  "View": "Vue",
+  "": "You didn't write any text that needs translation. Could you please provide the text?",
+  "Delete": "Supprimer",
+  "This is a snack message": "\"C'est un message de collation\"",
+  "close": "Fermer"
 }

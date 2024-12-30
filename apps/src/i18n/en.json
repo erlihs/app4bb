@@ -5,5 +5,7 @@
   "app.actions.login": "App actions login",
   "app.actions.logout": "App actions logout",
   "app.messages.welcome": "App messages welcome",
-  "Request failed with status code 403": "Request failed with status code 403"
+  "Request failed with status code 403": "Request failed with status code 403",
+  "you.are.not.allowed.to.access.this.page": "You are not allowed to access this page",
+  "copied.to.clipboard": "Copied to clipboard"
 }

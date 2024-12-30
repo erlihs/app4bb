@@ -1,9 +1,11 @@
 {
   "welcome": "Bienvenue",
-  "logout": "Déconnexion",
+  "logout": "\"Déconnexion\"",
   "login": "Connexion",
-  "app.actions.login": "App actions login",
-  "app.actions.logout": "App actions logout",
-  "app.messages.welcome": "App messages welcome",
-  "Request failed with status code 403": "Request failed with status code 403"
+  "app.actions.login": "\"Actions d'application connexion\"",
+  "app.actions.logout": "\"Actions de l'application déconnexion\"",
+  "app.messages.welcome": "\"Messages d'application bienvenus\"",
+  "Request failed with status code 403": "La requête a échoué avec le code d'état 403",
+  "you.are.not.allowed.to.access.this.page": "Vous n'êtes pas autorisé à accéder à cette page",
+  "copied.to.clipboard": "Copié dans le presse-papiers"
 }

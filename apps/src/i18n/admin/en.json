@@ -1,0 +1,16 @@
+{
+  "no.data": "No data",
+  "": "",
+  "email": "Email",
+  "message": "Message",
+  "Cancel": "Cancel",
+  "Submit": "Submit",
+  "close": "Close",
+  "copied.to.clipboard": "Copied to clipboard",
+  "Key": "Key",
+  "Value": "Value",
+  "Invalid value": "Invalid value",
+  "error.in_range_1_1000": "Error in_range_1_1000",
+  "must.be.in.range.from.1.to.1000": "Must be in range from 1 to 1000",
+  "required": "Required"
+}

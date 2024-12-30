@@ -1,0 +1,16 @@
+{
+  "no.data": "\"Aucune donnée\"",
+  "": "You did not provide any text to translate. Please provide text for translation.",
+  "email": "Courriel",
+  "message": "Message",
+  "Cancel": "Annuler",
+  "Submit": "Soumettre",
+  "close": "Fermer",
+  "copied.to.clipboard": "Copié dans le presse-papiers",
+  "Key": "Clé",
+  "Value": "Valeur",
+  "Invalid value": "\"Valeur invalide\"",
+  "error.in_range_1_1000": "\"Erreur dans_la_plage_1_1000\"",
+  "must.be.in.range.from.1.to.1000": "Doit être dans la plage de 1 à 1000",
+  "required": "Requis"
+}

@@ -1,5 +1,10 @@
 {
   "sandbox.title": "Sandbox title",
   "sandbox.content": "Sandbox content",
-  "sandbox.missing": "Sandbox missing"
+  "sandbox.missing": "Sandbox missing",
+  "View": "View",
+  "": "",
+  "Delete": "Delete",
+  "This is a snack message": "This is a snack message",
+  "close": "Close"
 }
