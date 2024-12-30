@@ -6,6 +6,7 @@
 
 import {
 	mdiAccount,
+	mdiAccountCowboyHat,
 	mdiCamera,
 	mdiChartLine,
 	mdiCheck,
@@ -58,6 +59,7 @@ import {
 
 export default {
   mdiAccount,
+  mdiAccountCowboyHat,
   mdiCamera,
   mdiChartLine,
   mdiCheck,
