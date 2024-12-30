@@ -226,12 +226,12 @@ export type BsbTableColumn = {
 
 Describes each action that can be performed on a row item, including its label, icon, and any associated form.
 
-```ts
+```typescript
 export type BsbTableAction = {
   action: string
   format?: BsbTableFormat
   form?: BsbFormOptions
-  condition?: BsbTableCondition[] | BsbTableCondition  // Conditions that determine action visibility
+  condition?: BsbTableCondition[] | BsbTableCondition // Conditions that determine action visibility
 }
 ```
 
@@ -239,11 +239,11 @@ export type BsbTableAction = {
 
 Defines conditions for showing/hiding actions based on item values.
 
-```ts
+```typescript
 export type BsbTableCondition = {
   type: 'equals' | 'not-equals' | 'greater-than' | 'less-than' | 'in-range'
-  name: string    // Name of the field to check
-  value: unknown  // Value to compare against
+  name: string // Name of the field to check
+  value: unknown // Value to compare against
 }
 ```
 

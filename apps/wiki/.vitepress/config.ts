@@ -221,24 +221,21 @@ export default defineConfig({
           text: 'Application',
           items: [
             { text: 'Application', link: '/features/' },
-            { text: 'Administration', link: '/introduction/administration' },
+            { text: 'Administration', link: '/features/administration' },
           ],
         },
         {
           text: 'Fun & Leisure',
           items: [
             { text: 'Chuck Norris', link: '/features/chuck-norris' },
-            { text: 'Bullshit Bingo', link: '/introduction/bullshit-bingo' },
+            { text: 'Bullshit Bingo', link: '/features/bullshit-bingo' },
           ],
         },
         {
           text: 'Productivity',
-          items: [
-            { text: 'Property Agent', link: '/features/property-agent' },
-            { text: 'Sign It', link: '/introduction/sign-it' },
-          ],
+          items: [{ text: 'Property Agent', link: '/features/property-agent' }],
         },
-        { text: 'Building New Features', link: '/introduction/building-new-features' },
+        { text: 'Building New Features', link: '/features/building-new-features' },
       ],
     },
 
