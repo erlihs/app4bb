@@ -172,7 +172,7 @@ export function LocalStorageWatcherPlugin({
               try {
                 const dir = path.dirname(resolvedPath)
                 if (!fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true })
-                fs.writeFileSync(resolvedPath, JSON.stringify(storedTranslations, null, 2)+"\n")
+                fs.writeFileSync(resolvedPath, JSON.stringify(storedTranslations, null, 2) + '\n')
                 console.log(`[i18n] Saved file`, resolvedPath)
               } catch (error) {
                 console.warn(`[i18n] Failed saving file:`, resolvedPath, error)

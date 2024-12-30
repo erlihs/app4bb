@@ -12,5 +12,6 @@
   "Invalid value": "Invalid value",
   "error.in_range_1_1000": "Error in_range_1_1000",
   "must.be.in.range.from.1.to.1000": "Must be in range from 1 to 1000",
-  "required": "Required"
+  "required": "Required",
+  "Close": "Close"
 }

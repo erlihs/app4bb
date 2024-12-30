@@ -90,9 +90,7 @@ const options = ref({
         {
           action: 'delete',
           format: { text: 'Delete', icon: '$mdiDelete', color: 'red', variant: 'flat' },
-          condition: [
-            { type: 'not-equals', name: 'email', value: 'clementine.bauch@myemail.com' },
-          ]
+          condition: [{ type: 'not-equals', name: 'email', value: 'clementine.bauch@myemail.com' }],
         },
       ],
     },
