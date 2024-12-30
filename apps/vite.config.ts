@@ -44,6 +44,7 @@ async function extractMetaFromMarkdown(absolutePath: string): Promise<Record<str
 
 export default defineConfig(({ mode }) => {
   const env = loadEnv(mode, process.cwd())
+  const isProduction = mode === 'production'
 
   return {
     plugins: [
@@ -131,7 +132,7 @@ export default defineConfig(({ mode }) => {
         '/api': {
           target: env.VITE_API_URI,
           changeOrigin: true,
-          secure: env.VITE_PROJECT_ENV == 'production' ? true : false,
+          secure: isProduction ? true : false,
           rewrite: (path) => path.replace(/^\/api/, '')
         }
       }

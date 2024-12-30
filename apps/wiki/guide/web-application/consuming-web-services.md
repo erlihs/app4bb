@@ -7,14 +7,12 @@ Create [Environment variables](https://vite.dev/guide/env-and-mode) to store inf
 For production `./.env.production`
 
 ```ini
-VITE_PROJECT_ENV = production
 VITE_API_URI = https://your_domain.adb.eu-frankfurt-1.oraclecloudapps.com/ords/your_prod_schema/
 ```
 
 For local development
 
 ```ini
-VITE_PROJECT_ENV = development
 VITE_API_URI = https://127.0.0.1:8443/ords/your_dev_schema/
 ```
 
@@ -28,6 +26,7 @@ import { defineConfig, loadEnv } from 'vite'
 // ...
 export default defineConfig(({ mode }) => {
   const env = loadEnv(mode, process.cwd())
+  const isProduction = mode === 'production'
 
   return {
     plugins: [
@@ -41,7 +40,7 @@ export default defineConfig(({ mode }) => {
         '/api': {
           target: env.VITE_API_URI,
           changeOrigin: true,
-          secure: env.VITE_PROJECT_ENV == 'production' ? true : false,
+          secure: isProduction ? true : false,
           rewrite: (path) => path.replace(/^\/api/, ''),
         },
       },
