@@ -167,7 +167,7 @@
       ></v-alert>
       <router-view />
       <v-snackbar v-model="app.ui.snackbar">
-        {{ app.ui.snack }}
+        {{ t(app.ui.snack) }}
         <template v-slot:actions>
           <v-btn color="pink" variant="text" @click="app.ui.snack = ''">
             {{ t('close') }}

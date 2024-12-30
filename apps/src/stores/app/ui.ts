@@ -6,6 +6,7 @@ export const useUiStore = defineStore('ui', () => {
   const warning = ref('')
   const error = ref('')
   const snack = ref('')
+  const snackTimeout = ref(0)
   const snackbar = computed(() => !!snack.value)
 
   function clearMessages() {
@@ -29,9 +30,16 @@ export const useUiStore = defineStore('ui', () => {
     error.value = message
   }
 
-  function setSnack(message: string) {
+  function setSnack(message: string, timeout = 0) {
     clearMessages()
     snack.value = message
+    if (timeout > 0) {
+      snackTimeout.value = timeout
+      setTimeout(() => {
+        snack.value = ''
+        snackTimeout.value = 0
+      }, timeout)
+    }
   }
 
   function startLoading() {
@@ -49,6 +57,7 @@ export const useUiStore = defineStore('ui', () => {
     warning,
     error,
     snack,
+    snackTimeout,
     snackbar,
     clearMessages,
     setInfo,
