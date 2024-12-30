@@ -1,13 +1,17 @@
 <template>
   <v-chip
-    v-if="formatted && !href"
+    v-if="formatted && !href && format.text"
     :color="format.color"
     :prepend-icon="format.icon"
     :variant="format.variant"
     :text="text"
   />
+  <span v-if="formatted && !href && !format.text && format.icon"
+    ><v-icon :icon="format.icon" :color="format.color"
+  /></span>
   <a v-if="href" :href="href" :target="format.target ?? '_self'">{{ text }}</a>
   <span v-if="!formatted && !href">{{ text }}</span>
+
   <v-dialog v-if="shortened">
     <template v-slot:activator="{ props: activatorProps }">
       <v-btn
@@ -22,7 +26,7 @@
     <template v-slot:default="{ isActive }">
       <v-card>
         <v-card-title>{{ column.title }}</v-card-title>
-        <v-card-text>{{ t((item[column.column] as string) || '') }}</v-card-text>
+        <v-card-text>{{ item[column.column] }}</v-card-text>
         <v-card-actions>
           <v-spacer></v-spacer>
           <v-btn :text="t('Close')" @click="isActive.value = false"></v-btn>
@@ -31,7 +35,7 @@
     </template>
   </v-dialog>
 
-  <span v-for="action in column.actions">
+  <span v-for="action in column.actions" :key="action.action">
     <v-btn
       v-if="showAction(action, item)"
       data-cy="action"
