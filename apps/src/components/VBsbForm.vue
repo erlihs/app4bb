@@ -556,14 +556,20 @@ const submit = async () => {
     })
     if (props.options.api) {
       const response = (await http?.post('', newData)) as HttpResponse<{ errors: [BsbFormError] }>
-      if (response?.data?.errors) {
+      if (response.data?.errors && response.data.errors.length > 0) {
         options.value.errors = response.data.errors
         valid.value = false
         return false
+      } else {
+        data.value = { ...newData }
+        valid.value = true
+        options.value.errors = []
+        emits('submit', newData)
       }
+    } else {
+      options.value.errors = []
+      emits('submit', newData)
     }
-    options.value.errors = []
-    emits('submit', newData)
   }
 }
 
