@@ -4,7 +4,7 @@
 
 ## Overview
 
-This repository contains source and guides for building and deploying a fully functional web application.
+This repository contains source and tutorials for building and deploying a fully functional web application.
 
 The core values:
 
@@ -25,7 +25,22 @@ Technology stack:
 
 ## Get started
 
-//todo
+1. Setup Oracle Database
+
+- Download and install [odb4bb](https://github.com/erlihs/odb4bb)
+
+2. Setup Web Application
+
+- Clone [app4bb](https://github.com/erlihs/app4bb)
+- Clone Environment file `./apps/.env.production` to `./apps/.env.development.local` and update Data base connection string `VITE_API_URI`.
+- Install Data base packages - run from SQLcl `/database/@setup.sql`
+- Run the app
+
+```ps
+cd apps
+npm install
+npm run dev
+```
 
 ## Credits
 
