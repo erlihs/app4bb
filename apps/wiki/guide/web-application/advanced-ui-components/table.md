@@ -119,20 +119,21 @@ The example below demonstrates the component with custom actions and conditional
 
 ### Props
 
-| Prop                | Type                  | Default                      | Description                                           |
-| ------------------- | --------------------- | ---------------------------- | ----------------------------------------------------- |
-| `title`             | `String`              | `""`                         | Title for the table.                                  |
-| `searchable`        | `Boolean`             | `false`                      | If `true`, enables a search bar.                      |
-| `searchLabel`       | `String`              | `"Search"`                   | Label for the search input field.                     |
-| `searchPlaceholder` | `String`              | `""`                         | Placeholder for the search input field.               |
-| `refreshable`       | `Boolean`             | `true`                       | If `true`, adds a refresh button to the footer.       |
-| `items`             | `Array<BsbTableItem>` | Required                     | Array of items (data rows) to display in the table.   |
-| `itemsPerPage`      | `Number`              | `10`                         | Number of items displayed per page.                   |
-| `currentPage`       | `Number`              | `1`                          | Current page of the table.                            |
-| `options`           | `BsbTableOptions`     | `{}`                         | Configuration options for columns, actions, and more. |
-| `shorten`           | `Number`              | `null`                       | Length to which text fields will be shortened.        |
-| `navigationFormat`  | `BsbTableFormat`      | Object with styling defaults | Format options for navigation buttons.                |
-| `actionFormat`      | `BsbTableFormat`      | Object with styling defaults | Format options for action buttons.                    |
+| Prop                | Type                  | Default                      | Description                                                                |
+| ------------------- | --------------------- | ---------------------------- | -------------------------------------------------------------------------- |
+| `title`             | `String`              | `""`                         | Title for the table.                                                       |
+| `searchable`        | `Boolean`             | `false`                      | If `true`, enables a search bar.                                           |
+| `searchLabel`       | `String`              | `"Search"`                   | Label for the search input field.                                          |
+| `searchPlaceholder` | `String`              | `""`                         | Placeholder for the search input field.                                    |
+| `refreshable`       | `Boolean`             | `true`                       | If `true`, adds a refresh button to the footer.                            |
+| `items`             | `Array<BsbTableItem>` | Required                     | Array of items (data rows) to display in the table.                        |
+| `itemsPerPage`      | `Number`              | `10`                         | Number of items displayed per page.                                        |
+| `currentPage`       | `Number`              | `1`                          | Current page of the table.                                                 |
+| `options`           | `BsbTableOptions`     | `{}`                         | Configuration options for columns, actions, and more.                      |
+| `shorten`           | `Number`              | `null`                       | Length to which text fields will be shortened.                             |
+| `navigationFormat`  | `BsbTableFormat`      | Object with styling defaults | Format options for navigation buttons.                                     |
+| `actionFormat`      | `BsbTableFormat`      | Object with styling defaults | Format options for action buttons.                                         |
+| `api`               | `String`              | `""`                         | Base URL for API requests. If provided, enables server-side data handling. |
 
 ### Emits
 
@@ -212,11 +213,12 @@ Defines each column in the table, including the title, formatting, and optional 
 
 ```typescript
 export type BsbTableColumn = {
-  column: string
-  title?: string
-  actions?: Array<BsbTableAction>
-  format?: Array<BsbTableFormat> | BsbTableFormat
-  shorten?: number
+  primary?: boolean // Indicates if this column contains the primary key
+  column: string // Column identifier
+  title?: string // Display title for the column
+  actions?: Array<BsbTableAction> // Actions available for this column
+  format?: Array<BsbTableFormat> | BsbTableFormat // Formatting options
+  shorten?: number // Number of characters to show before truncating
 }
 ```
 
@@ -224,11 +226,24 @@ export type BsbTableColumn = {
 
 Describes each action that can be performed on a row item, including its label, icon, and any associated form.
 
-```typescript
+```ts
 export type BsbTableAction = {
   action: string
   format?: BsbTableFormat
   form?: BsbFormOptions
+  condition?: BsbTableCondition[] | BsbTableCondition  // Conditions that determine action visibility
+}
+```
+
+#### `BsbTableCondition`
+
+Defines conditions for showing/hiding actions based on item values.
+
+```ts
+export type BsbTableCondition = {
+  type: 'equals' | 'not-equals' | 'greater-than' | 'less-than' | 'in-range'
+  name: string    // Name of the field to check
+  value: unknown  // Value to compare against
 }
 ```
 

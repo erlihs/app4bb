@@ -30,7 +30,7 @@
           </tr>
         </tbody>
       </v-table>
-      <v-table v-for="item in currentItems" :key="String(item[0])">
+      <v-table class="mb-4" v-for="item in currentItems" :key="String(item[0])">
         <tbody>
           <tr v-for="column in columns" :key="column.column">
             <th class="th-width-auto">{{ column.title }}</th>
@@ -161,10 +161,17 @@ export type BsbTableFormat = {
   target?: string
 }
 
+export type BsbTableCondition = {
+  type: 'equals' | 'not-equals' | 'greater-than' | 'less-than' | 'in-range'
+  name: string
+  value: unknown
+}
+
 export type BsbTableAction = {
   action: string
   format?: BsbTableFormat
   form?: BsbFormOptions
+  condition?: BsbTableCondition[] | BsbTableCondition
 }
 
 export type BsbTableColumn = {

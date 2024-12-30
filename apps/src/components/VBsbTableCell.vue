@@ -31,22 +31,30 @@
     </template>
   </v-dialog>
 
-  <v-btn
-    data-cy="action"
-    v-for="action in column.actions"
-    @click="onAction(action, item)"
-    :key="action.action"
-    :text="t(action.format?.text ?? '')"
-    :icon="action.format?.icon"
-    :color="action.format?.color"
-    :variant="action.format?.variant"
-    :density="action.format?.density"
-    :size="action.format?.size"
-    :class="action.format?.class"
-  ></v-btn>
+  <span v-for="action in column.actions">
+    <v-btn
+      v-if="showAction(action, item)"
+      data-cy="action"
+      @click="onAction(action, item)"
+      :key="action.action"
+      :text="t(action.format?.text ?? '')"
+      :icon="action.format?.icon"
+      :color="action.format?.color"
+      :variant="action.format?.variant"
+      :density="action.format?.density"
+      :size="action.format?.size"
+      :class="action.format?.class"
+    ></v-btn>
+  </span>
 </template>
 <script setup lang="ts">
-import type { BsbTableItem, BsbTableColumn, BsbTableFormat, BsbTableAction } from './VBsbTable.vue'
+import type {
+  BsbTableItem,
+  BsbTableColumn,
+  BsbTableFormat,
+  BsbTableAction,
+  BsbTableCondition,
+} from './VBsbTable.vue'
 
 const { t } = useI18n()
 
@@ -69,6 +77,42 @@ const shortened = ref(false)
 const format = ref<BsbTableFormat>({})
 const formatted = ref(false)
 const href = ref('')
+
+type ConditionChecker = (condition: BsbTableCondition) => boolean
+type ConditionEvaluator = (condition: BsbTableAction['condition']) => boolean
+function showAction(action: BsbTableAction, item: BsbTableItem): boolean {
+  if (!action.condition) return true
+
+  const checkCondition: ConditionChecker = ({ name, type, value }) => {
+    const itemValue = item[name]
+    const numValue = Number(itemValue)
+
+    switch (type) {
+      case 'equals':
+        return itemValue === value
+      case 'not-equals':
+        return itemValue !== value
+      case 'greater-than':
+        return numValue > Number(value)
+      case 'less-than':
+        return numValue < Number(value)
+      case 'in-range': {
+        const [min, max] = value as [number, number]
+        return numValue >= min && numValue <= max
+      }
+      default:
+        return false
+    }
+  }
+
+  const evaluateCondition: ConditionEvaluator = (condition) => {
+    return Array.isArray(condition)
+      ? condition.some(evaluateCondition)
+      : checkCondition(condition as BsbTableCondition)
+  }
+
+  return evaluateCondition(action.condition)
+}
 
 function validate(
   condition?: string,
