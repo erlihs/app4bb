@@ -3,7 +3,7 @@ title: About
 description: Learn more about our platform and its capabilities
 icon: $mdiInformation
 role: public
-color: #FA8531
+color: #C8E6C9
 ---
 
 # About
