@@ -45,4 +45,4 @@ pipelines:
                 USER: opc
                 SERVER: 130.61.61.103
                 REMOTE_PATH: '/var/www/html'
-                LOCAL_PATH: '../index.html'
+                LOCAL_PATH: '../html/*'

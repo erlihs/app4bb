@@ -435,7 +435,7 @@ END;
 BEGIN
     UPDATE bsb_plays SET 
         uuid = (SELECT uuid FROM app_users WHERE id = 1),
-        username = 'Janis Erlihs',
+        username = 'John Doe',
         status = 'A',
         w1 = 'agile',
         w2 = 'vision',
@@ -499,7 +499,7 @@ BEGIN
         seq_bsb_plays.NEXTVAL,
         1000,
         (SELECT uuid FROM app_users WHERE id = 1), -- uuid
-        'Janis Erlihs',
+        'John Doe',
         'A',
         'agile', -- w1
         'vision',

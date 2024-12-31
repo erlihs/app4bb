@@ -17,6 +17,6 @@ Although search engines can visit and crawl modern JavaScript powered Single Pag
 
 For example, our solution is based on [Demo](https://www.w3schools.com/w3css/tryw3css_templates_startup.htm) and after rework looks like this.
 
-::: details `./index.html`
-<<<../../../../index.html
+::: details `./html/index.html`
+<<<../../../../html/index.html
 :::

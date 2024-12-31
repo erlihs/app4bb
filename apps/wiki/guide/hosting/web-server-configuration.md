@@ -428,6 +428,24 @@ After the Certificate Authority signs and sends you the SSL Certificate, you can
 
 As an alternative - [Let's encrypt wildcard certificate can be used](https://www.linkedin.com/pulse/creating-wildcard-ssl-certificate-using/)
 
+:warning: In this case certificates need to be manually renewed every 3 months.
+
+SSH log in to your machine and run
+
+```ps
+sudo certbot certonly --manual --preferred-challenges dns -d "*.yourdomain.com" -d "yourdomain.com" --force-renewal
+```
+
+It will ask to update TXT record in DNS. Can ask couple of times and multiple records are allowed.
+
+If information is renewed, can be checked https://toolbox.googleapps.com/apps/dig/#TXT/_acme-challenge.yourdomain.com
+
+After completing challenge
+
+```ps
+sudo systemctl reload apache2
+```
+
 ### Configure Apache server
 
 Before starting, let's define the structure of the site. Our final setup will be:
@@ -459,7 +477,7 @@ Include conf.modules.d/*.conf
 User apache
 Group apache
 
-ServerAdmin erlihs@gmail.com
+ServerAdmin email@email.com
 
 #ServerName www.example.com:80
 
