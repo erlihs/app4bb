@@ -1,6 +1,6 @@
 #  Build and deploy BullshitBingo application
 
-image: node:16
+image: node:18
 
 pipelines:
   branches:
