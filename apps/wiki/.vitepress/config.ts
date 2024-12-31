@@ -233,7 +233,7 @@ export default defineConfig({
         },
         {
           text: 'Productivity',
-          items: [{ text: 'Property Agent', link: '/features/property-agent' }],
+          items: [{ text: 'Street Agent', link: '/features/street-agent' }],
         },
         { text: 'Building New Features', link: '/features/building-new-features' },
       ],
