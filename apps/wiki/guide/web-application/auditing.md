@@ -172,7 +172,7 @@ VITE_PERFORMANCE_API_CALL_THRESHOLD_IN_MS = 250
 Add audit test card to `@/pages/sandbox/index.ts`
 
 ```vue
-  <v-card>
+  <v-card class="mt-6">
     <v-card-title>Test audit</v-card-title>
     <v-card-text
       >Test audit capabilities. In stash: <strong>{{ appStore.audit.count }}</strong></v-card-text

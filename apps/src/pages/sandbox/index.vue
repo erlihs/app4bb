@@ -1,4 +1,5 @@
 <template>
+  
   <v-card :style="cardBackground('#00AA00')">
     <v-card-title><v-icon icon="$mdiHome" />{{ t('sandbox.title') }}</v-card-title>
     <v-card-text>{{ t('sandbox.content') }}</v-card-text>
@@ -21,7 +22,7 @@
     </v-card-actions>
   </v-card>
 
-  <v-card>
+  <v-card class="mt-6">
     <v-card-title>Test audit</v-card-title>
     <v-card-text
       >Test audit capabilities. In stash: <strong>{{ appStore.audit.count }}</strong></v-card-text
