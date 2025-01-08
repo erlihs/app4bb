@@ -41,6 +41,22 @@ export type UseHttpInstance = {
 }
 
 let isRefreshing = false
+const requestQueue: Array<{
+  resolve: (value: unknown) => void
+  reject: (error: unknown) => void
+  config: AxiosRequestConfig
+}> = []
+
+const processQueue = (error: unknown = null) => {
+  requestQueue.forEach((request) => {
+    if (error) {
+      request.reject(error)
+    } else {
+      request.resolve(request.config)
+    }
+  })
+  requestQueue.length = 0
+}
 
 const snakeToCamel = <T>(data: T): T => {
   const toCamelCase = (str: string): string => {
@@ -123,25 +139,40 @@ export function useHttp(options: UseHttpOptions = {}): UseHttpInstance {
         err.response?.status === 401 &&
         originalRequest &&
         !originalRequest.url?.includes('/refresh') &&
-        !originalRequest.url?.includes('/login') &&
-        !isRefreshing &&
-        appStore.auth.isAuthenticated
+        !originalRequest.url?.includes('/login')
       ) {
-        isRefreshing = true
+        if (!isRefreshing) {
+          isRefreshing = true
 
-        try {
-          await appStore.auth.refresh()
+          try {
+            await appStore.auth.refresh()
 
-          if (originalRequest.headers) {
-            originalRequest.headers.Authorization = `Bearer ${appStore.auth.accessToken}`
+            if (originalRequest.headers) {
+              originalRequest.headers.Authorization = `Bearer ${appStore.auth.accessToken}`
+            }
+
+            processQueue()
+            return instance(originalRequest)
+          } catch (error) {
+            processQueue(error)
+            return Promise.reject(error)
+          } finally {
+            isRefreshing = false
           }
-
-          return instance(originalRequest)
-        } catch (error) {
-          return Promise.reject(error)
-        } finally {
-          isRefreshing = false
         }
+
+        return new Promise((resolve, reject) => {
+          requestQueue.push({
+            resolve: () => {
+              if (originalRequest.headers && appStore.auth.accessToken) {
+                originalRequest.headers.Authorization = `Bearer ${appStore.auth.accessToken}`
+              }
+              resolve(instance(originalRequest))
+            },
+            reject,
+            config: originalRequest,
+          })
+        })
       }
 
       return Promise.reject(err)

@@ -19,6 +19,22 @@ const useHttpOptions = {
 // ...
 
 let isRefreshing = false
+const requestQueue: Array<{
+  resolve: (value: unknown) => void
+  reject: (error: unknown) => void
+  config: AxiosRequestConfig
+}> = []
+
+const processQueue = (error: unknown = null) => {
+  requestQueue.forEach((request) => {
+    if (error) {
+      request.reject(error)
+    } else {
+      request.resolve(request.config)
+    }
+  })
+  requestQueue.length = 0
+}
 
 const snakeToCamel = <T>(data: T): T => {
   const toCamelCase = (str: string): string => {
@@ -30,7 +46,6 @@ const snakeToCamel = <T>(data: T): T => {
   }
 
   if (data !== null && typeof data === 'object') {
-    console.log('data_is_object', data)
     const newObj: Record<string, unknown> = {}
 
     Object.entries(data as Record<string, unknown>).forEach(([key, value]) => {
@@ -43,62 +58,100 @@ const snakeToCamel = <T>(data: T): T => {
 
   return data
 }
-// ...
-instance.interceptors.request.use(
-  (config) => {
-    const appStore = useAppStore()
-    if (appStore.auth.accessToken && config.headers) {
-      config.headers.Authorization = `Bearer ${appStore.auth.accessToken}`
-    }
-    return config
-  },
-  (error) => Promise.reject(error),
-)
 
-instance.interceptors.response.use(
-  (response) => {
-    if (options.convertKeys ?? useHttpOptions.convertKeys == 'snake_to_camel') {
-      response.data = snakeToCamel(response.data)
-    }
-    return response
-  },
-  async (err: AxiosError) => {
-    const originalRequest = err.config
-    const appStore = useAppStore()
+export function useHttp(options: UseHttpOptions = {}): UseHttpInstance {
+  const instance: AxiosInstance = axios.create({
+    baseURL: options.baseURL || useHttpOptions.baseURL,
+    timeout: options.timeout !== undefined ? options.timeout : useHttpOptions.timeout,
+    headers: options.headers || useHttpOptions.headers,
+  })
 
-    if (err.response?.status === 401 && originalRequest?.url?.includes('/refresh')) {
-      await appStore.auth.logout()
-      return Promise.reject(err)
-    }
+  axiosRetry(instance, {
+    retries: options.retries ?? useHttpOptions.retries,
+    retryDelay: (retryCount) => axiosRetry.exponentialDelay(retryCount),
+    retryCondition: (error) => {
+      return (
+        axiosRetry.isNetworkOrIdempotentRequestError(error) ||
+        (error.response?.status ? error.response.status >= 500 : false)
+      )
+    },
+  })
 
-    if (
-      err.response?.status === 401 &&
-      originalRequest &&
-      !originalRequest.url?.includes('/refresh') &&
-      !originalRequest.url?.includes('/login') &&
-      !isRefreshing &&
-      appStore.auth.isAuthenticated
-    ) {
-      isRefreshing = true
+  instance.interceptors.request.use(
+    (config) => {
+      config.headers['request-startTime'] = performance.now()
+      const appStore = useAppStore()
+      if (appStore.auth.accessToken && config.headers) {
+        config.headers.Authorization = `Bearer ${appStore.auth.accessToken}`
+      }
+      return config
+    },
+    (error) => Promise.reject(error),
+  )
 
-      try {
-        await appStore.auth.refresh()
+  instance.interceptors.response.use(
+    (response) => {
+      if (options.convertKeys ?? useHttpOptions.convertKeys == 'snake_to_camel') {
+        response.data = snakeToCamel(response.data)
+      }
+      const duration = performance.now() - (response.config.headers['request-startTime'] as number)
+      if (duration >= import.meta.env.VITE_PERFORMANCE_API_CALL_THRESHOLD_IN_MS) {
+        const appAudit = useAuditStore()
+        appAudit.wrn(
+          'API call time threshold exceeded',
+          `API ${response.config.url} took ${duration}ms`,
+        )
+      }
+      return response
+    },
+    async (err: AxiosError) => {
+      const originalRequest = err.config
+      const appStore = useAppStore()
 
-        if (originalRequest.headers) {
-          originalRequest.headers.Authorization = `Bearer ${appStore.auth.accessToken}`
+      if (err.response?.status === 401 && originalRequest?.url?.includes('/refresh')) {
+        await appStore.auth.logout()
+        return Promise.reject(err)
+      }
+
+      if (err.response?.status === 401 && originalRequest && !originalRequest.url?.includes('/refresh') && !originalRequest.url?.includes('/login')) {
+        if (!isRefreshing) {
+          isRefreshing = true
+
+          try {
+            await appStore.auth.refresh()
+
+            if (originalRequest.headers) {
+              originalRequest.headers.Authorization = `Bearer ${appStore.auth.accessToken}`
+            }
+
+            processQueue()
+            return instance(originalRequest)
+          } catch (error) {
+            processQueue(error)
+            return Promise.reject(error)
+          } finally {
+            isRefreshing = false
+          }
         }
 
-        return instance(originalRequest)
-      } catch (error) {
-        return Promise.reject(error)
-      } finally {
-        isRefreshing = false
+        return new Promise((resolve, reject) => {
+          requestQueue.push({
+            resolve: () => {
+              if (originalRequest.headers && appStore.auth.accessToken) {
+                originalRequest.headers.Authorization = `Bearer ${appStore.auth.accessToken}`
+              }
+              resolve(instance(originalRequest))
+            },
+            reject,
+            config: originalRequest,
+          })
+        })
       }
-    }
 
-    return Promise.reject(err)
-  },
-)
+      return Promise.reject(err)
+    },
+  )
+
 // ...
 ```
 
