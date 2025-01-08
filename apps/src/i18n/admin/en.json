@@ -13,5 +13,6 @@
   "error.in_range_1_1000": "Error in_range_1_1000",
   "must.be.in.range.from.1.to.1000": "Must be in range from 1 to 1000",
   "required": "Required",
-  "Close": "Close"
+  "Close": "Close",
+  "unauthorized": "Unauthorized"
 }
