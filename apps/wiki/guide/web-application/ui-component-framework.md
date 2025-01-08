@@ -150,11 +150,10 @@ function toggleTheme() {
 ```ts
 export default {
   VCardActions: {
-    VBtn: { variant: 'outlined'},
+    VBtn: { variant: 'outlined' },
     class: 'd-flex flex-wrap',
   },
 }
-
 ```
 
 2. Import defaults in `@/plugins/vuetify.ts`

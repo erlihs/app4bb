@@ -1,5 +1,4 @@
 <template>
-  
   <v-card :style="cardBackground('#00AA00')">
     <v-card-title><v-icon icon="$mdiHome" />{{ t('sandbox.title') }}</v-card-title>
     <v-card-text>{{ t('sandbox.content') }}</v-card-text>
