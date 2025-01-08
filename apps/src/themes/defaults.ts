@@ -1,5 +1,6 @@
 export default {
   VCardActions: {
-    VBtn: { variant: 'outlined' },
+    VBtn: { variant: 'outlined'},
+    class: 'd-flex flex-wrap',
   },
 }
