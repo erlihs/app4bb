@@ -18,7 +18,7 @@ For auditing purposes add `post_audit` method.
 
 ```plsql
 --
-    PROCEDURE post_audit( -- Procedure logs user activity
+    PROCEDURE post_audit( -- Procedure logs user activity (PUBLIC)
         p_data CLOB --  Audit data in JSON format [{severity, action, details, created}]
     );
 --
@@ -35,8 +35,6 @@ For auditing purposes add `post_audit` method.
     BEGIN
         IF v_uuid IS NULL THEN
             pck_api_audit.wrn('Audit error', 'User not authenticated');
-            pck_api_auth.http_401;
-            RETURN;
         END IF;
 
         pck_api_audit.audit(p_data, v_uuid);

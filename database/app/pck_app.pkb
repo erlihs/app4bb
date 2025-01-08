@@ -125,8 +125,6 @@ CREATE OR REPLACE PACKAGE BODY pck_app AS
     BEGIN
         IF v_uuid IS NULL THEN
             pck_api_audit.wrn('Audit error', 'User not authenticated');
-            pck_api_auth.http_401;
-            RETURN;
         END IF;
 
         pck_api_audit.audit(p_data, v_uuid);
