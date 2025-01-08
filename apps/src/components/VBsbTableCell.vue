@@ -176,10 +176,13 @@ function validate(
 
 watchEffect(() => {
   text.value = item[column.column] as string
-  if (text.value)
-    shortened.value = text.value.length > (column.shorten || shorten || text.value.length)
-  if (shortened.value)
-    text.value = text.value?.slice(0, column.shorten || shorten || text.value.length)
+  if (text.value) {
+    const maxLength = column.shorten ?? shorten ?? Number.MAX_SAFE_INTEGER
+    shortened.value = text.value.length > maxLength || maxLength === 0
+    if (shortened.value) {
+      text.value = maxLength === 0 ? '' : text.value.slice(0, maxLength)
+    }
+  }
   format.value = Array.isArray(column.format)
     ? column.format.find((f) => validate(f.condition, f.params, item[column.column])) || {}
     : column.format || {}

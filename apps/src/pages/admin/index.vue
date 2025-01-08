@@ -26,15 +26,27 @@
       </v-tabs-window-item>
 
       <v-tabs-window-item value="users">
-        <v-bsb-table searchable :options="options_users" :api="api_users" @action="userAction" />
+        <v-bsb-table
+          :shorten="30"
+          searchable
+          :options="options_users"
+          :api="api_users"
+          @action="userAction"
+        />
       </v-tabs-window-item>
 
       <v-tabs-window-item value="audit">
-        <v-bsb-table searchable :options="options_audit" :api="api_audit" @action="auditAction" />
+        <v-bsb-table
+          :shorten="30"
+          searchable
+          :options="options_audit"
+          :api="api_audit"
+          @action="auditAction"
+        />
       </v-tabs-window-item>
 
       <v-tabs-window-item value="settings">
-        <v-bsb-table searchable :options="options_settings" :api="api_settings" />
+        <v-bsb-table :shorten="30" searchable :options="options_settings" :api="api_settings" />
       </v-tabs-window-item>
     </v-tabs-window>
   </v-container>
@@ -89,6 +101,7 @@ const options_users = ref({
       primary: true,
       column: 'uuid',
       title: 'ID',
+      shorten: 0,
     },
     { column: 'username', title: 'Username', format: { to: 'mailto:$value', target: '_blank' } },
     { column: 'fullname', title: 'Fullname' },
@@ -146,13 +159,11 @@ const options_audit = ref({
       column: 'username',
       title: 'user',
       format: { to: 'mailto:$value', target: '_blank' },
-      shorten: 10,
     },
     { column: 'action', title: 'action' },
     {
       column: 'details',
       title: 'details',
-      shorten: 30,
     },
     { actions: [{ action: 'copy', format: { icon: '$mdiContentCopy' } }] },
   ],

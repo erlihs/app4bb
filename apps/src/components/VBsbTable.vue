@@ -35,7 +35,7 @@
           <tr v-for="column in columns" :key="column.column">
             <th class="th-width-auto">{{ column.title }}</th>
             <td :class="column.actions ? 'text-right' : ''">
-              <v-bsb-table-cell :column :item :shorten="props.shorten" @action="onAction" />
+              <v-bsb-table-cell :column :item :shorten @action="onAction" />
             </td>
           </tr>
         </tbody>
@@ -55,7 +55,7 @@
               :key="column.column"
               :class="column.actions ? 'td-width-auto text-right' : ''"
             >
-              <v-bsb-table-cell :column :item :shorten="props.shorten" @action="onAction" />
+              <v-bsb-table-cell :column :item :shorten @action="onAction" />
             </td>
           </tr>
           <tr v-for="item in dummyItems" :key="String(item[0])">
@@ -226,7 +226,10 @@ const props = defineProps({
     type: Object as PropType<BsbTableOptions>,
     default: () => ({}),
   },
-  shorten: Number,
+  shorten: {
+    type: Number,
+    default: Number.MAX_SAFE_INTEGER,
+  },
   navigationFormat: {
     type: Object as PropType<BsbTableFormat>,
     default: () => ({
