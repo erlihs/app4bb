@@ -85,7 +85,10 @@ export function useHttp(options: UseHttpOptions = {}): UseHttpInstance {
   const instance: AxiosInstance = axios.create({
     baseURL: options.baseURL || useHttpOptions.baseURL,
     timeout: options.timeout !== undefined ? options.timeout : useHttpOptions.timeout,
-    headers: options.headers || useHttpOptions.headers,
+    headers: {
+      ...(options.headers || useHttpOptions.headers),
+    },
+    withCredentials: true,
   })
 
   axiosRetry(instance, {
