@@ -10,7 +10,7 @@ export const useAuthStore = defineStore(
     const refreshCookieOptions = {
       path: '/',
       secure: true,
-      sameSite: 'strict' as const,
+      sameSite: 'none' as const,
       domain: window.location.hostname,
       expires: 7,
     }
