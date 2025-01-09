@@ -65,7 +65,8 @@ export function useHttp(options: UseHttpOptions = {}): UseHttpInstance {
     timeout: options.timeout !== undefined ? options.timeout : useHttpOptions.timeout,
     headers: {
       ...(options.headers || useHttpOptions.headers),
-      AccessControlAllowOrigin: '*',
+      'Content-Type': 'application/json',
+      'Access-Control-Allow-Origin': '*',
     },
     withCredentials: true,
   })
