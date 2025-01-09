@@ -67,6 +67,7 @@ export function useHttp(options: UseHttpOptions = {}): UseHttpInstance {
       ...(options.headers || useHttpOptions.headers),
       'Content-Type': 'application/json',
       'Access-Control-Allow-Origin': '*',
+      'Access-Control-Allow-Credentials': 'true',
     },
     withCredentials: true,
   })
