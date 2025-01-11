@@ -105,6 +105,8 @@ export function useHttp(options: UseHttpOptions = {}): UseHttpInstance {
     },
   })
 
+  instance.defaults.withCredentials = true
+
   instance.interceptors.request.use(
     (config) => {
       config.headers['request-startTime'] = performance.now()
