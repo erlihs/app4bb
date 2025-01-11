@@ -109,7 +109,7 @@ export function useHttp(options: UseHttpOptions = {}): UseHttpInstance {
       if (appStore.auth.accessToken && config.headers) {
         config.headers.Authorization = `Bearer ${appStore.auth.accessToken}`
       }
-      if (config.url && config.url.includes('/refresh') && appStore.auth.refreshToken()) {
+      if (config.url && config.url.includes('refresh/') && appStore.auth.refreshToken()) {
         config.headers.Authorization = `Bearer ${appStore.auth.refreshToken()}`
       }
       return config
