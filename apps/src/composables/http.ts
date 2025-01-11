@@ -87,9 +87,6 @@ export function useHttp(options: UseHttpOptions = {}): UseHttpInstance {
     timeout: options.timeout !== undefined ? options.timeout : useHttpOptions.timeout,
     headers: {
       ...(options.headers || useHttpOptions.headers),
-      'Content-Type': 'application/json',
-      'Access-Control-Allow-Origin': '*',
-      'Access-Control-Allow-Credentials': 'true',
     },
     withCredentials: true,
   })
@@ -105,14 +102,15 @@ export function useHttp(options: UseHttpOptions = {}): UseHttpInstance {
     },
   })
 
-  instance.defaults.withCredentials = true
-
   instance.interceptors.request.use(
     (config) => {
       config.headers['request-startTime'] = performance.now()
       const appStore = useAppStore()
       if (appStore.auth.accessToken && config.headers) {
         config.headers.Authorization = `Bearer ${appStore.auth.accessToken}`
+      }
+      if (config.url && config.url.includes('/refresh') && appStore.auth.refreshToken()) {
+        config.headers.Authorization = `Bearer ${appStore.auth.refreshToken()}`
       }
       return config
     },

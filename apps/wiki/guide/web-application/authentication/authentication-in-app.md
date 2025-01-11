@@ -65,9 +65,6 @@ export function useHttp(options: UseHttpOptions = {}): UseHttpInstance {
     timeout: options.timeout !== undefined ? options.timeout : useHttpOptions.timeout,
     headers: {
       ...(options.headers || useHttpOptions.headers),
-      'Content-Type': 'application/json',
-      'Access-Control-Allow-Origin': '*',
-      'Access-Control-Allow-Credentials': 'true',
     },
     withCredentials: true,
   })
@@ -89,6 +86,9 @@ export function useHttp(options: UseHttpOptions = {}): UseHttpInstance {
       const appStore = useAppStore()
       if (appStore.auth.accessToken && config.headers) {
         config.headers.Authorization = `Bearer ${appStore.auth.accessToken}`
+      }
+      if (config.url && config.url.includes('/refresh') && appStore.auth.refreshToken()) {
+        config.headers.Authorization = `Bearer ${appStore.auth.refreshToken()}`
       }
       return config
     },
@@ -237,7 +237,7 @@ export const useAuthStore = defineStore(
     const refreshCookieOptions = {
       path: '/',
       secure: true,
-      sameSite: 'strict' as const,
+      sameSite: 'Strict' as const,
       domain: window.location.hostname,
       expires: 7,
     }
@@ -252,6 +252,10 @@ export const useAuthStore = defineStore(
     const accessToken = ref('')
     const isAuthenticated = ref(false)
     const user = ref({ ...defaultUser })
+
+    function refreshToken() {
+      return Cookies.get('refresh_token')
+    }
 
     const login = async (username: string, password: string): Promise<boolean> => {
       startLoading()
@@ -313,6 +317,7 @@ export const useAuthStore = defineStore(
 
     return {
       accessToken,
+      refreshToken,
       isAuthenticated,
       user,
       login,

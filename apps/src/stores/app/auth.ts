@@ -10,7 +10,7 @@ export const useAuthStore = defineStore(
     const refreshCookieOptions = {
       path: '/',
       secure: true,
-      sameSite: 'none' as const,
+      sameSite: 'Strict' as const,
       domain: window.location.hostname,
       expires: 7,
     }
@@ -31,6 +31,10 @@ export const useAuthStore = defineStore(
     const accessToken = ref('')
     const isAuthenticated = ref(false)
     const user = ref({ ...defaultUser })
+
+    function refreshToken() {
+      return Cookies.get('refresh_token')
+    }
 
     const login = async (username: string, password: string): Promise<boolean> => {
       startLoading()
@@ -179,6 +183,7 @@ export const useAuthStore = defineStore(
 
     return {
       accessToken,
+      refreshToken,
       isAuthenticated,
       user,
       login,
