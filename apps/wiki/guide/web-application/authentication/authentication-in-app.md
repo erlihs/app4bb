@@ -114,9 +114,12 @@ export function useHttp(options: UseHttpOptions = {}): UseHttpInstance {
       const originalRequest = err.config
       const appStore = useAppStore()
 
-      if (err.response?.status === 401 && originalRequest?.url?.includes('/refresh')) {
-        await appStore.auth.logout()
-        return Promise.reject(err)
+      if (err.response?.status === 401 && err.config?.url?.includes('refresh/')) {
+        const error = new Error('session.expired')
+        processQueue(error)
+        isRefreshing = false
+        appStore.auth.logout('/login', true, error.message)
+        return Promise.reject(error)
       }
 
       if (err.response?.status === 401 && originalRequest && !originalRequest.url?.includes('/refresh') && !originalRequest.url?.includes('/login')) {
@@ -291,12 +294,15 @@ export const useAuthStore = defineStore(
       user.value = { ...defaultUser }
     }
 
-    const logout = async () => {
-      startLoading()
-      await appApi.logout()
+    const logout = async (to: string = '/', skipApiCall: boolean = false, message?: string) => {
+      if (!skipApiCall) {
+        startLoading()
+        await appApi.logout()
+        stopLoading()
+      }
       _logout()
-      stopLoading()
-      router.push('/')
+      if (message) setInfo(message)
+      router.push(to)
     }
 
     const refresh = async () => {

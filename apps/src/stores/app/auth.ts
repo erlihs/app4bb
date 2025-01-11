@@ -71,12 +71,15 @@ export const useAuthStore = defineStore(
       user.value = { ...defaultUser }
     }
 
-    const logout = async () => {
-      startLoading()
-      await appApi.logout()
+    const logout = async (to: string = '/', skipApiCall: boolean = false, message?: string) => {
+      if (!skipApiCall) {
+        startLoading()
+        await appApi.logout()
+        stopLoading()
+      }
       _logout()
-      stopLoading()
-      router.push('/')
+      if (message) setInfo(message)
+      router.push(to)
     }
 
     const refresh = async () => {
@@ -85,6 +88,7 @@ export const useAuthStore = defineStore(
         _logout()
         if (status == 401) {
           setError(data?.error || 'unauthorized')
+          router.push('/login')
         } else {
           setWarning(error.message)
         }

@@ -136,9 +136,12 @@ export function useHttp(options: UseHttpOptions = {}): UseHttpInstance {
       const originalRequest = err.config
       const appStore = useAppStore()
 
-      if (err.response?.status === 401 && originalRequest?.url?.includes('/refresh')) {
-        await appStore.auth.logout()
-        return Promise.reject(err)
+      if (err.response?.status === 401 && err.config?.url?.includes('refresh/')) {
+        const error = new Error('session.expired')
+        processQueue(error)
+        isRefreshing = false
+        appStore.auth.logout('/login', true, error.message)
+        return Promise.reject(error)
       }
 
       if (
