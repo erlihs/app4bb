@@ -28,6 +28,13 @@ export type AuditData = {
   created?: string
 }
 
+export type I18nData = {
+  module: string
+  locale: string
+  key: string
+  value: string
+}
+
 export type VoidResponse = {
   error?: string
 }
@@ -79,5 +86,13 @@ export const appApi = {
     recovertoken: string,
   ): Promise<HttpResponse<AuthResponse>> {
     return await http.post('resetpassword/', { username, password, recovertoken })
+  },
+
+  async getI18n(module: string, locale: string): Promise<HttpResponse<{ [key: string]: string }>> {
+    return await http.get('i18n/', { module, locale })
+  },
+
+  async setI18n(i18n: string): Promise<HttpResponse<void>> {
+    return await http.post('i18n_batch/', { i18n })
   },
 }

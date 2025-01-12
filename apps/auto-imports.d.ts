@@ -69,6 +69,7 @@ declare global {
   const useHeadSafe: typeof import('unhead')['useHeadSafe']
   const useHttp: typeof import('./src/composables/http')['useHttp']
   const useI18n: typeof import('vue-i18n')['useI18n']
+  const useI18nStore: typeof import('./src/stores/app/i18n')['useI18nStore']
   const useId: typeof import('vue')['useId']
   const useLayout: typeof import('vuetify')['useLayout']
   const useLink: typeof import('vue-router')['useLink']

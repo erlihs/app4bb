@@ -55,5 +55,15 @@ CREATE OR REPLACE PACKAGE pck_app AS -- Package provides methods for app
         r_error OUT VARCHAR2 -- Error (NULL if success)
     );
 
+    PROCEDURE get_i18n( -- Procedure returns internationalization data (PUBLIC)
+        p_module VARCHAR2 DEFAULT NULL, -- Module name
+        p_locale VARCHAR2 DEFAULT NULL, -- Locale
+        r_i18n OUT CLOB -- Internationalization data {"en":{"key":"value"}}
+    );
+
+    PROCEDURE post_i18n_batch( -- Procedure updates internationalization data (PUBLIC)
+        p_i18n CLOB -- Internationalization data [{module, locale, key, value}]
+    );
+
 END;
 /

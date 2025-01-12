@@ -1,6 +1,5 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import { routes, handleHotUpdate } from 'vue-router/auto-routes'
-import { loadPageTranslations } from '@/plugins/i18n'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -10,7 +9,8 @@ const router = createRouter({
 router.beforeEach(async (to) => {
   to.meta.performance = performance.now()
 
-  await loadPageTranslations(to.path)
+  const i18nStore = useI18nStore()
+  await i18nStore.loadTranslations(to.path)
 
   const appTitle = 'Bullshit Bingo'
   const navigationStore = useNavigationStore()

@@ -13,7 +13,6 @@ import Components from 'unplugin-vue-components/vite'
 import AutoImportMdiIcons from './src/plugins/icons'
 import { unheadComposablesImports } from 'unhead'
 import { VitePWA } from 'vite-plugin-pwa'
-import { LocalStorageWatcherPlugin } from './src/plugins/i18n'
 
 async function extractMetaFromMarkdown(absolutePath: string): Promise<Record<string, unknown> | null> {
   try {
@@ -119,7 +118,6 @@ export default defineConfig(({ mode }) => {
           ]
         }
       }),
-      LocalStorageWatcherPlugin({}),
       vueDevTools(),
     ],
     resolve: {

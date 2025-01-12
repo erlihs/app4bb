@@ -367,5 +367,21 @@ CREATE OR REPLACE PACKAGE BODY pck_app AS
             pck_api_audit.err('Reset password error', pck_api_audit.mrg('username', p_username,'password','********','recoverytoken','********'), v_uuid);
     END;
 
+    PROCEDURE get_i18n(
+        p_module VARCHAR2 DEFAULT NULL,
+        p_locale VARCHAR2 DEFAULT NULL,
+        r_i18n OUT CLOB
+    ) AS 
+    BEGIN
+        pck_api_i18n.READ(p_module, p_locale, r_i18n);
+    END;
+
+    PROCEDURE post_i18n_batch(
+        p_i18n CLOB
+    ) AS 
+    BEGIN
+        pck_api_i18n.write(p_i18n);
+    END;
+
 END;
 /

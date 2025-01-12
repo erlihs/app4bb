@@ -194,6 +194,7 @@ export default defineConfig({
               ],
             },
             { text: 'Progressive Web Application', link: '/guide/web-application/pwa' },
+            { text: 'Experimental', link: '/guide/web-application/experimental' },
           ],
         },
         {

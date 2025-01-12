@@ -8,6 +8,7 @@ export const useAppStore = defineStore('app', () => {
   const settings = useSettingsStore()
   const navigation = useNavigationStore()
   const ui = useUiStore()
+  const i18n = useI18nStore()
   const version = ref('...')
 
   async function init() {
@@ -19,7 +20,7 @@ export const useAppStore = defineStore('app', () => {
     settings.init()
   }
 
-  return { auth, audit, settings, navigation, ui, version, init }
+  return { auth, audit, settings, navigation, ui, i18n, version, init }
 })
 
 if (import.meta.hot) {
