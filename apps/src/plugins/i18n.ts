@@ -10,10 +10,14 @@ const i18n = createI18n({
     fr: {},
   },
   fallbackWarn: false,
-  missing: (locale, key) => {
-    const i18nStore = useI18nStore()
-    i18nStore.addTranslation(locale, key)
-  },
+  missing: handleMissing,
 })
 
 export default i18n
+
+function handleMissing(locale: string, key: string) {
+  //eslint-disable-next-line
+  //@ts-ignore
+  const i18nStore = useI18nStore()
+  i18nStore.addTranslation(locale, key)
+}
