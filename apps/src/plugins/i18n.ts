@@ -11,10 +11,9 @@ const i18n = createI18n({
   },
   fallbackWarn: false,
   missing: (locale, key) => {
-    // @ts-ignore
     const i18nStore = useI18nStore()
     i18nStore.addTranslation(locale, key)
-    },
+  },
 })
 
 export default i18n

@@ -88,7 +88,6 @@ export function useHttp(options: UseHttpOptions = {}): UseHttpInstance {
     headers: {
       ...(options.headers || useHttpOptions.headers),
     },
-    withCredentials: true,
   })
 
   axiosRetry(instance, {
