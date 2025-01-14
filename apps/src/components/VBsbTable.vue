@@ -202,6 +202,10 @@ const props = defineProps({
     type: String,
     default: 'Search',
   },
+  searchValue: {
+    type: String,
+    default: '',
+  },
   searchPlaceholder: {
     type: String,
     default: '',
@@ -260,7 +264,7 @@ const emits = defineEmits(['action', 'beforeFetch', 'afterFetch', 'submit'])
 
 const http = props.api ? useHttp({ baseURL: props.api }) : undefined
 
-const search = ref('')
+const search = ref(props.searchValue)
 
 const { mobile } = useDisplay()
 const showTable = ref(true)
