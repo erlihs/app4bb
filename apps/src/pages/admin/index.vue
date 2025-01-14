@@ -9,12 +9,14 @@
       <v-tab value="settings">Settings</v-tab>
       <v-tab value="jobs">Jobs</v-tab>
     </v-tabs>
-
     <v-tabs-window v-model="admin.tab">
       <v-tabs-window-item value="dashboard">
         <v-row>
           <v-col cols="12" md="6" lg="4" v-for="item in status" :key="item.status">
-            <v-card :color="item.severity === 'E' ? 'red' : item.severity === 'W' ? 'orange' : ''">
+            <v-card
+              :to="item.to"
+              :color="item.severity === 'E' ? 'red' : item.severity === 'W' ? 'orange' : ''"
+            >
               <v-card-title>{{ item.status }}</v-card-title>
               <v-card-text>{{ item.value }}</v-card-text>
             </v-card>
@@ -293,6 +295,21 @@ async function refreshStatus() {
 onMounted(() => {
   refreshStatus()
 })
+
+const route = useRoute()
+
+watch(
+  () => route?.hash,
+  (newHash) => {
+    if (newHash) {
+      const tab = newHash.replace('#', '')
+      if (['dashboard', 'users', 'audit', 'settings', 'jobs'].includes(tab)) {
+        admin.tab = tab
+      }
+    }
+  },
+  { immediate: true },
+)
 
 const { setSnack } = useUiStore()
 function copyToClipboard(text: string) {
