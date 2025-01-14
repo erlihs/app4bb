@@ -7,6 +7,7 @@
       <v-tab value="users">Users</v-tab>
       <v-tab value="audit">Audit</v-tab>
       <v-tab value="settings">Settings</v-tab>
+      <v-tab value="jobs">Jobs</v-tab>
     </v-tabs>
 
     <v-tabs-window v-model="admin.tab">
@@ -48,6 +49,26 @@
       <v-tabs-window-item value="settings">
         <v-bsb-table :shorten="30" searchable :options="options_settings" :api="api_settings" />
       </v-tabs-window-item>
+
+      <v-tabs-window-item value="jobs">
+        <v-bsb-table
+          v-if="!jobs_details"
+          :shorten="30"
+          searchable
+          :options="options_jobs"
+          :api="api_jobs"
+          @action="action"
+        />
+        <v-bsb-table
+          v-if="jobs_details"
+          :shorten="30"
+          searchable
+          :searchValue="jobName"
+          :options="options_jobs_details"
+          :api="api_jobs_details"
+        />
+        <v-btn v-if="jobs_details" @click="jobs_details = false" icon="$mdiArrowLeft" />
+      </v-tabs-window-item>
     </v-tabs-window>
   </v-container>
 </template>
@@ -83,7 +104,7 @@ const useAdminStore = defineStore(
 const admin = useAdminStore()
 
 const baseURL = (import.meta.env.DEV ? '/api/' : import.meta.env.VITE_API_URI) + 'adm-v1/'
-const http = useHttp({ baseURL })
+const http = useHttp({ baseURL, headers: { 'Cache-Control': 'no-cache' } })
 
 type StatusResponse = {
   status: string
@@ -211,6 +232,57 @@ const options_settings = ref({
     },
   ],
 })
+
+const jobs_details = ref(false)
+const api_jobs = ref(baseURL + 'jobs/')
+const options_jobs = ref({
+  title: 'Jobs',
+  columns: [
+    {
+      primary: true,
+      column: 'name',
+      title: 'Job name',
+    },
+    { column: 'schedule', title: 'Schedule' },
+    { column: 'start', title: 'Last run date' },
+    { column: 'duration', title: 'Last run duration' },
+    { column: 'comments', title: 'Comments' },
+    {
+      actions: [
+        { action: 'details', format: { icon: '$mdiHistory' } },
+        { action: 'run', format: { icon: '$mdiRun' } },
+      ],
+    },
+  ],
+})
+
+const jobName = ref('')
+const api_jobs_details = ref(baseURL + 'jobs_history/')
+const options_jobs_details = ref({
+  title: 'Job History',
+  columns: [
+    {
+      column: 'name',
+      title: 'Job name',
+    },
+    { column: 'start', title: 'Start' },
+    { column: 'duration', title: 'Duration' },
+    { column: 'status', title: 'Status' },
+    { column: 'output', title: 'Output' },
+  ],
+})
+
+function action(action: { action: string; item: { name: string } }) {
+  if (action.action === 'details') {
+    jobName.value = action.item.name
+    jobs_details.value = true
+  }
+  if (action.action === 'run') {
+    http.post('job_run/', { name: action.item.name }).then(() => {
+      refreshStatus()
+    })
+  }
+}
 
 async function refreshStatus() {
   await http.get('status/').then((response) => {

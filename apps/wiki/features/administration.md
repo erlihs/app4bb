@@ -15,6 +15,7 @@ Dashboard:
 - number of error emails
 - number of stored files
 - total size of stored files
+- number of jobs in last hour
 
 Users:
 
@@ -32,9 +33,16 @@ Settings:
 - list, search by key
 - edit
 
+Jobs:
+
+- Job list
+- Job history
+
 ## Data model
 
 No new tables, using `APP_` tables
+
+Relies on `user_scheduler_*` tables
 
 ## Api
 

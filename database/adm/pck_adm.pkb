@@ -10,12 +10,14 @@ CREATE OR REPLACE PACKAGE BODY pck_adm AS
         SELECT 
             'Total users' AS "status",
             TO_CHAR(COUNT(id)) AS "value",
+            '/admin#users' AS "to",
             'I' AS "severity"
         FROM app_users
         UNION ALL
         SELECT 
             'Active users' AS "status",
             TO_CHAR(COUNT(id)) AS "value",
+            '/admin#users' AS "to",
             'I' AS "severity"
         FROM app_users 
         WHERE status = 'A'
@@ -23,6 +25,7 @@ CREATE OR REPLACE PACKAGE BODY pck_adm AS
         SELECT 
             'Active user tokens' AS "status",
             TO_CHAR(COUNT(token)) AS "value",
+            NULL AS "to",
             'I' AS "severity"
         FROM app_tokens 
         WHERE id_token_type = 'A'
@@ -31,12 +34,14 @@ CREATE OR REPLACE PACKAGE BODY pck_adm AS
         SELECT 
             'Emails in queue' AS "status",
             TO_CHAR(COUNT(id)) AS "value",
+            NULL AS "to",
             'I' AS "severity"
         FROM app_emails PARTITION (emails_active) 
         UNION ALL
         SELECT 
             'Emails sent' AS "status",
             TO_CHAR(COUNT(id)) AS "value",
+            NULL AS "to",
             'I' AS "severity"
         FROM app_emails PARTITION (emails_archive)
         WHERE status = 'S' 
@@ -44,6 +49,7 @@ CREATE OR REPLACE PACKAGE BODY pck_adm AS
         SELECT 
             'Unsent emails' AS "status",
             TO_CHAR(COUNT(id)) AS "value",
+            NULL AS "to",
             CASE WHEN COUNT(id) > 0 THEN 'W' ELSE 'I' END AS "severity"
         FROM app_emails PARTITION (emails_archive)
         WHERE status = 'E' 
@@ -51,8 +57,17 @@ CREATE OR REPLACE PACKAGE BODY pck_adm AS
         SELECT
             'Storage' AS "status",
             TO_CHAR(COUNT(id)) || ' (' || TO_CHAR(COALESCE(SUM(file_size),0)) || ' bytes)' AS "value",
+            NULL AS "to",
             'I' AS "severity"
         FROM app_storage
+        UNION ALL
+        SELECT
+            'Jobs started within last hour' AS "status",
+            TO_CHAR(COUNT(log_id)) AS "value",
+            '/admin#jobs' AS "to",
+            'I' AS "severity"
+        FROM user_scheduler_job_run_details
+        WHERE actual_start_date >= SYSDATE - 1 / 24    
         ;
 
     END;
@@ -225,6 +240,73 @@ CREATE OR REPLACE PACKAGE BODY pck_adm AS
         COMMIT;
 
     END;
+
+    PROCEDURE get_jobs (
+        p_search VARCHAR2 DEFAULT NULL,
+        p_offset NUMBER DEFAULT 0,
+        p_limit NUMBER DEFAULT 10,
+        r_items OUT SYS_REFCURSOR
+    ) AS
+    BEGIN
+        IF (pck_api_auth.role(NULL, 'ADMIN') IS NULL) THEN
+            pck_api_auth.http_401;
+            RETURN;
+        END IF;
+
+        OPEN r_items FOR
+        SELECT 
+            j.job_name AS "name",
+            (SELECT LISTAGG(s.repeat_interval, ', ') FROM user_scheduler_schedules s WHERE s.schedule_name = j.schedule_name) AS "schedule",
+            TO_CHAR(last_start_date, 'YYYY-MM-DD HH24:MI:SS') AS "start",
+            TO_CHAR(last_run_duration) AS "duration",
+            j.comments AS "comments",
+            j.enabled AS "enabled"
+        FROM user_scheduler_jobs j
+        WHERE (p_search IS NULL OR j.job_name LIKE '%' || p_search || '%')
+        ORDER BY j.job_name
+        OFFSET p_offset ROWS FETCH NEXT p_limit ROWS ONLY;
+
+    END;
+
+    PROCEDURE get_jobs_history (
+        p_search VARCHAR2 DEFAULT NULL,
+        p_offset NUMBER DEFAULT 0,
+        p_limit NUMBER DEFAULT 10,
+        r_items OUT SYS_REFCURSOR
+    ) AS
+    BEGIN
+        IF (pck_api_auth.role(NULL, 'ADMIN') IS NULL) THEN
+            pck_api_auth.http_401;
+            RETURN;
+        END IF;
+
+        OPEN r_items FOR
+        SELECT 
+            job_name AS "name",
+            TO_CHAR(actual_start_date, 'YYYY-MM-DD HH24:MI:SS') AS "start",
+            TO_CHAR(run_duration) AS "duration",
+            status AS "status",
+            TRIM(output || ' ' || errors) AS "output" 
+        FROM user_scheduler_job_run_details
+        WHERE (p_search IS NULL OR job_name LIKE '%' || p_search || '%')
+        ORDER BY actual_start_date DESC
+        OFFSET p_offset ROWS FETCH NEXT p_limit ROWS ONLY;
+
+    END;
+
+    PROCEDURE post_job_run (
+        p_name VARCHAR2
+    ) AS
+    BEGIN
+        IF (pck_api_auth.role(NULL, 'ADMIN') IS NULL) THEN
+            pck_api_auth.http_401;
+            RETURN;
+        END IF;
+
+        pck_api_jobs.run(UPPER(TRIM(REPLACE(p_name,'_JOB',''))));
+
+    END;
+
 
 END;
 /

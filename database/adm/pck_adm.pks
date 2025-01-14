@@ -1,7 +1,7 @@
 CREATE OR REPLACE PACKAGE pck_adm AS -- Package for Admin
 
     PROCEDURE get_status ( -- Procedure to get status data
-        r_status OUT SYS_REFCURSOR -- Status data
+        r_status OUT SYS_REFCURSOR -- Status data [{"status": "Total users", "value": "10", "to": "/admin#users", "severity": "I"}]
     );
 
     PROCEDURE get_users ( -- Procedure to get users data
@@ -39,6 +39,23 @@ CREATE OR REPLACE PACKAGE pck_adm AS -- Package for Admin
         r_errors OUT SYS_REFCURSOR -- Error message
     );
 
+    PROCEDURE get_jobs ( -- Get jobs data
+        p_search VARCHAR2 DEFAULT NULL, -- Search string
+        p_offset NUMBER DEFAULT 0, -- Offset
+        p_limit NUMBER DEFAULT 10, -- Limit
+        r_items OUT SYS_REFCURSOR -- Jobs data [{"name": "Job name", "schedule": "FREQ=Daily", "start": "2025-12-12 12:12:12", "duration": "+00 00:00:00", "comments": "Job comments", "enabled": "Y"}]
+    );
+
+    PROCEDURE get_jobs_history ( -- Get jobs history data
+        p_search VARCHAR2 DEFAULT NULL, -- Search string
+        p_offset NUMBER DEFAULT 0, -- Offset
+        p_limit NUMBER DEFAULT 10, -- Limit
+        r_items OUT SYS_REFCURSOR -- Jobs history data [{"name": "Job name", "start": "2025-12-12 12:12:12", "duration": "+00 00:00:00", "status": "SUCCEEDED", "output": "Job output"}]
+    );
+
+    PROCEDURE post_job_run ( -- Post job run data
+        p_name VARCHAR2 -- Job name
+    );
 
 END;
 /

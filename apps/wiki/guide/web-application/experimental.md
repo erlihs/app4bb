@@ -54,9 +54,8 @@ const i18n = createI18n({
     // @ts-ignore
     const i18nStore = useI18nStore()
     i18nStore.addTranslation(locale, key)
-    },
   },
-)
+})
 ```
 
 4. Upgrade `@/router/index.ts` with the new lazy loading feature
