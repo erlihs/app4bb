@@ -12,7 +12,7 @@
   <a v-if="href" :href="href" :target="format.target ?? '_self'">{{ text }}</a>
   <span v-if="!formatted && !href">{{ text }}</span>
 
-  <v-dialog v-if="shortened">
+  <v-dialog width="auto" v-if="shortened">
     <template v-slot:activator="{ props: activatorProps }">
       <v-btn
         v-bind="activatorProps"
