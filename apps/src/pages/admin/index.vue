@@ -91,7 +91,7 @@ import { defineStore } from 'pinia'
 const useAdminStore = defineStore(
   'admin',
   () => {
-    const tab = ref(null)
+    const tab = ref<string | null>(null)
 
     return {
       tab,
@@ -111,6 +111,7 @@ const http = useHttp({ baseURL, headers: { 'Cache-Control': 'no-cache' } })
 type StatusResponse = {
   status: string
   value: string
+  to: string
   severity: string
 }
 
@@ -304,7 +305,7 @@ watch(
     if (newHash) {
       const tab = newHash.replace('#', '')
       if (['dashboard', 'users', 'audit', 'settings', 'jobs'].includes(tab)) {
-        admin.tab = tab
+        admin.tab = tab as unknown as string
       }
     }
   },
