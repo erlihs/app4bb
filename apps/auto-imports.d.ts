@@ -101,4 +101,13 @@ declare global {
   // @ts-ignore
   export type { UseHttpOptions, HttpResponse, UseHttpInstance } from './src/composables/http'
   import('./src/composables/http')
+  // @ts-ignore
+  export type { TBsbMapMarker } from './src/components/VBsbMap.vue'
+  import('./src/components/VBsbMap.vue')
+  // @ts-ignore
+  export type { Share, WindowFeatures, ShareOptions } from './src/components/VBsbShare.vue'
+  import('./src/components/VBsbShare.vue')
+  // @ts-ignore
+  export type { BsbTableItem, BsbTableFormat, BsbTableCondition, BsbTableAction, BsbTableColumn, BsbTableOptions } from './src/components/VBsbTable.vue'
+  import('./src/components/VBsbTable.vue')
 }

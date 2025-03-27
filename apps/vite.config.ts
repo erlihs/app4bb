@@ -82,7 +82,7 @@ export default defineConfig(({ mode }) => {
           },
           unheadComposablesImports[0],
         ],
-        dirs: ['./src/composables/**', './src/stores/**']
+        dirs: ['./src/composables/**', './src/stores/**', './src/components/**']
       }),
       Components({}),
       AutoImportMdiIcons({}),
