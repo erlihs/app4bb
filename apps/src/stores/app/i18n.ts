@@ -29,8 +29,9 @@ export const useI18nStore = defineStore('i18n', () => {
   const addTranslation = (locale: string, key: string) => {
     if (process.env.NODE_ENV === 'production') return
     try {
-      const route = useRoute()
-      const module = route ? route.path.split('/')[1] : ''
+      const pathname = window.location.pathname
+      const module = pathname.split('/').filter((segment) => segment !== '')[0] || ''
+
       if (
         !translations.value.some(
           (t) => (t.module === module || t.module === '') && t.locale === locale && t.key === key,
