@@ -7,6 +7,9 @@
 export {}
 declare global {
   const EffectScope: typeof import('vue')['EffectScope']
+  const bsbActionsFormat: typeof import('./src/components/index')['bsbActionsFormat']
+  const bsbRuleValidate: typeof import('./src/components/index')['bsbRuleValidate']
+  const bsbTextAlign: typeof import('./src/components/index')['bsbTextAlign']
   const computed: typeof import('vue')['computed']
   const createApp: typeof import('vue')['createApp']
   const customRef: typeof import('vue')['customRef']
@@ -110,4 +113,7 @@ declare global {
   // @ts-ignore
   export type { BsbTableItem, BsbTableFormat, BsbTableCondition, BsbTableAction, BsbTableColumn, BsbTableOptions } from './src/components/VBsbTable.vue'
   import('./src/components/VBsbTable.vue')
+  // @ts-ignore
+  export type { BsbRule, BsbFormat, BsbAction, BsbFormTextareaField, BsbFormRatingField, BsbFormSelectionField, BsbFormFieldError, BsbFormOptions, BsbFormData } from './src/components/index'
+  import('./src/components/index')
 }

@@ -38,26 +38,22 @@ The `VBsbForm` component is a dynamic and flexible form generator built using Vu
 </template>
 
 <script setup lang="ts">
-const formData = {
+const formData = ref({
   username: '',
   email: '',
   password: '',
-}
+})
 
 const formOptions = {
-  cols: 2,
   fields: [
     { name: 'username', type: 'text', label: 'Username', required: true },
     { name: 'email', type: 'email', label: 'Email', required: true },
     { name: 'password', type: 'password', label: 'Password', required: true },
   ],
-  actions: [
-    { type: 'submit', title: 'Submit', color: 'success' },
-    { type: 'cancel', title: 'Cancel', color: 'error', variant: 'outlined' },
-  ],
+  actions: ['submit', 'cancel'],
 }
 
-const onSubmit = (data: any) => {
+const onSubmit = (data) => {
   console.log('Form submitted with data:', data)
 }
 
@@ -65,8 +61,8 @@ const onCancel = () => {
   console.log('Form cancelled')
 }
 
-const onValidate = ({ valid, errors }: { valid: boolean; errors: any[] }) => {
-  console.log('Form validation result:', valid, errors)
+const onValidate = (data, errors) => {
+  console.log('Form validation result:', data, errors)
 }
 </script>
 ```
@@ -75,16 +71,24 @@ const onValidate = ({ valid, errors }: { valid: boolean; errors: any[] }) => {
 
 ```vue
 <template>
-  <VBsbForm :data="formData" :options="formOptions" @submit="onSubmit" />
+  <VBsbForm 
+    :data="formData" 
+    :options="formOptions" 
+    :loading="isSubmitting"
+    @submit="onSubmit" 
+  />
 </template>
 
 <script setup lang="ts">
-const formData = {
+import { ref } from 'vue'
+
+const isSubmitting = ref(false)
+const formData = ref({
   username: '',
   email: '',
   password: '',
   confirmPassword: '',
-}
+})
 
 const formOptions = {
   fields: [
@@ -94,7 +98,7 @@ const formOptions = {
       label: 'Username',
       required: true,
       rules: [
-        { type: 'min-length', value: 3, message: 'Username must be at least 3 characters long' },
+        { type: 'min-length', params: 3, message: 'Username must be at least 3 characters long' },
       ],
     },
     {
@@ -102,7 +106,7 @@ const formOptions = {
       type: 'email',
       label: 'Email',
       required: true,
-      rules: [{ type: 'email', message: 'Email is not valid' }],
+      rules: [{ type: 'email', params: true, message: 'Email is not valid' }],
     },
     {
       name: 'password',
@@ -112,6 +116,7 @@ const formOptions = {
       rules: [
         {
           type: 'password',
+          params: true,
           message: 'Password must be at least 8 characters with letters and numbers',
         },
       ],
@@ -121,16 +126,25 @@ const formOptions = {
       type: 'password',
       label: 'Confirm Password',
       required: true,
-      rules: [{ type: 'same-as', value: 'password', message: 'Passwords must match' }],
+      rules: [{ type: 'same-as', params: 'password', message: 'Passwords must match' }],
     },
   ],
   actions: [
-    { type: 'submit', title: 'Create Account', color: 'success', icon: '$mdiAccountPlus' },
-    { type: 'validate', title: 'Check Form', color: 'info', variant: 'outlined' },
-    { type: 'cancel', title: 'Reset', color: 'error', variant: 'text' },
+    { name: 'submit', format: { text: 'Create Account', color: 'success', icon: 'mdi-account-plus' } },
+    { name: 'validate', format: { color: 'info', variant: 'outlined' } },
+    { name: 'cancel', format: { color: 'error', variant: 'text' } },
   ],
-  actionsAlign: 'right',
-  actionsClass: 'mt-4',
+  actionAlign: 'center',
+  cols: 2,
+  focusFirst: true,
+}
+
+async function onSubmit(newData) {
+  isSubmitting.value = true
+  // Simulate API call
+  await new Promise(resolve => setTimeout(resolve, 2000))
+  isSubmitting.value = false
+  console.log('Form submitted with data:', newData)
 }
 </script>
 ```
@@ -143,144 +157,178 @@ const formOptions = {
 | --------- | ---------------- | -------- | ------- | ---------------------------------------------------------------------------------------- |
 | `data`    | `Object`         | No       | `{}`    | Initial form data object. This object is reactive and updated as the form inputs change. |
 | `options` | `BsbFormOptions` | Yes      | `{}`    | Configuration object that defines the fields, actions, and settings for the form.        |
+| `loading` | `Boolean`        | No       | `false` | Shows a loading overlay with progress indicator when true.                               |
+| `t`       | `Function`       | No       | `(text) => text` | Translation function for internationalizing form content.                       |
 
 #### BsbFormOptions
 
-| Property       | Type                                      | Required | Default     | Description                                                                            |
-| -------------- | ----------------------------------------- | -------- | ----------- | -------------------------------------------------------------------------------------- |
-| `fields`       | `Array<BsbFormField>`                     | Yes      | `[]`        | Defines the fields to be rendered in the form.                                         |
-| `cols`         | `number`                                  | No       | `1`         | Number of columns the form should span.                                                |
-| `variant`      | `string`                                  | No       | `outlined`  | The visual variant of form fields (e.g., `outlined`, `filled`, etc.).                  |
-| `density`      | `'default' \| 'comfortable' \| 'compact'` | No       | `'default'` | Density of the form fields (spacing and padding).                                      |
-| `actions`      | `Array<BsbFormAction>`                    | No       | `[]`        | Defines the action buttons that are rendered below the form fields.                    |
-| `actionsAlign` | `'left' \| 'right'`                       | No       | `'left'`    | Alignment of action buttons.                                                           |
-| `actionsClass` | `string`                                  | No       | `''`        | CSS class to apply to the actions container.                                           |
-| `errors`       | `Array<BsbFormError>`                     | No       | `[]`        | Array of form-level errors. This is used to display error messages at the field level. |
+| Property        | Type                       | Required | Default     | Description                                                                            |
+| --------------- | -------------------------- | -------- | ----------- | -------------------------------------------------------------------------------------- |
+| `fields`        | `Array<BsbFormField>`      | Yes      | `[]`        | Defines the fields to be rendered in the form.                                         |
+| `cols`          | `number`                   | No       | `1`         | Number of columns the form should use for layout (e.g., 3 columns).                    |
+| `actions`       | `Array<BsbAction>`         | No       | `[]`        | Defines the action buttons that are rendered below the form fields.                    |
+| `actionFormat`  | `BsbFormat`                | No       | `{}`        | Default format for action buttons.                                                     |
+| `actionAlign`   | `'left'/'right'/'center'`  | No       | `'left'`    | Alignment of action buttons.                                                           |
+| `actionSubmit`  | `string`                   | No       | `'submit'`  | Name of the submit action.                                                             |
+| `actionReset`   | `string`                   | No       | `'reset'`   | Name of the reset action.                                                              |
+| `actionValidate`| `string`                   | No       | `'validate'`| Name of the validate action.                                                           |
+| `actionCancel`  | `string`                   | No       | `'cancel'`  | Name of the cancel action.                                                             |
+| `autocomplete`  | `'on'/'off'`               | No       | `undefined` | Form autocomplete behavior.                                                            |
+| `disabled`      | `boolean`                  | No       | `false`     | Disables all form fields.                                                              |
+| `readonly`      | `boolean`                  | No       | `false`     | Makes all form fields read-only.                                                       |
+| `fastFail`      | `boolean`                  | No       | `false`     | If true, stops validation on first error.                                              |
+| `errors`        | `Array<BsbFormFieldError>` | No       | `[]`        | Array of form-level errors to show on specific fields.                                 |
+| `focusFirst`    | `boolean`                  | No       | `false`     | Automatically focus the first field when form loads.                                   |
 
 #### BsbFormField
 
-| Property           | Type                                                                                                                                                                                      | Required | Default      | Description                                                                                                |
-| ------------------ | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------- | ------------ | ---------------------------------------------------------------------------------------------------------- |
-| `type`             | `'text' \| 'number' \| 'password' \| 'email' \| 'textarea' \| 'switch' \| 'rating' \| 'checkbox' \| 'select' \| 'combobox' \| 'autocomplete' \| 'file' \| 'date' \| 'time' \| 'datetime'` | Yes      | `text`       | The type of form input to render.                                                                          |
-| `name`             | `string`                                                                                                                                                                                  | Yes      | `''`         | The unique name identifier for the field.                                                                  |
-| `value`            | `any`                                                                                                                                                                                     | No       | `''`         | The current value of the field.                                                                            |
-| `label`            | `string`                                                                                                                                                                                  | No       | `''`         | Label for the form field. Supports translation.                                                            |
-| `placeholder`      | `string`                                                                                                                                                                                  | No       | `''`         | Placeholder text for the field. Supports translation.                                                      |
-| `required`         | `boolean`                                                                                                                                                                                 | No       | `false`      | Whether the field is required.                                                                             |
-| `readonly`         | `boolean`                                                                                                                                                                                 | No       | `false`      | Whether the field is read-only.                                                                            |
-| `hidden`           | `boolean`                                                                                                                                                                                 | No       | `false`      | Whether the field is hidden.                                                                               |
-| `disabled`         | `boolean`                                                                                                                                                                                 | No       | `false`      | Whether the field is disabled.                                                                             |
-| `clearable`        | `boolean`                                                                                                                                                                                 | No       | `false`      | Whether the field has a clear button.                                                                      |
-| `prefix`           | `string`                                                                                                                                                                                  | No       | `''`         | Prefix text or icon for the field.                                                                         |
-| `suffix`           | `string`                                                                                                                                                                                  | No       | `''`         | Suffix text or icon for the field.                                                                         |
-| `variant`          | `'outlined' \| 'filled' \| 'underlined' \| 'solo' \| 'solo-inverted' \| 'solo-filled' \| 'plain'`                                                                                         | No       | `'outlined'` | The visual variant of the input field.                                                                     |
-| `density`          | `'default' \| 'comfortable' \| 'compact'`                                                                                                                                                 | No       | `'default'`  | Density of the field.                                                                                      |
-| `color`            | `string`                                                                                                                                                                                  | No       | `undefined`  | Color of the field when active.                                                                            |
-| `hint`             | `string`                                                                                                                                                                                  | No       | `''`         | Hint text to display below the field. Supports translation.                                                |
-| `prependIcon`      | `string`                                                                                                                                                                                  | No       | `undefined`  | Icon to display before the field.                                                                          |
-| `appendIcon`       | `string`                                                                                                                                                                                  | No       | `undefined`  | Icon to display after the field.                                                                           |
-| `prependInnerIcon` | `string`                                                                                                                                                                                  | No       | `undefined`  | Icon to display inside the field before the content.                                                       |
-| `appendInnerIcon`  | `string`                                                                                                                                                                                  | No       | `undefined`  | Icon to display inside the field after the content. For password fields, this shows the visibility toggle. |
-| `rules`            | `Array<BsbFormValidationRule>`                                                                                                                                                            | No       | `[]`         | Array of validation rules applied to the field.                                                            |
-| `errors`           | `string[]`                                                                                                                                                                                | No       | `[]`         | Array of error messages to display for this field.                                                         |
-| `rows`             | `number`                                                                                                                                                                                  | No       | `5`          | Number of rows for textarea fields.                                                                        |
-| `counter`          | `boolean \| number \| string`                                                                                                                                                             | No       | `undefined`  | Character counter for textarea fields.                                                                     |
-| `noResize`         | `boolean`                                                                                                                                                                                 | No       | `false`      | Prevents textarea resizing.                                                                                |
-| `autoGrow`         | `boolean`                                                                                                                                                                                 | No       | `false`      | Enables textarea auto-growing.                                                                             |
-| `length`           | `number`                                                                                                                                                                                  | No       | `5`          | Number of stars for rating fields.                                                                         |
-| `size`             | `number`                                                                                                                                                                                  | No       | `24`         | Size of rating stars in pixels.                                                                            |
-| `items`            | `string[]`                                                                                                                                                                                | No       | `[]`         | Array of items for select, combobox, and autocomplete fields.                                              |
-| `chips`            | `boolean`                                                                                                                                                                                 | No       | `false`      | Display selected items as chips.                                                                           |
-| `multiple`         | `boolean`                                                                                                                                                                                 | No       | `false`      | Allow multiple selections.                                                                                 |
+| Property           | Type                           | Required | Default     | Description                                                                                                |
+| ------------------ | ------------------------------ | -------- | ----------- | ---------------------------------------------------------------------------------------------------------- |
+| `type`             | `string`                       | Yes      | -           | The type of form input to render (text, email, password, etc).                                             |
+| `name`             | `string`                       | Yes      | -           | The unique name identifier for the field.                                                                  |
+| `value`            | `any`                          | No       | `undefined` | Default value for the field.                                                                               |
+| `label`            | `string`                       | No       | `''`        | Label for the form field. Supports translation.                                                            |
+| `placeholder`      | `string`                       | No       | `''`        | Placeholder text for the field. Supports translation.                                                      |
+| `autocomplete`     | `'on'/'off'`                   | No       | `undefined` | Browser autocomplete behavior for the field.                                                               |
+| `required`         | `boolean`                      | No       | `false`     | Whether the field is required.                                                                             |
+| `readonly`         | `boolean`                      | No       | `false`     | Whether the field is read-only.                                                                            |
+| `hidden`           | `boolean`                      | No       | `false`     | Whether the field is hidden.                                                                               |
+| `disabled`         | `boolean`                      | No       | `false`     | Whether the field is disabled.                                                                             |
+| `clearable`        | `boolean`                      | No       | `false`     | Whether the field has a clear button.                                                                      |
+| `prefix`           | `string`                       | No       | `''`        | Prefix text for the field.                                                                                 |
+| `suffix`           | `string`                       | No       | `''`        | Suffix text for the field.                                                                                 |
+| `variant`          | `string`                       | No       | `undefined` | The visual variant of the input field.                                                                     |
+| `density`          | `string`                       | No       | `undefined` | Density of the field.                                                                                      |
+| `color`            | `string`                       | No       | `undefined` | Color of the field when active.                                                                            |
+| `hint`             | `string`                       | No       | `''`        | Hint text to display below the field. Supports translation.                                                |
+| `prependIcon`      | `string`                       | No       | `undefined` | Icon to display before the field.                                                                          |
+| `appendIcon`       | `string`                       | No       | `undefined` | Icon to display after the field.                                                                           |
+| `prependInnerIcon` | `string`                       | No       | `undefined` | Icon to display inside the field before the content.                                                       |
+| `appendInnerIcon`  | `string`                       | No       | `undefined` | Icon to display inside the field after the content. For password fields, this shows the visibility toggle. |
+| `rules`            | `Array<BsbRule>`               | No       | `[]`        | Array of validation rules applied to the field.                                                            |
+| `counter`          | `boolean/number`               | No       | `undefined` | Character counter for text fields.                                                                         |
 
-#### BsbFormAction
+For specific field types, additional properties are available:
 
-| Property  | Type                                                                 | Required | Default     | Description                                                                          |
-| --------- | -------------------------------------------------------------------- | -------- | ----------- | ------------------------------------------------------------------------------------ |
-| `type`    | `'submit' \| 'cancel' \| 'validate'`                                 | Yes      | `submit`    | The type of action button. Determines its functionality (e.g., submitting the form). |
-| `title`   | `string`                                                             | No       | `''`        | The text label of the action button. Supports translation.                           |
-| `icon`    | `string`                                                             | No       | `''`        | Icon name to show on the button.                                                     |
-| `color`   | `string`                                                             | No       | `'primary'` | The color of the action button.                                                      |
-| `variant` | `'flat' \| 'text' \| 'elevated' \| 'tonal' \| 'outlined' \| 'plain'` | No       | `'text'`    | The visual style of the action button.                                               |
-| `density` | `'default' \| 'comfortable' \| 'compact'`                            | No       | `'default'` | Density of the action button (spacing and padding).                                  |
+- **Textarea fields**:
+  - `rows`: Number of visible text rows (default: 5)
+  - `noResize`: Prevent user from resizing (default: false)
+  - `autoGrow`: Automatically adjust height to content (default: false)
 
-#### BsbFormValidationRule
+- **Rating fields**:
+  - `length`: Number of rating items (default: 5)
+  - `size`: Size of rating items (default: 24)
+  - `itemLabels`: Labels for rating items
 
-| Property  | Type                                                                                                                                                                                                                                                         | Required | Default    | Description                                                                             |
-| --------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | -------- | ---------- | --------------------------------------------------------------------------------------- |
-| `type`    | `'required' \| 'min-length' \| 'max-length' \| 'equals' \| 'equals-not' \| 'starts-with' \| 'ends-with' \| 'greater-than' \| 'less-than' \| 'in-range' \| 'set' \| 'password' \| 'email' \| 'url' \| 'ip' \| 'regexp' \| 'same-as' \| 'is-json' \| 'custom'` | Yes      | `required` | The type of validation rule applied to the form field.                                  |
-| `value`   | `any`                                                                                                                                                                                                                                                        | No       | `null`     | The value associated with the validation rule (e.g., minimum length, comparison value). |
-| `message` | `string`                                                                                                                                                                                                                                                     | Yes      | `''`       | The validation error message to show if the rule is violated. Supports translation.     |
+- **Selection fields** (select, combobox, autocomplete):
+  - `items`: Array of items or option values
+  - `chips`: Display selected items as chips (default: false)
+  - `multiple`: Allow multiple selections (default: false)
+
+#### BsbAction
+
+Actions can be either strings (using default settings) or objects for customization:
+
+```typescript
+type BsbAction = string | {
+  key?: string
+  name: string
+  format?: BsbFormat | BsbFormat[]
+}
+```
+
+#### BsbFormat
+
+```typescript
+type BsbFormat = {
+  rules?: BsbRule | BsbRule[]
+  text?: string
+  icon?: string
+  color?: string
+  variant?: 'flat' | 'outlined' | 'plain' | 'text' | 'elevated' | 'tonal'
+  density?: 'compact' | 'default' | 'comfortable'
+  size?: 'x-small' | 'small' | 'default' | 'large' | 'x-large'
+  rounded?: boolean
+  class?: string
+  to?: string
+  href?: string
+  target?: string
+}
+```
+
+#### BsbRule
+
+```typescript
+type BsbRule = {
+  type: string
+  params: unknown
+  message?: string
+}
+```
+
+Supported rule types include: `required`, `min-length`, `max-length`, `equals`, `equals-not`, `starts-with`, `ends-with`, `contains`, `greater-than`, `less-than`, `in-range`, `includes`, `set`, `password`, `email`, `url`, `ip`, `regexp`, `same-as`, `is-json`, and `custom`.
 
 ### Events
 
-| Event      | Payload                                         | Description                                                                               |
-| ---------- | ----------------------------------------------- | ----------------------------------------------------------------------------------------- |
-| `submit`   | `data: Record<string, any>`                     | Emitted when the form is successfully validated and submitted.                            |
-| `cancel`   | `void`                                          | Emitted when the form's cancel action is triggered.                                       |
-| `validate` | `{ valid: boolean, errors: any[] }`             | Emitted after form validation occurs, providing whether the form is valid and any errors. |
-| `action`   | `{ action: string, data: Record<string, any> }` | Emitted when a custom action is triggered.                                                |
+| Event      | Payload                      | Description                                                              |
+| ---------- | ---------------------------- | ------------------------------------------------------------------------ |
+| `submit`   | `formData: BsbFormData`      | Emitted when the form is successfully validated and submitted.           |
+| `cancel`   | none                         | Emitted when the form's cancel action is triggered.                      |
+| `reset`    | none                         | Emitted when the form's reset action is triggered.                       |
+| `validate` | `formData, errors?`          | Emitted after form validation, with data and optional error information. |
+| `action`   | `actionName, formData`       | Emitted when a custom action is triggered.                               |
 
 ### Form Behavior
 
 #### Validation
 
 - The form validates on invalid input by default (`validate-on="invalid-input"`)
-- Validation is performed when:
+- Validation happens when:
   - A field value changes
   - The form is submitted
   - The validate action is triggered
-- Field-level validation uses the rules defined in the field configuration
-- Form-level validation aggregates all field validations
 
 #### Data Synchronization
 
 - The form watches for changes in the `data` prop and updates field values accordingly
-- When form values change, the parent component is updated through events
-- The `refresh()` method is called internally to sync data and field values
+- Initial field values can be set via the field's `value` property or through the `data` prop
 
 #### Focus Management
 
-- On mount, the first enabled and visible field is automatically focused
-- Enter key on the last field triggers form submission
-- Password fields include a visibility toggle button
+- When `focusFirst` is true, the first enabled and visible field is automatically focused
+- Enter key on the last field triggers form submission if a submit action is defined
+- Password fields include a visibility toggle button (eye icon)
 
 #### Default Actions
 
-The form comes with three pre-configured actions:
+The form supports several pre-configured action types:
 
-1. Submit (`type: 'submit'`)
-   - Icon: check mark
-   - Color: success
-   - Triggers form validation and submission
-2. Cancel (`type: 'cancel'`)
-   - Icon: close
-   - Color: error
-   - Variant: outlined
-   - Resets form to initial values
-3. Validate (`type: 'validate'`)
-   - Icon: check mark
-   - Color: info
-   - Variant: outlined
-   - Triggers form validation
+1. `submit` - Triggers form validation and submission
+2. `cancel` - Emits the cancel event
+3. `reset` - Resets form fields to initial values
+4. `validate` - Performs form validation
 
-These default actions can be:
+Custom actions can be defined and will emit the `action` event with the action name and current form data.
 
-- Used directly by specifying action types as strings
-- Customized by providing full action objects
-- Mixed with custom actions
-- Reordered or subset selected
+## Supported Field Types
 
-#### Internationalization
+The component supports the following field types:
 
-The component supports translation through the `t()` function for:
-
-- Field labels
-- Placeholders
-- Hints
-- Validation messages
-- Action button texts
-- Error messages
+- `text` - Standard text input
+- `email` - Email input with validation
+- `password` - Password input with visibility toggle
+- `textarea` - Multi-line text input
+- `number` - Numeric input
+- `switch` - Toggle switch
+- `rating` - Star rating input
+- `checkbox` - Checkbox input
+- `select` - Dropdown selection
+- `combobox` - Searchable dropdown
+- `autocomplete` - Text input with suggestions
+- `file` - File upload
+- `date` - Date picker
+- `time` - Time picker
+- `datetime` - Date and time picker
 
 ## Source
 
@@ -289,7 +337,5 @@ The component supports translation through the `t()` function for:
 :::
 
 :::details Test `'components/__tests__/VBsbForm.test.ts`' (see below for file content)
-
-<!-- prettier-ignore -->
 <<< @../../src/components/__tests__/VBsbForm.test.ts
 :::

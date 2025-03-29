@@ -19,7 +19,7 @@ const { t } = useI18n()
 
 const sent = ref(false)
 
-const options = {
+const options = <BsbFormOptions>{
   fields: [
     {
       type: 'text',
@@ -27,20 +27,19 @@ const options = {
       label: 'Username',
       placeholder: 'Username',
       rules: [
-        { type: 'required', value: true, message: 'username.is.required' },
-        { type: 'email', value: true, message: 'username.must.be.a.valid.e-mail.address' },
+        { type: 'required', params: true, message: 'username.is.required' },
+        { type: 'email', params: true, message: 'username.must.be.a.valid.e-mail.address' },
       ],
     },
   ],
   actions: [
     {
-      type: 'submit',
-      title: 'send',
-      color: 'primary',
+      name: 'submit',
+      format: { text: 'send' },
     },
   ],
-  actionsAlign: 'right',
-  actionsClass: 'ml-2',
+  actionAlign: 'right',
+  actionSubmit: 'submit',
 }
 
 const data = ref({

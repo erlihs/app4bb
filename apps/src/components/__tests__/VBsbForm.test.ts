@@ -3,18 +3,18 @@ import { mount, VueWrapper } from '@vue/test-utils'
 import { describe, expect, it, beforeEach } from 'vitest'
 import VBsbForm from '../VBsbForm.vue'
 import vuetify from '../../plugins/vuetify'
+import type { BsbFormOptions } from '../index' // Import the required types
 
 describe('VBsbForm', () => {
   let wrapper: VueWrapper
-
-  const options = {
+  const options: BsbFormOptions = {
     fields: [
       {
         name: 'username',
         type: 'text' as const,
         label: 'Username',
         value: '',
-        required: true,
+
         errors: [],
       },
       {
@@ -22,7 +22,7 @@ describe('VBsbForm', () => {
         type: 'checkbox' as const,
         label: 'Checkbox',
         value: false,
-        required: true,
+
         errors: [],
       },
       {
@@ -30,14 +30,12 @@ describe('VBsbForm', () => {
         type: 'password' as const,
         label: 'Password',
         value: '',
-        required: true,
+
         errors: [],
       },
     ],
-    actions: [
-      { type: 'submit' as const, title: 'Submit', color: 'success' },
-      { type: 'cancel' as const, title: 'Cancel', color: 'error', variant: 'outlined' as const },
-    ],
+    actions: ['submit', 'cancel'],
+    actionSubmit: 'submit',
     errors: [],
   }
 
@@ -65,14 +63,14 @@ describe('VBsbForm', () => {
     expect(textFields[0].props('label')).toBe('Username')
     expect(textFields[1].props('label')).toBe('Password')
 
-    const passwordField = wrapper.findComponent({ name: 'VCheckbox' })
-    expect(passwordField.props('label')).toBe('Checkbox')
+    const checkboxField = wrapper.findComponent({ name: 'VCheckbox' })
+    expect(checkboxField.props('label')).toBe('Checkbox')
   })
 
   it('renders action buttons correctly', () => {
     const buttons = wrapper.findAllComponents({ name: 'VBtn' })
-    expect(buttons).toHaveLength(2) // Submit, Cancel
-    expect(buttons[0].text()).toBe('Submit')
-    expect(buttons[1].text()).toBe('Cancel')
+    expect(buttons).toHaveLength(2)
+    expect(buttons[0].html()).toContain('submit')
+    expect(buttons[1].html()).toContain('cancel')
   })
 })

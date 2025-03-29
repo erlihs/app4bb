@@ -121,7 +121,7 @@
 </template>
 
 <script setup lang="ts">
-import type { BsbFormOptions } from './VBsbForm.vue'
+import type { BsbFormOptions } from './index'
 import VBsbTableCell from './VBsbTableCell.vue'
 
 const { t } = useI18n()

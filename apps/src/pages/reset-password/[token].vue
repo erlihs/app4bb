@@ -29,7 +29,7 @@ const devAction = import.meta.env.DEV
       },
     ]
   : []
-const options = {
+const options = <BsbFormOptions>{
   fields: [
     {
       type: 'text',
@@ -37,8 +37,8 @@ const options = {
       label: 'username',
       placeholder: 'username',
       rules: [
-        { type: 'required', value: true, message: 'username.is.required' },
-        { type: 'email', value: true, message: 'username.must.be.a.valid.e-mail.address' },
+        { type: 'required', params: true, message: 'username.is.required' },
+        { type: 'email', params: true, message: 'username.must.be.a.valid.e-mail.address' },
       ],
     },
     {
@@ -46,7 +46,7 @@ const options = {
       name: 'password',
       label: 'password',
       placeholder: 'password',
-      rules: [{ type: 'required', value: true, message: 'password.is.required' }],
+      rules: [{ type: 'required', params: true, message: 'password.is.required' }],
     },
     {
       type: 'password',
@@ -54,21 +54,20 @@ const options = {
       label: 'password.repeat',
       placeholder: 'password.repeat',
       rules: [
-        { type: 'required', value: true, message: 'password.is.required' },
-        { type: 'same-as', value: 'password', message: 'passwords.must.match' },
+        { type: 'required', params: true, message: 'password.is.required' },
+        { type: 'same-as', params: 'password', message: 'passwords.must.match' },
       ],
     },
   ],
   actions: [
     {
-      type: 'submit',
-      title: 'reset.password',
-      color: 'primary',
+      name: 'submit',
+      format: { text: 'reset.password' },
     },
     ...devAction,
   ],
-  actionsAlign: 'right',
-  actionsClass: 'ml-2',
+  actionAlign: 'right',
+  actionSubmit: 'submit',
 }
 
 const data = ref({

@@ -441,16 +441,10 @@ const route = useRoute()
 const { t } = useI18n()
 
 const devAction = import.meta.env.DEV
-  ? [
-      {
-        type: 'dev',
-        title: 'dev',
-        variant: 'outlined',
-      },
-    ]
+  ? ['dev']
   : []
 
-const options = {
+const options = <BsbFormOptions>{
   fields: [
     {
       type: 'text',
@@ -458,8 +452,8 @@ const options = {
       label: 'username',
       placeholder: 'username',
       rules: [
-        { type: 'required', value: true, message: 'username.is.required' },
-        { type: 'email', value: true, message: 'username.must.be.a.valid.email.address' },
+        { type: 'required', params: true, message: 'username.is.required' },
+        { type: 'email', params: true, message: 'username.must.be.a.valid.email.address' },
       ],
     },
     {
@@ -467,19 +461,14 @@ const options = {
       name: 'password',
       label: 'password',
       placeholder: 'password',
-      rules: [{ type: 'required', value: true, message: 'password.is.required' }],
+      rules: [{ type: 'required', params: true, message: 'password.is.required' }],
     },
   ],
-  actions: [
-    {
-      type: 'submit',
-      title: 'submit',
-      color: 'primary',
-    },
+  actions: ['submit',
     ...devAction,
   ],
-  actionsAlign: 'right',
-  actionsClass: 'ml-2',
+  actionAlign: 'right',
+  actionSubmit: 'submit',
 }
 
 const data = ref({
