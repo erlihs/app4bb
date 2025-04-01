@@ -17,6 +17,5 @@ declare module 'vue' {
     VBsbPad: typeof import('./src/components/VBsbPad.vue')['default']
     VBsbShare: typeof import('./src/components/VBsbShare.vue')['default']
     VBsbTable: typeof import('./src/components/VBsbTable.vue')['default']
-    VBsbTableCell: typeof import('./src/components/VBsbTableCell.vue')['default']
   }
 }

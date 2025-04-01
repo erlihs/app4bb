@@ -62,7 +62,7 @@ import {
   type BsbFormOptions,
   type BsbFormData,
   bsbTextAlign,
-  bsbActionsFormat,
+  bsbActionFormat,
   bsbRuleValidate,
 } from './index'
 
@@ -237,9 +237,16 @@ const fields = computed(() => {
   })
 })
 
-const actions = computed(() =>
-  bsbActionsFormat(options.actions, options.actionFormat, undefined, t),
-)
+const actions = computed(() => {
+  return (options.actions || []).map((action) => {
+    const props = bsbActionFormat(undefined, action, options.actionFormat)
+    props.text = props.text ? t(String(props.text)) : undefined
+    return {
+      name: props.name as string,
+      props,
+    }
+  })
+})
 
 const values = ref<BsbFormData>({})
 

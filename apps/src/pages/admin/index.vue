@@ -9,6 +9,7 @@
       <v-tab value="settings">Settings</v-tab>
       <v-tab value="jobs">Jobs</v-tab>
     </v-tabs>
+
     <v-tabs-window v-model="admin.tab">
       <v-tabs-window-item value="dashboard">
         <v-row>
@@ -30,46 +31,44 @@
 
       <v-tabs-window-item value="users">
         <v-bsb-table
-          :shorten="30"
-          searchable
-          :options="options_users"
-          :api="api_users"
-          @action="userAction"
+          :options="userOptions"
+          :loading
+          @fetch="handleUserFetch"
+          @action="handleUserAction"
         />
       </v-tabs-window-item>
 
       <v-tabs-window-item value="audit">
         <v-bsb-table
-          :shorten="30"
-          searchable
-          :options="options_audit"
-          :api="api_audit"
-          @action="auditAction"
+          :options="auditOptions"
+          :loading
+          @fetch="handleAuditFetch"
+          @action="handleAuditAction"
         />
       </v-tabs-window-item>
 
       <v-tabs-window-item value="settings">
-        <v-bsb-table :shorten="30" searchable :options="options_settings" :api="api_settings" />
+        <v-bsb-table
+          :options="settingsOptions"
+          :loading
+          @fetch="handleSettingsFetch"
+          @action="handleSettingsAction"
+        />
       </v-tabs-window-item>
 
       <v-tabs-window-item value="jobs">
         <v-bsb-table
-          v-if="!jobs_details"
-          :shorten="30"
-          searchable
-          :options="options_jobs"
-          :api="api_jobs"
-          @action="action"
+          v-if="!jobsDetails"
+          :options="jobsOptions"
+          @fetch="handleJobsFetch"
+          @action="handleJobsAction"
         />
         <v-bsb-table
-          v-if="jobs_details"
-          :shorten="30"
-          searchable
-          :searchValue="jobName"
-          :options="options_jobs_details"
-          :api="api_jobs_details"
+          v-if="jobsDetails"
+          :options="jobsDetailsOptions"
+          @fetch="handleJobsDetailsFetch"
         />
-        <v-btn v-if="jobs_details" @click="jobs_details = false" icon="$mdiArrowLeft" />
+        <v-btn v-if="jobsDetails" @click="jobsDetails = false" icon="$mdiArrowLeft" />
       </v-tabs-window-item>
     </v-tabs-window>
   </v-container>
@@ -87,6 +86,7 @@ definePage({
 })
 const meta = useRoute().meta
 
+import type { BsbFormFieldError, BsbTableOptions } from '@/components'
 import { defineStore } from 'pinia'
 const useAdminStore = defineStore(
   'admin',
@@ -108,6 +108,8 @@ const admin = useAdminStore()
 const baseURL = (import.meta.env.DEV ? '/api/' : import.meta.env.VITE_API_URI) + 'adm-v1/'
 const http = useHttp({ baseURL, headers: { 'Cache-Control': 'no-cache' } })
 
+const loading = ref(false)
+
 type StatusResponse = {
   status: string
   value: string
@@ -117,185 +119,11 @@ type StatusResponse = {
 
 const status = ref([] as StatusResponse[])
 
-const api_users = ref(baseURL + 'users/')
-const options_users = ref({
-  title: 'Users',
-  columns: [
-    {
-      primary: true,
-      column: 'uuid',
-      title: 'ID',
-      shorten: 0,
-    },
-    { column: 'username', title: 'Username', format: { to: 'mailto:$value', target: '_blank' } },
-    { column: 'fullname', title: 'Fullname' },
-    { column: 'status', title: 'Status' },
-    {
-      actions: [
-        {
-          action: 'lock',
-          format: { icon: '$mdiLock', color: 'red' },
-          condition: [
-            { type: 'equals', name: 'status', value: 'N' },
-            { type: 'equals', name: 'status', value: 'A' },
-          ],
-        },
-        {
-          action: 'unlock',
-          format: { icon: '$mdiLockOff' },
-          condition: { type: 'equals', name: 'status', value: 'D' },
-        },
-      ],
-    },
-  ],
-})
-
-async function userAction(action: { action: string; item: { uuid: string; status: string } }) {
-  if (action.action === 'lock') {
-    const { error } = await http.post('user_lock/', { uuid: action.item.uuid })
-    if (!error) action.item.status = 'D'
-    return
-  }
-  if (action.action === 'unlock') {
-    const { error } = await http.post('user_unlock/', { uuid: action.item.uuid })
-    if (!error) action.item.status = 'N'
-    return
-  }
-}
-
-const api_audit = ref(baseURL + 'audit/')
-const options_audit = ref({
-  title: 'Audit Records',
-  columns: [
-    {
-      column: 'severity',
-      format: [
-        { condition: 'equals', params: 'I', icon: '$mdiInformation', color: 'blue', text: '' },
-        { condition: 'equals', params: 'W', icon: '$mdiAlert', color: 'orange', text: '' },
-        { condition: 'equals', params: 'E', icon: '$mdiAlertOctagon', color: 'red', text: '' },
-      ],
-    },
-    {
-      column: 'created',
-      title: 'created',
-    },
-    {
-      column: 'username',
-      title: 'user',
-      format: { to: 'mailto:$value', target: '_blank' },
-    },
-    { column: 'action', title: 'action' },
-    {
-      column: 'details',
-      title: 'details',
-    },
-    { actions: [{ action: 'copy', format: { icon: '$mdiContentCopy' } }] },
-  ],
-})
-
-async function auditAction(action: { action: string; item: unknown }) {
-  if (action.action === 'copy') {
-    const data = JSON.stringify(action.item, null, 2)
-    copyToClipboard(data)
-  }
-}
-
-const api_settings = ref(baseURL + 'settings/')
-const api_settings_edit = ref(baseURL + 'setting/')
-const options_settings = ref({
-  title: 'Settings',
-  columns: [
-    {
-      primary: true,
-      column: 'id',
-      title: 'Key',
-    },
-    { column: 'description', title: 'Description' },
-    {
-      column: 'content',
-      title: 'Value',
-      shorten: 30,
-    },
-    {
-      actions: [
-        {
-          action: 'edit',
-          format: { icon: '$mdiPencil' },
-          form: {
-            title: 'Edit',
-            api: api_settings_edit,
-            fields: [
-              { name: 'id', label: 'Key', type: 'text', readonly: true },
-              { name: 'content', label: 'Value', type: 'text' },
-            ],
-            actions: ['cancel', 'submit'],
-          },
-        },
-      ],
-    },
-  ],
-})
-
-const jobs_details = ref(false)
-const api_jobs = ref(baseURL + 'jobs/')
-const options_jobs = ref({
-  title: 'Jobs',
-  columns: [
-    {
-      primary: true,
-      column: 'name',
-      title: 'Job name',
-    },
-    { column: 'schedule', title: 'Schedule' },
-    { column: 'start', title: 'Last run date' },
-    { column: 'duration', title: 'Last run duration' },
-    { column: 'comments', title: 'Comments' },
-    {
-      actions: [
-        { action: 'details', format: { icon: '$mdiHistory' } },
-        { action: 'run', format: { icon: '$mdiRun' } },
-      ],
-    },
-  ],
-})
-
-const jobName = ref('')
-const api_jobs_details = ref(baseURL + 'jobs_history/')
-const options_jobs_details = ref({
-  title: 'Job History',
-  columns: [
-    {
-      column: 'name',
-      title: 'Job name',
-    },
-    { column: 'start', title: 'Start' },
-    { column: 'duration', title: 'Duration' },
-    { column: 'status', title: 'Status' },
-    { column: 'output', title: 'Output' },
-  ],
-})
-
-function action(action: { action: string; item: { name: string } }) {
-  if (action.action === 'details') {
-    jobName.value = action.item.name
-    jobs_details.value = true
-  }
-  if (action.action === 'run') {
-    http.post('job_run/', { name: action.item.name }).then(() => {
-      refreshStatus()
-    })
-  }
-}
-
 async function refreshStatus() {
   await http.get('status/').then((response) => {
     status.value = (response.data as { status: StatusResponse[] }).status
   })
 }
-
-onMounted(() => {
-  refreshStatus()
-})
 
 const route = useRoute()
 
@@ -323,4 +151,310 @@ function copyToClipboard(text: string) {
     },
   )
 }
+
+const userOptions = ref<BsbTableOptions>({
+  key: 'uuid',
+  columns: [
+    {
+      name: 'uuid',
+      title: 'Id',
+      maxLength: 0,
+    },
+    { name: 'username', title: 'User name', format: { to: 'mailto:${value}', target: '_blank' } },
+    { name: 'fullname', title: 'Full name' },
+    { name: 'status' },
+    {
+      name: 'actions',
+      actions: [
+        {
+          name: 'lock',
+          key: 'status',
+          format: [
+            {
+              rules: [
+                { type: 'equals', params: 'N' },
+                { type: 'equals', params: 'A' },
+              ],
+              icon: '$mdiLock',
+              color: 'red',
+            },
+            { hidden: true },
+          ],
+        },
+        {
+          name: 'unlock',
+          key: 'status',
+          format: [
+            {
+              rules: [{ type: 'equals', params: 'D' }],
+              icon: '$mdiLockOff',
+            },
+            { hidden: true },
+          ],
+        },
+      ],
+    },
+  ],
+})
+
+async function handleUserFetch(
+  fetchData: Ref<BsbTableData[]>,
+  offset: number,
+  limit: number,
+  search: string,
+  filter: string,
+  sort: string,
+) {
+  loading.value = true
+  const { data, error } = await http.get('users/', { offset, limit, search, filter, sort })
+  fetchData.value = error ? [] : (data as { items: BsbTableData[] }).items
+  loading.value = false
+}
+
+async function handleAuditFetch(
+  fetchData: Ref<BsbTableData[]>,
+  offset: number,
+  limit: number,
+  search: string,
+  filter: string,
+  sort: string,
+) {
+  loading.value = true
+  const { data, error } = await http.get('audit/', { offset, limit, search, filter, sort })
+  fetchData.value = error ? [] : (data as { items: BsbTableData[] }).items
+  loading.value = false
+}
+
+async function handleUserAction(
+  actionName: string,
+  actionData: Ref<BsbTableData>,
+  value: BsbTableData,
+) {
+  loading.value = true
+  if (actionName === 'lock') {
+    const { error } = await http.post('user_lock/', { uuid: value.uuid })
+    if (!error) value.status = 'D'
+  }
+  if (actionName === 'unlock') {
+    const { error } = await http.post('user_unlock/', { uuid: value.uuid })
+    if (!error) value.status = 'N'
+  }
+  loading.value = false
+}
+
+const auditOptions = ref<BsbTableOptions>({
+  key: 'id',
+
+  columns: [
+    {
+      name: 'severity',
+      format: [
+        {
+          rules: { type: 'equals', params: 'I' },
+          icon: '$mdiInformation',
+          color: 'blue',
+          text: '',
+        },
+        { rules: { type: 'equals', params: 'W' }, icon: '$mdiAlert', color: 'orange', text: '' },
+        {
+          rules: { type: 'equals', params: 'E' },
+          icon: '$mdiAlertOctagon',
+          color: 'red',
+          text: '',
+        },
+      ],
+    },
+    {
+      name: 'created',
+    },
+    {
+      name: 'username',
+      format: { to: 'mailto:${value}' },
+    },
+    { name: 'action' },
+    {
+      name: 'details',
+      maxLength: 0,
+    },
+    { name: 'actions', actions: [{ name: 'copy', format: { icon: '$mdiContentCopy' } }] },
+  ],
+})
+
+async function handleAuditAction(
+  actionName: string,
+  actionData: Ref<BsbTableData>,
+  value: BsbTableData,
+) {
+  if (actionName === 'copy') {
+    const data = JSON.stringify(value, null, 2)
+    copyToClipboard(data)
+  }
+}
+
+const settingsOptions = ref<BsbTableOptions>({
+  key: 'id',
+  columns: [
+    {
+      name: 'id',
+      title: 'Key',
+    },
+    { name: 'description', title: 'Description' },
+    {
+      name: 'content',
+      title: 'Value',
+      maxLength: 30,
+    },
+    {
+      name: 'actions',
+      actions: [
+        {
+          name: 'edit',
+          format: { icon: '$mdiPencil' },
+          form: {
+            fields: [
+              { name: 'id', label: 'Key', type: 'text', readonly: true },
+              { name: 'content', label: 'Value', type: 'text' },
+            ],
+            actions: ['cancel', 'submit'],
+            actionSubmit: 'submit',
+            actionCancel: 'cancel',
+          },
+        },
+      ],
+    },
+  ],
+})
+
+async function handleSettingsFetch(
+  fetchData: Ref<BsbTableData[]>,
+  offset: number,
+  limit: number,
+  search: string,
+  filter: string,
+  sort: string,
+) {
+  loading.value = true
+  const { data, error } = await http.get('settings/', { offset, limit, search, filter, sort })
+  fetchData.value = error ? [] : (data as { items: BsbTableData[] }).items
+  loading.value = false
+}
+
+async function handleSettingsAction(
+  actionName: string,
+  actionData: Ref<BsbTableData>,
+  value: BsbTableData,
+) {
+  loading.value = true
+  const oldValue = value.content
+  if (actionName === 'edit') {
+    const { error, data } = await http.post('setting/', { id: value.id, content: value.content })
+    if (error) {
+      value.content = oldValue
+      console.log(
+        'todo: process server side errors',
+        (data as { errors: BsbFormFieldError[] }).errors,
+      )
+    }
+  }
+  loading.value = false
+}
+
+const jobsDetails = ref(false)
+
+const jobsOptions = ref<BsbTableOptions>({
+  key: 'name',
+  columns: [
+    {
+      name: 'name',
+      title: 'Job name',
+    },
+    { name: 'schedule', title: 'Schedule' },
+    { name: 'start', title: 'Last run date' },
+    { name: 'duration', title: 'Last run duration' },
+    { name: 'comments', title: 'Comments' },
+    {
+      name: 'actions',
+      actions: [
+        { name: 'details', format: { icon: '$mdiHistory' } },
+        { name: 'run', format: { icon: '$mdiRun' } },
+      ],
+    },
+  ],
+})
+
+const jobsDetailsOptions = ref<BsbTableOptions>({
+  key: 'name',
+  columns: [
+    {
+      name: 'name',
+      title: 'Job name',
+    },
+    { name: 'start', title: 'Start' },
+    { name: 'duration', title: 'Duration' },
+    { name: 'status', title: 'Status' },
+    { name: 'output', title: 'Output', maxLength: 20 },
+  ],
+})
+
+async function handleJobsFetch(
+  fetchData: Ref<BsbTableData[]>,
+  offset: number,
+  limit: number,
+  search: string,
+  filter: string,
+  sort: string,
+) {
+  loading.value = true
+  const { data, error } = await http.get('jobs/', { offset, limit, search, filter, sort })
+  fetchData.value = error ? [] : (data as { items: BsbTableData[] }).items
+  loading.value = false
+}
+
+async function handleJobsDetailsFetch(
+  fetchData: Ref<BsbTableData[]>,
+  offset: number,
+  limit: number,
+  search: string,
+  filter: string,
+  sort: string,
+) {
+  loading.value = true
+  const { data, error } = await http.get('jobs_history/', {
+    offset,
+    limit,
+    search: jobName.value,
+    filter,
+    sort,
+  })
+  fetchData.value = error ? [] : (data as { items: BsbTableData[] }).items
+  loading.value = false
+}
+
+const jobName = ref('')
+
+async function handleJobsAction(
+  actionName: string,
+  actionData: Ref<BsbTableData>,
+  value: BsbTableData,
+) {
+  if (actionName === 'details') {
+    jobName.value = value.name as string
+    jobsDetailsOptions.value.filter = {
+      fields: [{ type: 'text', name: 'name', value: value.name }],
+      actions: ['apply', 'cancel'],
+      actionCancel: 'cancel',
+    }
+    jobsDetails.value = true
+  }
+  if (actionName === 'run') {
+    const { error } = await http.post('job_run/', { name: value.name })
+    if (!error) {
+      refreshStatus()
+    }
+  }
+}
+
+onMounted(() => {
+  refreshStatus()
+})
 </script>

@@ -1,305 +1,227 @@
 <template>
-  <v-bsb-table
-    searchable
-    :options
-    :items
-    @action="action"
-    @beforeFetch="beforeFetch"
-    @afterFetch="afterFetch"
-    @submit="submit"
-  ></v-bsb-table>
+  <v-bsb-table :options :loading :t @fetch="fetch" @action="action" />
+  <v-checkbox v-model="loading" label="Loading" class="ma-1" />
 </template>
 
 <script setup lang="ts">
 definePage({ meta: { role: 'restricted' } })
-function action(action: unknown) {
-  console.log('action', action)
+
+const { t } = useI18n()
+
+const loading = ref(false)
+
+import jsonData from './sandbox-table.json'
+
+function action(
+  actionName: string,
+  actionData: Ref<BsbTableData | BsbTableData[]>,
+  value?: BsbTableData,
+) {
+  console.log('action', actionName, actionData, value)
+  if (actionName == 'custom' && value && 'phone' in value)
+    value.phone = Math.ceil(Math.random() * 100)
+  if (actionName == 'delete' && value && 'status' in value) value.status = 'blocked'
+  if (actionName === 'status-all') {
+    const newStatus = value?.status
+    if (!newStatus) return
+    ;(actionData as Ref<BsbTableData[]>).value.forEach((item) => {
+      item.status = newStatus
+    })
+  }
 }
 
-function beforeFetch(data: unknown) {
-  console.log('beforeFetch', data)
+async function fetch(
+  fetchData: Ref<BsbTableData[]>,
+  offset: number,
+  limit: number,
+  search: string,
+  filter: string,
+  sort: string,
+) {
+  function filterValueToObject(filter: string) {
+    const filterParts = filter.split(',')
+    const filterObj: Record<string, string | string[]> = {}
+    filterParts.forEach((part) => {
+      const match = part.match(/([^[]+)\[([^\]]+)\]/)
+      if (match) {
+        const [, key, value] = match
+        if (value.includes(',')) {
+          filterObj[key] = value.split(',')
+        } else {
+          filterObj[key] = value
+        }
+      }
+    })
+    return filterObj
+  }
+
+  loading.value = true
+  await new Promise((resolve) => setTimeout(resolve, 1500))
+
+  let newData = jsonData
+
+  if (search)
+    newData = newData.filter((item) =>
+      Object.values(item).some((value) =>
+        String(value).toLowerCase().includes(search.toLowerCase()),
+      ),
+    )
+
+  if (filter) {
+    const filterObj = filterValueToObject(filter)
+    newData = newData.filter((item) =>
+      Object.entries(filterObj).every(([key, value]) => {
+        const itemValue = item[key as keyof typeof item]
+        return Array.isArray(value)
+          ? value.includes(itemValue as string)
+          : String(itemValue).toLowerCase().includes(String(value).toLowerCase())
+      }),
+    )
+  }
+
+  if (sort) {
+    const sortArr = sort.split(',')
+    newData = newData.sort((a, b) => {
+      for (const sortItem of sortArr) {
+        const sortKey = (sortItem.startsWith('-') ? sortItem.slice(1) : sortItem) as keyof typeof a
+        const sortDir = sortItem.startsWith('-') ? -1 : 1
+        if (a[sortKey] < b[sortKey]) return -sortDir
+        if (a[sortKey] > b[sortKey]) return sortDir
+      }
+      return 0
+    })
+  }
+
+  newData = newData.slice(offset, offset + limit)
+  fetchData.value = newData
+  console.log('fetch', fetchData.value)
+  loading.value = false
 }
 
-function afterFetch(data: unknown) {
-  console.log('afterFetch', data)
-}
-
-function submit(data: unknown) {
-  console.log('submit', data)
-}
-
-function customValidation(value: unknown) {
-  return (value as string).startsWith('ervin')
-}
-
-const options = ref({
-  title: 'Table Title',
+const options = ref<BsbTableOptions>({
+  key: 'name',
   columns: [
+    { name: 'name' },
+    { name: 'email' },
+    { name: 'phone', maxLength: 0 },
+    { name: 'website', format: { text: 'site' }, maxLength: 20 },
     {
-      column: 'name',
-      title: 'Name',
+      name: 'status',
       format: [
-        { condition: 'starts-with', params: 'L', color: 'red' },
-        { condition: 'starts-with', params: 'E', icon: '$mdiAccount', color: 'blue' },
         {
-          condition: 'starts-with',
-          params: 'C',
-          icon: '$mdiAccount',
+          rules: { type: 'starts-with', params: 'active' },
           color: 'green',
-          variant: 'outlined',
         },
-        {
-          condition: 'starts-with',
-          params: 'P',
-          icon: '$mdiAccount',
-          color: 'yellow',
-          variant: 'flat',
-          text: '',
-        },
+        { color: 'red' },
       ],
+      align: 'center',
     },
     {
-      column: 'email',
-      title: 'Email',
-      format: [{ condition: 'custom', params: customValidation, color: 'blue' }],
-    },
-    { column: 'phone', title: 'Phone', format: { color: 'green' } },
-    {
-      column: 'website',
-      title: 'Website',
-      shorten: 30,
-      format: { to: 'https://$value', target: '_blank' },
-    },
-    {
+      name: 'actions',
+      align: 'right',
       actions: [
-        { action: 'view', format: { text: 'View' } },
         {
-          action: 'edit',
+          name: 'edit',
           format: { icon: '$mdiPencil' },
           form: {
-            title: 'Edit',
             fields: [
-              { name: 'name', label: 'Name', type: 'text' },
-              { name: 'email', label: 'Email', type: 'email' },
-              { name: 'phone', label: 'Phone', type: 'text' },
-              { name: 'website', label: 'Website', type: 'text' },
+              {
+                type: 'text',
+                name: 'name',
+                label: 'name',
+                rules: [{ type: 'required', params: true, message: 'required' }],
+              },
+              { type: 'text', name: 'email', label: 'email' },
+              { type: 'text', name: 'phone', label: 'phone' },
+              { type: 'text', name: 'website', label: 'website' },
+              { type: 'select', name: 'status', label: 'status', items: ['active', 'blocked'] },
             ],
-            actions: ['cancel', 'submit'],
+            actions: [
+              { name: 'edit', format: { text: 'submit' } },
+              {
+                name: 'cancel',
+                format: { variant: 'outlined', text: 'cancel', color: 'lime' },
+              },
+            ],
+            actionFormat: {
+              color: 'lime',
+            },
+            actionAlign: 'center',
+            actionSubmit: 'edit',
+            actionCancel: 'cancel',
+            cols: 2,
+            autocomplete: 'off',
+            focusFirst: true,
           },
         },
         {
-          action: 'delete',
-          format: { text: 'Delete', icon: '$mdiDelete', color: 'red', variant: 'flat' },
-          condition: [{ type: 'not-equals', name: 'email', value: 'clementine.bauch@myemail.com' }],
+          name: 'delete',
+          key: 'status',
+          format: [
+            {
+              rules: { type: 'starts-with', params: 'active' },
+              icon: '$mdiDelete',
+              color: 'red',
+            },
+            { hidden: true },
+          ],
         },
       ],
     },
   ],
-  actions: [{ action: 'new', format: { icon: '$mdiPlus' } }],
+  actions: [
+    { name: 'add', format: { icon: '$mdiPlus' } },
+    {
+      name: 'status-all',
+      format: { icon: '$mdiListStatus' },
+      form: {
+        fields: [
+          {
+            type: 'select',
+            name: 'status',
+            label: 'status',
+            items: ['active', 'blocked'],
+            rules: [{ type: 'required', params: true, message: 'required' }],
+          },
+        ],
+        actions: [
+          { name: 'status', format: { text: 'submit' } },
+          {
+            name: 'cancel',
+            format: { variant: 'outlined', text: 'cancel', color: 'lime' },
+          },
+        ],
+        actionSubmit: 'status',
+        actionCancel: 'cancel',
+      },
+    },
+  ],
+  actionFormat: {},
+  search: {
+    value: 'a',
+    label: 'search',
+    placeholder: '',
+  },
+  filter: {
+    fields: [
+      { type: 'text', name: 'phone', label: 'phone' },
+      {
+        type: 'select',
+        name: 'status',
+        label: 'status',
+        value: ['active', 'blocked'],
+        items: ['active', 'blocked'],
+        multiple: true,
+      },
+    ],
+    actions: [{ name: 'custom' }],
+    cols: 2,
+  },
+  sort: [
+    { name: 'name', value: 'asc' },
+    { name: 'phone', label: 'Phone' },
+    { name: 'status', value: 'desc' },
+  ],
+  maxLength: 40,
 })
-
-const items = ref([
-  {
-    name: 'Leanne Graham',
-    email: 'leanne.graham@example.com',
-    phone: '118-332-6675 x95515',
-    website:
-      'lorem-ipsum-lorem-ipsum-lorem-ipsum-lorem-ipsum-lorem-ipsum-lorem-ipsum-lorem-ipsum-lorem-ipsum-lorem-ipsum-lorem-ipsum-lorem-ipsum-lorem-ipsum-lorem-ipsum-lorem-ipsum-lorem-ipsum-lorem-ipsum-lorem-ipsum-lorem-ipsum-lorem-ipsum-lorem-ipsum-lorem-ipsum-lorem-ipsum-lorem-ipsum-lorem-ipsum-lorem-ipsum-lorem-ipsum-lorem-ipsum-lorem-ipsum-lorem-ipsum-lorem-ipsum-lorem-ipsum-lorem-ipsum-lorem-ipsum-lorem-ipsum-lorem-ipsum-lorem-ipsum-lorem-ipsum-lorem-ipsum-lorem-ipsum-lorem-ipsum-lorem-ipsum-lorem-ipsum-lorem-ipsum-lorem-ipsum-lorem-ipsum-lorem-ipsum-lorem-ipsum-lorem-ipsum-lorem-ipsum-lorem-ipsum-lorem-ipsum-lorem-ipsum-lorem-ipsum-lorem-ipsum-lorem-ipsum-lorem-ipsum-lorem-ipsum-lorem-ipsum-lorem-ipsum-lorem-ipsum-lorem-ipsum-lorem-ipsum-lorem-ipsum-lorem-ipsum-lorem-ipsum-simone.org',
-  },
-  {
-    name: 'Ervin Howell',
-    email: 'ervin.howell@myemail.com',
-    phone: '928-310-8872 x91857',
-    website:
-      'lorem-ipsum-lorem-ipsum-lorem-ipsum-lorem-ipsum-lorem-ipsum-lorem-ipsum-lorem-ipsum-lorem-ipsum-lorem-ipsum-lorem-ipsum-lorem-ipsum-lorem-ipsum-lorem-ipsum-lorem-ipsum-lorem-ipsum-lorem-ipsum-lorem-ipsum-lorem-ipsum-lorem-ipsum-lorem-ipsum-lorem-ipsum-lorem-ipsum-lorem-ipsum-lorem-ipsum-lorem-ipsum-lorem-ipsum-lorem-ipsum-lorem-ipsum-lorem-ipsum-lorem-ipsum-lorem-ipsum-lorem-ipsum-lorem-ipsum-lorem-ipsum-lorem-ipsum-lorem-ipsum-lorem-ipsum-lorem-ipsum-lorem-ipsum-lorem-ipsum-lorem-ipsum-lorem-ipsum-lorem-ipsum-lorem-ipsum-lorem-ipsum-lorem-ipsum-lorem-ipsum-lorem-ipsum-lorem-ipsum-lorem-ipsum-lorem-ipsum-lorem-ipsum-lorem-ipsum-lorem-ipsum-lorem-ipsum-lorem-ipsum-lorem-ipsum-lorem-ipsum-lorem-ipsum-lorem-ipsum-lorem-ipsum-lorem-ipsum-lorem-ipsum-lorem-ipsum-lorem-ipsum-simone.org',
-  },
-  {
-    name: 'Clementine Bauch',
-    email: 'clementine.bauch@myemail.com',
-    phone: '907-559-7101 x11102',
-    website: 'hildegard.org',
-  },
-  {
-    name: 'Patricia Lebsack',
-    email: 'patricia.lebsack@myemail.com',
-    phone: '753-521-2764 x79502',
-    website: 'demarco.info',
-  },
-  {
-    name: 'Chelsey Dietrich',
-    email: 'chelsey.dietrich@myemail.com',
-    phone: '409-510-3798 x43067',
-    website: 'jessie.org',
-  },
-  {
-    name: 'Mrs. Dennis Schulist',
-    email: 'mrsdennis.schulist@gmail.com',
-    phone: '512-632-6129 x47618',
-    website: 'tamarajo.tv',
-  },
-  {
-    name: 'Kurtis Weissnat',
-    email: 'kurtis.weissnat@yahoo.com',
-    phone: '167-267-3941 x31234',
-    website: 'kale.biz',
-  },
-  {
-    name: 'Nicholas Runolfsdottir',
-    email: 'nicholas.runolfsdottir@example.com',
-    phone: '717-330-1892 x70391',
-    website:
-      'lorem-ipsum-lorem-ipsum-lorem-ipsum-lorem-ipsum-lorem-ipsum-lorem-ipsum-lorem-ipsum-lorem-ipsum-lorem-ipsum-lorem-ipsum-lorem-ipsum-lorem-ipsum-lorem-ipsum-lorem-ipsum-lorem-ipsum-lorem-ipsum-lorem-ipsum-lorem-ipsum-lorem-ipsum-lorem-ipsum-lorem-ipsum-lorem-ipsum-lorem-ipsum-lorem-ipsum-lorem-ipsum-lorem-ipsum-lorem-ipsum-lorem-ipsum-lorem-ipsum-lorem-ipsum-lorem-ipsum-lorem-ipsum-lorem-ipsum-lorem-ipsum-lorem-ipsum-lorem-ipsum-lorem-ipsum-lorem-ipsum-lorem-ipsum-lorem-ipsum-lorem-ipsum-lorem-ipsum-lorem-ipsum-lorem-ipsum-lorem-ipsum-lorem-ipsum-lorem-ipsum-lorem-ipsum-lorem-ipsum-lorem-ipsum-lorem-ipsum-lorem-ipsum-lorem-ipsum-lorem-ipsum-lorem-ipsum-lorem-ipsum-lorem-ipsum-lorem-ipsum-lorem-ipsum-lorem-ipsum-lorem-ipsum-lorem-ipsum-lorem-ipsum-lorem-ipsum-lorem-ipsum-simone.org',
-  },
-  {
-    name: 'Glenna Reichert',
-    email: 'glenna.reichert@outlook.com',
-    phone: '231-758-5103 x85049',
-    website: 'hildegard.org',
-  },
-  {
-    name: 'Clementina DuBuque',
-    email: 'clementina.dubuque@myemail.com',
-    phone: '554-659-3286 x86631',
-    website: 'jessie.org',
-  },
-  {
-    name: 'Leopoldo Corkery',
-    email: 'leopoldo.corkery@gmail.com',
-    phone: '601-844-2530 x18641',
-    website:
-      'lorem-ipsum-lorem-ipsum-lorem-ipsum-lorem-ipsum-lorem-ipsum-lorem-ipsum-lorem-ipsum-lorem-ipsum-lorem-ipsum-lorem-ipsum-lorem-ipsum-lorem-ipsum-lorem-ipsum-lorem-ipsum-lorem-ipsum-lorem-ipsum-lorem-ipsum-lorem-ipsum-lorem-ipsum-lorem-ipsum-lorem-ipsum-lorem-ipsum-lorem-ipsum-lorem-ipsum-lorem-ipsum-lorem-ipsum-lorem-ipsum-lorem-ipsum-lorem-ipsum-lorem-ipsum-lorem-ipsum-lorem-ipsum-lorem-ipsum-lorem-ipsum-lorem-ipsum-lorem-ipsum-lorem-ipsum-lorem-ipsum-lorem-ipsum-lorem-ipsum-lorem-ipsum-lorem-ipsum-lorem-ipsum-lorem-ipsum-lorem-ipsum-lorem-ipsum-lorem-ipsum-lorem-ipsum-lorem-ipsum-lorem-ipsum-lorem-ipsum-lorem-ipsum-lorem-ipsum-lorem-ipsum-lorem-ipsum-lorem-ipsum-lorem-ipsum-lorem-ipsum-lorem-ipsum-lorem-ipsum-lorem-ipsum-lorem-ipsum-lorem-ipsum-lorem-ipsum-lorem-ipsum-simone.org',
-  },
-  {
-    name: 'Elwyn Skiles',
-    email: 'elwyn.skiles@example.com',
-    phone: '909-650-6221 x70690',
-    website: 'demarco.info',
-  },
-  {
-    name: 'Maxime Nitzsche',
-    email: 'maxime.nitzsche@example.com',
-    phone: '289-571-2394 x19130',
-    website: 'jessie.org',
-  },
-  {
-    name: 'Ebony Collier',
-    email: 'ebony.collier@example.com',
-    phone: '924-456-8668 x71845',
-    website:
-      'lorem-ipsum-lorem-ipsum-lorem-ipsum-lorem-ipsum-lorem-ipsum-lorem-ipsum-lorem-ipsum-lorem-ipsum-lorem-ipsum-lorem-ipsum-lorem-ipsum-lorem-ipsum-lorem-ipsum-lorem-ipsum-lorem-ipsum-lorem-ipsum-lorem-ipsum-lorem-ipsum-lorem-ipsum-lorem-ipsum-lorem-ipsum-lorem-ipsum-lorem-ipsum-lorem-ipsum-lorem-ipsum-lorem-ipsum-lorem-ipsum-lorem-ipsum-lorem-ipsum-lorem-ipsum-lorem-ipsum-lorem-ipsum-lorem-ipsum-lorem-ipsum-lorem-ipsum-lorem-ipsum-lorem-ipsum-lorem-ipsum-lorem-ipsum-lorem-ipsum-lorem-ipsum-lorem-ipsum-lorem-ipsum-lorem-ipsum-lorem-ipsum-lorem-ipsum-lorem-ipsum-lorem-ipsum-lorem-ipsum-lorem-ipsum-lorem-ipsum-lorem-ipsum-lorem-ipsum-lorem-ipsum-lorem-ipsum-lorem-ipsum-lorem-ipsum-lorem-ipsum-lorem-ipsum-lorem-ipsum-lorem-ipsum-lorem-ipsum-lorem-ipsum-lorem-ipsum-lorem-ipsum-simone.org',
-  },
-  {
-    name: 'Julian Krajcik',
-    email: 'julian.krajcik@outlook.com',
-    phone: '679-626-7934 x81432',
-    website: 'kale.biz',
-  },
-  {
-    name: 'Elena Jakubowski',
-    email: 'elena.jakubowski@yahoo.com',
-    phone: '167-536-8927 x21719',
-    website: 'hildegard.org',
-  },
-  {
-    name: 'Tanya Reilly',
-    email: 'tanya.reilly@example.com',
-    phone: '746-481-3961 x94832',
-    website: 'demarco.info',
-  },
-  {
-    name: 'Rhea Nitzsche',
-    email: 'rhea.nitzsche@outlook.com',
-    phone: '316-984-8753 x35617',
-    website:
-      'lorem-ipsum-lorem-ipsum-lorem-ipsum-lorem-ipsum-lorem-ipsum-lorem-ipsum-lorem-ipsum-lorem-ipsum-lorem-ipsum-lorem-ipsum-lorem-ipsum-lorem-ipsum-lorem-ipsum-lorem-ipsum-lorem-ipsum-lorem-ipsum-lorem-ipsum-lorem-ipsum-lorem-ipsum-lorem-ipsum-lorem-ipsum-lorem-ipsum-lorem-ipsum-lorem-ipsum-lorem-ipsum-lorem-ipsum-lorem-ipsum-lorem-ipsum-lorem-ipsum-lorem-ipsum-lorem-ipsum-lorem-ipsum-lorem-ipsum-lorem-ipsum-lorem-ipsum-lorem-ipsum-lorem-ipsum-lorem-ipsum-lorem-ipsum-lorem-ipsum-lorem-ipsum-lorem-ipsum-lorem-ipsum-lorem-ipsum-lorem-ipsum-lorem-ipsum-lorem-ipsum-lorem-ipsum-lorem-ipsum-lorem-ipsum-lorem-ipsum-lorem-ipsum-lorem-ipsum-lorem-ipsum-lorem-ipsum-lorem-ipsum-lorem-ipsum-lorem-ipsum-lorem-ipsum-lorem-ipsum-lorem-ipsum-lorem-ipsum-lorem-ipsum-lorem-ipsum-lorem-ipsum-simone.org',
-  },
-  {
-    name: 'Thalia Prohaska',
-    email: 'thalia.prohaska@example.com',
-    phone: '870-945-5307 x69058',
-    website: 'hildegard.org',
-  },
-  {
-    name: 'Natasha Kessler',
-    email: 'natasha.kessler@example.com',
-    phone: '660-429-7991 x37929',
-    website:
-      'lorem-ipsum-lorem-ipsum-lorem-ipsum-lorem-ipsum-lorem-ipsum-lorem-ipsum-lorem-ipsum-lorem-ipsum-lorem-ipsum-lorem-ipsum-lorem-ipsum-lorem-ipsum-lorem-ipsum-lorem-ipsum-lorem-ipsum-lorem-ipsum-lorem-ipsum-lorem-ipsum-lorem-ipsum-lorem-ipsum-lorem-ipsum-lorem-ipsum-lorem-ipsum-lorem-ipsum-lorem-ipsum-lorem-ipsum-lorem-ipsum-lorem-ipsum-lorem-ipsum-lorem-ipsum-lorem-ipsum-lorem-ipsum-lorem-ipsum-lorem-ipsum-lorem-ipsum-lorem-ipsum-lorem-ipsum-lorem-ipsum-lorem-ipsum-lorem-ipsum-lorem-ipsum-lorem-ipsum-lorem-ipsum-lorem-ipsum-lorem-ipsum-lorem-ipsum-lorem-ipsum-lorem-ipsum-lorem-ipsum-lorem-ipsum-lorem-ipsum-lorem-ipsum-lorem-ipsum-lorem-ipsum-lorem-ipsum-lorem-ipsum-lorem-ipsum-lorem-ipsum-lorem-ipsum-lorem-ipsum-lorem-ipsum-lorem-ipsum-lorem-ipsum-lorem-ipsum-lorem-ipsum-simone.org',
-  },
-  {
-    name: 'Jeanne Lemke',
-    email: 'jeanne.lemke@example.com',
-    phone: '479-756-7391 x24815',
-    website: 'kale.biz',
-  },
-  {
-    name: 'Melyssa Schumm',
-    email: 'melyssa.schumm@example.com',
-    phone: '732-571-1125 x87393',
-    website: 'demarco.info',
-  },
-  {
-    name: 'Marcellus Ratke',
-    email: 'marcellus.ratke@gmail.com',
-    phone: '945-437-3759 x73841',
-    website: 'jessie.org',
-  },
-  {
-    name: 'Janelle Denesik',
-    email: 'janelle.denesik@gmail.com',
-    phone: '608-354-4444 x43725',
-    website:
-      'lorem-ipsum-lorem-ipsum-lorem-ipsum-lorem-ipsum-lorem-ipsum-lorem-ipsum-lorem-ipsum-lorem-ipsum-lorem-ipsum-lorem-ipsum-lorem-ipsum-lorem-ipsum-lorem-ipsum-lorem-ipsum-lorem-ipsum-lorem-ipsum-lorem-ipsum-lorem-ipsum-lorem-ipsum-lorem-ipsum-lorem-ipsum-lorem-ipsum-lorem-ipsum-lorem-ipsum-lorem-ipsum-lorem-ipsum-lorem-ipsum-lorem-ipsum-lorem-ipsum-lorem-ipsum-lorem-ipsum-lorem-ipsum-lorem-ipsum-lorem-ipsum-lorem-ipsum-lorem-ipsum-lorem-ipsum-lorem-ipsum-lorem-ipsum-lorem-ipsum-lorem-ipsum-lorem-ipsum-lorem-ipsum-lorem-ipsum-lorem-ipsum-lorem-ipsum-lorem-ipsum-lorem-ipsum-lorem-ipsum-lorem-ipsum-lorem-ipsum-lorem-ipsum-lorem-ipsum-lorem-ipsum-lorem-ipsum-lorem-ipsum-lorem-ipsum-lorem-ipsum-lorem-ipsum-lorem-ipsum-lorem-ipsum-lorem-ipsum-lorem-ipsum-lorem-ipsum-lorem-ipsum-simone.org',
-  },
-  {
-    name: 'Esteban Wisozk',
-    email: 'esteban.wisozk@myemail.com',
-    phone: '342-204-1839 x68411',
-    website: 'kale.biz',
-  },
-  {
-    name: 'Deven Herzog',
-    email: 'deven.herzog@outlook.com',
-    phone: '469-956-1821 x50145',
-    website: 'hildegard.org',
-  },
-  {
-    name: 'Jodie Kulas',
-    email: 'jodie.kulas@outlook.com',
-    phone: '986-246-6467 x53273',
-    website:
-      'lorem-ipsum-lorem-ipsum-lorem-ipsum-lorem-ipsum-lorem-ipsum-lorem-ipsum-lorem-ipsum-lorem-ipsum-lorem-ipsum-lorem-ipsum-lorem-ipsum-lorem-ipsum-lorem-ipsum-lorem-ipsum-lorem-ipsum-lorem-ipsum-lorem-ipsum-lorem-ipsum-lorem-ipsum-lorem-ipsum-lorem-ipsum-lorem-ipsum-lorem-ipsum-lorem-ipsum-lorem-ipsum-lorem-ipsum-lorem-ipsum-lorem-ipsum-lorem-ipsum-lorem-ipsum-lorem-ipsum-lorem-ipsum-lorem-ipsum-lorem-ipsum-lorem-ipsum-lorem-ipsum-lorem-ipsum-lorem-ipsum-lorem-ipsum-lorem-ipsum-lorem-ipsum-lorem-ipsum-lorem-ipsum-lorem-ipsum-lorem-ipsum-lorem-ipsum-lorem-ipsum-lorem-ipsum-lorem-ipsum-lorem-ipsum-lorem-ipsum-lorem-ipsum-lorem-ipsum-lorem-ipsum-lorem-ipsum-lorem-ipsum-lorem-ipsum-lorem-ipsum-lorem-ipsum-lorem-ipsum-lorem-ipsum-lorem-ipsum-lorem-ipsum-lorem-ipsum-lorem-ipsum-simone.org',
-  },
-  {
-    name: 'Kaley Halvorson',
-    email: 'kaley.halvorson@example.com',
-    phone: '698-854-7007 x97315',
-    website: 'demarco.info',
-  },
-  {
-    name: 'Gretchen Nienow',
-    email: 'gretchen.nienow@example.com',
-    phone: '740-304-1392 x70660',
-    website: 'jessie.org',
-  },
-  {
-    name: 'Sherman Bergstrom',
-    email: 'sherman.bergstrom@myemail.com',
-    phone: '156-592-2250 x51788',
-    website: 'kale.biz',
-  },
-  {
-    name: 'Shane Eichmann',
-    email: 'shane.eichmann@example.com',
-    phone: '292-957-3411 x30224',
-    website:
-      'lorem-ipsum-lorem-ipsum-lorem-ipsum-lorem-ipsum-lorem-ipsum-lorem-ipsum-lorem-ipsum-lorem-ipsum-lorem-ipsum-lorem-ipsum-lorem-ipsum-lorem-ipsum-lorem-ipsum-lorem-ipsum-lorem-ipsum-lorem-ipsum-lorem-ipsum-lorem-ipsum-lorem-ipsum-lorem-ipsum-lorem-ipsum-lorem-ipsum-lorem-ipsum-lorem-ipsum-lorem-ipsum-lorem-ipsum-lorem-ipsum-lorem-ipsum-lorem-ipsum-lorem-ipsum-lorem-ipsum-lorem-ipsum-lorem-ipsum-lorem-ipsum-lorem-ipsum-lorem-ipsum-lorem-ipsum-lorem-ipsum-lorem-ipsum-lorem-ipsum-lorem-ipsum-lorem-ipsum-lorem-ipsum-lorem-ipsum-lorem-ipsum-lorem-ipsum-lorem-ipsum-lorem-ipsum-lorem-ipsum-lorem-ipsum-lorem-ipsum-lorem-ipsum-lorem-ipsum-lorem-ipsum-lorem-ipsum-lorem-ipsum-lorem-ipsum-lorem-ipsum-lorem-ipsum-lorem-ipsum-lorem-ipsum-lorem-ipsum-lorem-ipsum-lorem-ipsum-lorem-ipsum-simone.org',
-  },
-  {
-    name: 'Mathew Runolfsdottir',
-    email: 'mathew.runolfsdottir@example.com',
-    phone: '489-674-3277 x51249',
-    website: 'jessie.org',
-  },
-])
 </script>

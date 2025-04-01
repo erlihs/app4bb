@@ -7,7 +7,8 @@
 export {}
 declare global {
   const EffectScope: typeof import('vue')['EffectScope']
-  const bsbActionsFormat: typeof import('./src/components/index')['bsbActionsFormat']
+  const bsbActionFormat: typeof import('./src/components/index')['bsbActionFormat']
+  const bsbFormat: typeof import('./src/components/index')['bsbFormat']
   const bsbRuleValidate: typeof import('./src/components/index')['bsbRuleValidate']
   const bsbTextAlign: typeof import('./src/components/index')['bsbTextAlign']
   const computed: typeof import('vue')['computed']
@@ -111,9 +112,6 @@ declare global {
   export type { Share, WindowFeatures, ShareOptions } from './src/components/VBsbShare.vue'
   import('./src/components/VBsbShare.vue')
   // @ts-ignore
-  export type { BsbTableItem, BsbTableFormat, BsbTableCondition, BsbTableAction, BsbTableColumn, BsbTableOptions } from './src/components/VBsbTable.vue'
-  import('./src/components/VBsbTable.vue')
-  // @ts-ignore
-  export type { BsbRule, BsbFormat, BsbAction, BsbFormTextareaField, BsbFormRatingField, BsbFormSelectionField, BsbFormFieldError, BsbFormOptions, BsbFormData } from './src/components/index'
+  export type { BsbRule, BsbFormat, BsbAction, BsbFormTextareaField, BsbFormRatingField, BsbFormSelectionField, BsbFormFieldError, BsbAlign, BsbFormOptions, BsbTableColumn, BsbTableOptions, BsbFormData, BsbTableData } from './src/components/index'
   import('./src/components/index')
 }

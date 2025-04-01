@@ -38,13 +38,14 @@ export type BsbFormat = {
   to?: string
   href?: string
   target?: string
+  hidden?: boolean
 }
 export type BsbAction =
   | {
       key?: string
       name: string
       format?: BsbFormat | BsbFormat[]
-      //form
+      form?: BsbFormOptions
     }
   | string
 
@@ -134,11 +135,13 @@ export type BsbFormFieldError = {
   message: string
 }
 
+export type BsbAlign = 'left' | 'center' | 'right'
+
 export type BsbFormOptions = {
   fields: BsbFormField[]
   actions?: BsbAction[]
   actionFormat?: BsbFormat | BsbFormat[]
-  actionAlign?: 'left' | 'right' | 'center'
+  actionAlign?: BsbAlign
   actionSubmit?: string
   actionReset?: string
   actionValidate?: string
@@ -152,7 +155,44 @@ export type BsbFormOptions = {
   focusFirst?: boolean
 }
 
+export type BsbTableColumn = {
+  name: string
+  title?: string
+  format?: BsbFormat | BsbFormat[]
+  actions?: BsbAction[]
+  actionFormat?: BsbFormat | BsbFormat[]
+  maxLength?: number
+  align?: BsbAlign
+}
+
+type BsbTableSort = {
+  name: string
+  label?: string
+  value?: 'asc' | 'desc'
+}
+
+export type BsbTableOptions = {
+  key: string
+  columns: BsbTableColumn[]
+  columnFormat?: BsbFormat | BsbFormat[]
+  search?: {
+    value?: string
+    label?: string
+    placeholder?: string
+  }
+  filter?: BsbFormOptions
+  sort?: BsbTableSort[]
+  actions?: BsbAction[]
+  actionFormat?: BsbFormat | BsbFormat[]
+  itemsPerPage?: number
+  currentPage?: number
+  canRefresh?: boolean
+  maxLength?: number
+  align?: BsbAlign
+}
+
 export type BsbFormData = Record<string, unknown>
+export type BsbTableData = Record<string, unknown>
 
 export const bsbRuleValidate = (
   value?: unknown,
@@ -231,37 +271,35 @@ function formatValidate(value: unknown, format?: BsbFormat | BsbFormat[]): BsbFo
 export const bsbTextAlign = (align: 'left' | 'center' | 'right' | undefined) =>
   align ?? `text-${align}`
 
-export const bsbActionsFormat = (
-  actions?: BsbAction[],
+export const bsbFormat = (value: unknown, format?: BsbFormat | BsbFormat[]) => {
+  const fmt = formatValidate(value, format)
+  return Object.fromEntries(
+    Object.entries({
+      icon: fmt.icon,
+      text: fmt.text,
+      color: fmt.color,
+      class: fmt.class,
+      hidden: fmt.hidden,
+      size: fmt.size,
+      density: fmt.density,
+      variant: fmt.variant,
+      rounded: fmt.rounded,
+      to: fmt.to,
+      href: fmt.href,
+      target: fmt.target,
+    }).filter(([, value]) => value !== undefined),
+  )
+}
+
+export const bsbActionFormat = (
+  value: unknown,
+  action: BsbAction,
   actionFormat?: BsbFormat | BsbFormat[],
-  actionValues?: Record<string, unknown>,
-  t?: (text?: string) => string,
 ) => {
-  if (!actions) return []
-
-  return (actions || []).map((action) => {
-    const act = typeof action === 'string' ? { name: action } : action
-    const val = actionValues?.[act.name]
-    const fmt = formatValidate(val, { ...actionFormat, ...act.format })
-
-    return {
-      key: act.key,
-      name: act.name,
-      props: Object.fromEntries(
-        Object.entries({
-          icon: fmt.icon,
-          text: fmt.icon ? undefined : t ? t(fmt.text || act.name) : fmt.text || act.name,
-          color: fmt.color,
-          class: fmt.class,
-          size: fmt.size,
-          density: fmt.density,
-          variant: fmt.variant,
-          rounded: fmt.rounded,
-          to: fmt.to,
-          href: fmt.href,
-          target: fmt.target,
-        }).filter(([, v]) => v !== undefined),
-      ),
-    }
-  })
+  if (typeof action === 'string') return { name: action, text: action }
+  const fmt = bsbFormat(value, action.format)
+  const actionFmt = bsbFormat(value, actionFormat)
+  fmt.text = fmt.icon ? undefined : fmt.text || action.name
+  fmt.name = action.name
+  return { ...actionFmt, ...fmt }
 }

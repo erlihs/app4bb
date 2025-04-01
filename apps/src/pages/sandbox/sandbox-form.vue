@@ -117,7 +117,6 @@ const options = ref<BsbFormOptions>({
       name: 'rating',
       label: 'Rating',
       length: 6,
-      //size:48,
       color: 'amber',
     },
     {
