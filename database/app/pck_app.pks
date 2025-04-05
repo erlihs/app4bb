@@ -1,10 +1,10 @@
 CREATE OR REPLACE PACKAGE pck_app AS -- Package provides methods for app
 
-    PROCEDURE get_version( -- Procedure returns current version
+    PROCEDURE get_version( -- Procedure returns current version (PUBLIC)
         r_version OUT VARCHAR2 -- Version number
     );
 
-    PROCEDURE post_login( -- Procedure authenticates user and returns tokens
+    PROCEDURE post_login( -- Procedure authenticates user and returns tokens (PUBLIC)
         p_username APP_USERS.USERNAME%TYPE, -- User name (e-mail address)
         p_password APP_USERS.PASSWORD%TYPE, -- Password
         r_access_token OUT APP_TOKENS.TOKEN%TYPE, -- Token
@@ -25,7 +25,7 @@ CREATE OR REPLACE PACKAGE pck_app AS -- Package provides methods for app
         p_data CLOB --  Audit data in JSON format [{severity, action, details, created}]
     );
 
-    PROCEDURE post_signup( -- Procedure registers and authenticates user and returns token and context data
+    PROCEDURE post_signup( -- Procedure registers and authenticates user and returns token and context data (PUBLIC)
         p_username APP_USERS.USERNAME%TYPE, -- User name (e-mail address)
         p_password APP_USERS.PASSWORD%TYPE, -- Password
         p_fullname APP_USERS.FULLNAME%TYPE, -- Full name
@@ -35,17 +35,17 @@ CREATE OR REPLACE PACKAGE pck_app AS -- Package provides methods for app
         r_error OUT VARCHAR2 -- Error (NULL if success)
     );
 
-    PROCEDURE post_confirmemail( -- Procedure confirms email address
+    PROCEDURE post_confirmemail( -- Procedure confirms email address (PUBLIC)
         p_confirmtoken APP_TOKENS.TOKEN%TYPE, --  Email confirmation token (sent by e-mail)
         r_error OUT VARCHAR2 -- Error (NULL if sucess)
     );
 
-   PROCEDURE post_recoverpassword( -- Procedure initiates sending of email to recover password
+   PROCEDURE post_recoverpassword( -- Procedure initiates sending of email to recover password (PUBLIC)
         p_username APP_USERS.USERNAME%TYPE, -- Username (e-mail address)
         r_error OUT VARCHAR2 -- Error (NULL if sucess)
     );
     
-    PROCEDURE post_resetpassword( -- Procedure resets user password
+    PROCEDURE post_resetpassword( -- Procedure resets user password (PUBLIC)
         p_username APP_USERS.USERNAME%TYPE, -- Username (e-mail address)
         p_password APP_USERS.PASSWORD%TYPE, -- Password
         p_recovertoken APP_TOKENS.TOKEN%TYPE, --  Password recovery token (sent by e-mail)

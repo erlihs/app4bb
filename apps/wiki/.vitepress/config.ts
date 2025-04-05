@@ -223,6 +223,7 @@ export default defineConfig({
           items: [
             { text: 'Application', link: '/features/' },
             { text: 'Administration', link: '/features/administration' },
+            { text: 'Rest API', link: '/features/rest' },
           ],
         },
         {

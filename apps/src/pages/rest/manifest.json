@@ -1,0 +1,1631 @@
+{
+  "openapi": "3.0.3",
+  "info": {
+    "title": "BSB_DEV API",
+    "version": "0.3",
+    "description": "This is automatically generated Open API Manifest for Oracle Rest Data Services by [odb4bb](https://github.com/erlihs/odb4bb)"
+  },
+  "security": [
+    {
+      "BearerAuth": []
+    }
+  ],
+  "servers": [
+    {
+      "url": "https://localhost:8443/ords/bsb_dev/"
+    }
+  ],
+  "tags": [
+    {
+      "name": "adm-v1",
+      "description": "Package for Admin"
+    },
+    {
+      "name": "app-demo-v1",
+      "description": "Demo package"
+    },
+    {
+      "name": "app-v1",
+      "description": "Package provides methods for app"
+    },
+    {
+      "name": "bsb-v1",
+      "description": "package for public app"
+    }
+  ],
+  "paths": {
+    "/adm-v1/user_lock/": {
+      "post": {
+        "tags": ["adm-v1"],
+        "description": "Procedure to lock user",
+        "responses": {
+          "200": {
+            "description": "No content returned"
+          }
+        },
+        "requestBody": {
+          "description": "JSON object",
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "uuid": {
+                    "type": "string",
+                    "description": "User UUID"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/adm-v1/user_unlock/": {
+      "post": {
+        "tags": ["adm-v1"],
+        "description": "Procedure to lock user",
+        "responses": {
+          "200": {
+            "description": "No content returned"
+          }
+        },
+        "requestBody": {
+          "description": "JSON object",
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "uuid": {
+                    "type": "string",
+                    "description": "User UUID"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/adm-v1/status/": {
+      "get": {
+        "tags": ["adm-v1"],
+        "description": "Procedure to get status data",
+        "responses": {
+          "200": {
+            "description": "queried record",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "description": "Status data",
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "status": {
+                            "type": "string"
+                          },
+                          "value": {
+                            "type": "string"
+                          },
+                          "to": {
+                            "type": "string"
+                          },
+                          "severity": {
+                            "type": "string"
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/adm-v1/setting/": {
+      "post": {
+        "tags": ["adm-v1"],
+        "description": "Post setting data",
+        "responses": {
+          "200": {
+            "description": "queried record",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "errors": {
+                      "description": "Error message",
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "additionalProperties": true,
+                        "description": "An unknown JSON object"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "requestBody": {
+          "description": "JSON object",
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "content": {
+                    "type": "string",
+                    "description": "Setting value"
+                  },
+                  "id": {
+                    "type": "string",
+                    "description": "Setting ID"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/adm-v1/job_run/": {
+      "post": {
+        "tags": ["adm-v1"],
+        "description": "Post job run data",
+        "responses": {
+          "200": {
+            "description": "No content returned"
+          }
+        },
+        "requestBody": {
+          "description": "JSON object",
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "name": {
+                    "type": "string",
+                    "description": "Job name"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/adm-v1/jobs/": {
+      "get": {
+        "tags": ["adm-v1"],
+        "description": "Get jobs data",
+        "responses": {
+          "200": {
+            "description": "queried record",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "items": {
+                      "description": "Jobs data",
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "additionalProperties": true,
+                        "description": "An unknown JSON object"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "search",
+            "in": "query",
+            "required": false,
+            "description": "Search string",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "description": "Limit",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "offset",
+            "in": "query",
+            "required": false,
+            "description": "Offset",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ]
+      }
+    },
+    "/adm-v1/settings/": {
+      "get": {
+        "tags": ["adm-v1"],
+        "description": "Get settings data",
+        "responses": {
+          "200": {
+            "description": "queried record",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "items": {
+                      "description": "Result data",
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "additionalProperties": true,
+                        "description": "An unknown JSON object"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "search",
+            "in": "query",
+            "required": false,
+            "description": "Search string",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "description": "Limit",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "offset",
+            "in": "query",
+            "required": false,
+            "description": "Offset",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ]
+      }
+    },
+    "/adm-v1/users/": {
+      "get": {
+        "tags": ["adm-v1"],
+        "description": "Procedure to get users data",
+        "responses": {
+          "200": {
+            "description": "queried record",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "items": {
+                      "description": "Users data",
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "additionalProperties": true,
+                        "description": "An unknown JSON object"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "search",
+            "in": "query",
+            "required": false,
+            "description": "Search string",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "description": "Limit",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "offset",
+            "in": "query",
+            "required": false,
+            "description": "Offset",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ]
+      }
+    },
+    "/adm-v1/jobs_history/": {
+      "get": {
+        "tags": ["adm-v1"],
+        "description": "Get jobs history data",
+        "responses": {
+          "200": {
+            "description": "queried record",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "items": {
+                      "description": "Jobs history data",
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "additionalProperties": true,
+                        "description": "An unknown JSON object"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "search",
+            "in": "query",
+            "required": false,
+            "description": "Search string",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "description": "Limit",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "offset",
+            "in": "query",
+            "required": false,
+            "description": "Offset",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ]
+      }
+    },
+    "/adm-v1/audit/": {
+      "get": {
+        "tags": ["adm-v1"],
+        "description": "Procedure to get audit data",
+        "responses": {
+          "200": {
+            "description": "queried record",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "items": {
+                      "description": "Audit data",
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "additionalProperties": true,
+                        "description": "An unknown JSON object"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "search",
+            "in": "query",
+            "required": false,
+            "description": "Search string",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "description": "Limit",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "offset",
+            "in": "query",
+            "required": false,
+            "description": "Offset",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ]
+      }
+    },
+    "/app-demo-v1/status/": {
+      "get": {
+        "tags": ["app-demo-v1"],
+        "description": "Get status of the application",
+        "responses": {
+          "200": {
+            "description": "queried record",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "version": {
+                      "description": "Version of the application",
+                      "type": "string"
+                    },
+                    "ace": {
+                      "description": "Acces control list entries",
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "additionalProperties": true,
+                        "description": "An unknown JSON object"
+                      }
+                    },
+                    "dbsize": {
+                      "description": "Database size",
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "additionalProperties": true,
+                        "description": "An unknown JSON object"
+                      }
+                    },
+                    "created": {
+                      "description": "Date of creation",
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/app-demo-v1/job_history/{search}/{limit}/{offset}": {
+      "get": {
+        "tags": ["app-demo-v1"],
+        "description": "Get job history records",
+        "responses": {
+          "200": {
+            "description": "queried record",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "result": {
+                      "description": "Job history records",
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "jobName": {
+                            "type": "string"
+                          },
+                          "logDate": {
+                            "type": "string"
+                          },
+                          "status": {
+                            "type": "string"
+                          },
+                          "runDuration": {
+                            "type": "string"
+                          },
+                          "output": {
+                            "type": "string"
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "search",
+            "in": "path",
+            "required": true,
+            "description": "Search string (job name or status or ..)",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "offset",
+            "in": "path",
+            "required": true,
+            "description": "Offset of records",
+            "schema": {
+              "type": "integer"
+            }
+          },
+          {
+            "name": "limit",
+            "in": "path",
+            "required": true,
+            "description": "Limit of records",
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ]
+      }
+    },
+    "/app-v1/i18n/": {
+      "get": {
+        "tags": ["app-v1"],
+        "description": "Procedure returns internationalization data (PUBLIC)",
+        "security": [],
+        "responses": {
+          "200": {
+            "description": "queried record",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "i18n": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "locale",
+            "in": "query",
+            "required": false,
+            "description": "Locale",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "module",
+            "in": "query",
+            "required": false,
+            "description": "Module name",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ]
+      }
+    },
+    "/app-v1/recoverpassword/": {
+      "post": {
+        "tags": ["app-v1"],
+        "description": "Procedure initiates sending of email to recover password",
+        "responses": {
+          "200": {
+            "description": "queried record",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "description": "Error (NULL if sucess)",
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "requestBody": {
+          "description": "JSON object",
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "username": {
+                    "type": "string",
+                    "description": "Username (e-mail address)"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/app-v1/audit/": {
+      "post": {
+        "tags": ["app-v1"],
+        "description": "Procedure logs user activity (PUBLIC)",
+        "security": [],
+        "responses": {
+          "200": {
+            "description": "No content returned"
+          }
+        },
+        "requestBody": {
+          "description": "JSON object",
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "data": {
+                    "type": "string",
+                    "description": "Audit data in JSON format [{severity, action, details, created}]"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "search",
+            "in": "query",
+            "required": false,
+            "description": "Search string",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "description": "Limit",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "offset",
+            "in": "query",
+            "required": false,
+            "description": "Offset",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ]
+      }
+    },
+    "/app-v1/version/": {
+      "get": {
+        "tags": ["app-v1"],
+        "description": "Procedure returns current version",
+        "responses": {
+          "200": {
+            "description": "queried record",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "version": {
+                      "description": "Version number",
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/app-v1/i18n_batch/": {
+      "post": {
+        "tags": ["app-v1"],
+        "description": "Procedure updates internationalization data (PUBLIC)",
+        "security": [],
+        "responses": {
+          "200": {
+            "description": "No content returned"
+          }
+        },
+        "requestBody": {
+          "description": "JSON object",
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "i18n": {
+                    "type": "string",
+                    "description": "Internationalization data [{module, locale, key, value}]"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/app-v1/login/": {
+      "post": {
+        "tags": ["app-v1"],
+        "description": "Procedure authenticates user and returns tokens",
+        "responses": {
+          "200": {
+            "description": "queried record",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "access_token": {
+                      "description": "Token",
+                      "type": "string"
+                    },
+                    "user": {
+                      "description": "User data",
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "additionalProperties": true,
+                        "description": "An unknown JSON object"
+                      }
+                    },
+                    "refresh_token": {
+                      "description": "Refresh token",
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "requestBody": {
+          "description": "JSON object",
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "password": {
+                    "type": "string",
+                    "description": "Password"
+                  },
+                  "username": {
+                    "type": "string",
+                    "description": "User name (e-mail address)"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/app-v1/resetpassword/": {
+      "post": {
+        "tags": ["app-v1"],
+        "description": "Procedure resets user password",
+        "responses": {
+          "200": {
+            "description": "queried record",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "access_token": {
+                      "description": "Access token",
+                      "type": "string"
+                    },
+                    "error": {
+                      "description": "Error (NULL if success)",
+                      "type": "string"
+                    },
+                    "user": {
+                      "description": "User data",
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "additionalProperties": true,
+                        "description": "An unknown JSON object"
+                      }
+                    },
+                    "refresh_token": {
+                      "description": "Refresh token",
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "requestBody": {
+          "description": "JSON object",
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "username": {
+                    "type": "string",
+                    "description": "Username (e-mail address)"
+                  },
+                  "recovertoken": {
+                    "type": "string",
+                    "description": "Password recovery token (sent by e-mail)"
+                  },
+                  "password": {
+                    "type": "string",
+                    "description": "Password"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/app-v1/signup/": {
+      "post": {
+        "tags": ["app-v1"],
+        "description": "Procedure registers and authenticates user and returns token and context data",
+        "responses": {
+          "200": {
+            "description": "queried record",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "access_token": {
+                      "description": "Token",
+                      "type": "string"
+                    },
+                    "error": {
+                      "description": "Error (NULL if success)",
+                      "type": "string"
+                    },
+                    "user": {
+                      "description": "User data",
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "additionalProperties": true,
+                        "description": "An unknown JSON object"
+                      }
+                    },
+                    "refresh_token": {
+                      "description": "Refresh token",
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "requestBody": {
+          "description": "JSON object",
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "username": {
+                    "type": "string",
+                    "description": "User name (e-mail address)"
+                  },
+                  "fullname": {
+                    "type": "string",
+                    "description": "Full name"
+                  },
+                  "password": {
+                    "type": "string",
+                    "description": "Password"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/app-v1/logout/": {
+      "post": {
+        "tags": ["app-v1"],
+        "description": "Procedure invalidates access and refresh tokens",
+        "responses": {
+          "200": {
+            "description": "No content returned"
+          }
+        }
+      }
+    },
+    "/app-v1/refresh/": {
+      "post": {
+        "tags": ["app-v1"],
+        "description": "Procedure re-issues access and refresh tokens",
+        "responses": {
+          "200": {
+            "description": "queried record",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "refresh_token": {
+                      "description": "Refresh token",
+                      "type": "string"
+                    },
+                    "access_token": {
+                      "description": "Token",
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/app-v1/confirmemail/": {
+      "post": {
+        "tags": ["app-v1"],
+        "description": "Procedure confirms email address",
+        "responses": {
+          "200": {
+            "description": "queried record",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "description": "Error (NULL if sucess)",
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "requestBody": {
+          "description": "JSON object",
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "confirmtoken": {
+                    "type": "string",
+                    "description": "Email confirmation token (sent by e-mail)"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/app-v1/heartbeat/": {
+      "get": {
+        "tags": ["app-v1"],
+        "description": "Procedure keeps session alive",
+        "responses": {
+          "200": {
+            "description": "No content returned"
+          }
+        }
+      }
+    },
+    "/bsb-v1/chat/": {
+      "put": {
+        "tags": ["bsb-v1"],
+        "description": "procedure sends comment to chat",
+        "responses": {
+          "200": {
+            "description": "queried record",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "chat": {
+                      "description": "chat data",
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "additionalProperties": true,
+                        "description": "An unknown JSON object"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "requestBody": {
+          "description": "JSON object",
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "id": {
+                    "type": "string",
+                    "description": "game ID"
+                  },
+                  "message": {
+                    "type": "string",
+                    "description": "message text"
+                  },
+                  "status": {
+                    "type": "string",
+                    "description": "status (T - typing, B - bot, P - player, D - dealer, N - none)"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/bsb-v1/join/": {
+      "post": {
+        "tags": ["bsb-v1"],
+        "description": "procedure joins player to the play",
+        "responses": {
+          "200": {
+            "description": "queried record",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "play": {
+                      "description": "game data",
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "additionalProperties": true,
+                        "description": "An unknown JSON object"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "requestBody": {
+          "description": "JSON object",
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "username": {
+                    "type": "string",
+                    "description": "user name"
+                  },
+                  "gamecode": {
+                    "type": "string",
+                    "description": "game code"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/bsb-v1/deal/": {
+      "put": {
+        "tags": ["bsb-v1"],
+        "description": "procedure modifies game",
+        "responses": {
+          "200": {
+            "description": "queried record",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "deals": {
+                      "description": "game data",
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "additionalProperties": true,
+                        "description": "An unknown JSON object"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "requestBody": {
+          "description": "JSON object",
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "code": {
+                    "type": "string",
+                    "description": "code"
+                  },
+                  "w25": {
+                    "type": "string"
+                  },
+                  "fullname": {
+                    "type": "string",
+                    "description": "Full name"
+                  },
+                  "title": {
+                    "type": "string",
+                    "description": "title"
+                  },
+                  "status": {
+                    "type": "string",
+                    "description": "status"
+                  },
+                  "w1": {
+                    "type": "string"
+                  },
+                  "w2": {
+                    "type": "string"
+                  },
+                  "w3": {
+                    "type": "string"
+                  },
+                  "w4": {
+                    "type": "string"
+                  },
+                  "w5": {
+                    "type": "string"
+                  },
+                  "w6": {
+                    "type": "string"
+                  },
+                  "w7": {
+                    "type": "string"
+                  },
+                  "w8": {
+                    "type": "string"
+                  },
+                  "w9": {
+                    "type": "string"
+                  },
+                  "w10": {
+                    "type": "string"
+                  },
+                  "w11": {
+                    "type": "string"
+                  },
+                  "w12": {
+                    "type": "string"
+                  },
+                  "w13": {
+                    "type": "string"
+                  },
+                  "w14": {
+                    "type": "string"
+                  },
+                  "w15": {
+                    "type": "string"
+                  },
+                  "w16": {
+                    "type": "string"
+                  },
+                  "w17": {
+                    "type": "string"
+                  },
+                  "w18": {
+                    "type": "string"
+                  },
+                  "w19": {
+                    "type": "string"
+                  },
+                  "w20": {
+                    "type": "string"
+                  },
+                  "w21": {
+                    "type": "string"
+                  },
+                  "w22": {
+                    "type": "string"
+                  },
+                  "w23": {
+                    "type": "string"
+                  },
+                  "w24": {
+                    "type": "string"
+                  },
+                  "tag": {
+                    "type": "string",
+                    "description": "tag"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/bsb-v1/mark/": {
+      "put": {
+        "tags": ["bsb-v1"],
+        "description": "procedure gets user input",
+        "responses": {
+          "200": {
+            "description": "queried record",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "play": {
+                      "description": "game data",
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "additionalProperties": true,
+                        "description": "An unknown JSON object"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "requestBody": {
+          "description": "JSON object",
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "id": {
+                    "type": "string",
+                    "description": "play ID"
+                  },
+                  "m25": {
+                    "type": "string"
+                  },
+                  "m2": {
+                    "type": "string"
+                  },
+                  "m3": {
+                    "type": "string"
+                  },
+                  "m4": {
+                    "type": "string"
+                  },
+                  "m5": {
+                    "type": "string"
+                  },
+                  "m6": {
+                    "type": "string"
+                  },
+                  "m7": {
+                    "type": "string"
+                  },
+                  "m8": {
+                    "type": "string"
+                  },
+                  "m9": {
+                    "type": "string"
+                  },
+                  "m10": {
+                    "type": "string"
+                  },
+                  "m11": {
+                    "type": "string"
+                  },
+                  "m12": {
+                    "type": "string"
+                  },
+                  "m13": {
+                    "type": "string"
+                  },
+                  "m14": {
+                    "type": "string"
+                  },
+                  "m15": {
+                    "type": "string"
+                  },
+                  "m16": {
+                    "type": "string"
+                  },
+                  "m17": {
+                    "type": "string"
+                  },
+                  "m18": {
+                    "type": "string"
+                  },
+                  "m19": {
+                    "type": "string"
+                  },
+                  "m20": {
+                    "type": "string"
+                  },
+                  "m21": {
+                    "type": "string"
+                  },
+                  "m22": {
+                    "type": "string"
+                  },
+                  "m23": {
+                    "type": "string"
+                  },
+                  "m24": {
+                    "type": "string"
+                  },
+                  "m1": {
+                    "type": "string"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/bsb-v1/tags/": {
+      "get": {
+        "tags": ["bsb-v1"],
+        "description": "procedure gets list of tags",
+        "responses": {
+          "200": {
+            "description": "queried record",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "tags": {
+                      "description": "list of tags",
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "additionalProperties": true,
+                        "description": "An unknown JSON object"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/bsb-v1/chats/{id}": {
+      "get": {
+        "tags": ["bsb-v1"],
+        "description": "procedure gets chat",
+        "responses": {
+          "200": {
+            "description": "queried record",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "chat": {
+                      "description": "chat data",
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "additionalProperties": true,
+                        "description": "An unknown JSON object"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "description": "game ID",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ]
+      }
+    },
+    "/bsb-v1/deals/": {
+      "get": {
+        "tags": ["bsb-v1"],
+        "description": "gets list of deals",
+        "responses": {
+          "200": {
+            "description": "queried record",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "deals": {
+                      "description": "game data",
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "additionalProperties": true,
+                        "description": "An unknown JSON object"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "tag",
+            "in": "query",
+            "required": false,
+            "description": "tag",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "description": "number of rows to return",
+            "schema": {
+              "type": "integer"
+            }
+          },
+          {
+            "name": "offset",
+            "in": "query",
+            "required": false,
+            "description": "number of rows to skip",
+            "schema": {
+              "type": "integer"
+            }
+          },
+          {
+            "name": "title",
+            "in": "query",
+            "required": false,
+            "description": "title",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ]
+      }
+    },
+    "/bsb-v1/play/{id}": {
+      "get": {
+        "tags": ["bsb-v1"],
+        "description": "procedure gets play data",
+        "responses": {
+          "200": {
+            "description": "queried record",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "play": {
+                      "description": "game data",
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "additionalProperties": true,
+                        "description": "An unknown JSON object"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "description": "play id",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ]
+      }
+    }
+  },
+  "components": {
+    "securitySchemes": {
+      "BearerAuth": {
+        "type": "http",
+        "scheme": "bearer",
+        "bearerFormat": "JWT"
+      }
+    }
+  }
+}
