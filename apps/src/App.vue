@@ -30,6 +30,15 @@
           <v-list-item-title>{{ page.title }}</v-list-item-title>
         </v-list-item>
       </v-list>
+      <v-divider />
+      <v-list>
+        <v-list-item href="https://wiki.bsbingo.me" target="_blank">
+          <v-list-item-title>Wiki</v-list-item-title>
+          <template #prepend>
+            <v-icon icon="$mdiOpenInNew"></v-icon>
+          </template>
+        </v-list-item>
+      </v-list>
       <v-divider v-if="app.auth.isAuthenticated" />
       <v-list v-if="app.auth.isAuthenticated">
         <v-list-item>
