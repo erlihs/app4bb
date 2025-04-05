@@ -44,13 +44,14 @@
                 </td>
                 <td class="w-0 text-no-wrap text-right">
                   <v-btn
+                    v-if="options.filter"
                     v-bind="bsbActionFormat(undefined, 'filter', options.actionFormat)"
                     icon="$mdiFilterPlus"
                     color="primary"
                     @click="handleFilterShow()"
                   />
 
-                  <v-menu location="start">
+                  <v-menu location="start" v-if="options.sort">
                     <template v-slot:activator="{ props }">
                       <v-btn
                         v-bind="{
