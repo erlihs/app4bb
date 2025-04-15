@@ -49,6 +49,17 @@ export const useAuditStore = defineStore('audit', () => {
         data.value = []
       }
     }
+    const errors = JSON.parse(localStorage.getItem('errors') || '[]')
+    if (errors.length) {
+      try {
+        await appApi.audit(errors)
+      } catch (error) {
+        err('Failed to save error log', (error as Error).message)
+        if (import.meta.env.DEV) console.error('Failed to save error log', errors)
+      } finally {
+        localStorage.removeItem('errors')
+      }
+    }
   }
 
   function startAutoSave() {

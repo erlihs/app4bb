@@ -50,7 +50,7 @@ export const errorHandler = function (
   instance: ComponentPublicInstance | null,
   info: string,
 ) {
-  if (import.meta.env.MODE !== 'production') console.error(err, instance, info)
+  console.error(err, instance, info)
 
   let errorMessage = ''
   let stackTrace = [] as StackTraceElement[]
@@ -89,6 +89,12 @@ export const errorHandler = function (
     errorDetails = `Failed to stringify error details: ${errorMessage}`
   }
 
-  const auditStore = useAuditStore()
-  auditStore.err(errorMessage, errorDetails)
+  const errors = JSON.parse(localStorage.getItem('errors') || '[]')
+  errors.push({
+    severity: 'E',
+    action: errorMessage,
+    details: errorDetails,
+    created: new Date().toISOString(),
+  })
+  localStorage.setItem('errors', JSON.stringify(errors))
 }

@@ -170,7 +170,7 @@ As on moment there is no native support yet - see [Feature request](https://gith
   "extends": "@tsconfig/node20/tsconfig.json",
   "include": [
 // ...
-    "./src/plugins/icons.ts"
+    "./src/plugins/**/*.ts",
   ],
 // ...
 }

@@ -6,9 +6,7 @@
     "cypress.config.*",
     "nightwatch.conf.*",
     "playwright.config.*",
-    "./src/plugins/icons.ts",
-    "./src/plugins/vuetify.ts",
-    "./src/plugins/i18n.ts",
+    "./src/plugins/**/*.ts",
     "./src/themes/*.ts"
   ],
   "compilerOptions": {
