@@ -235,7 +235,7 @@ export default defineConfig({
         },
         {
           text: 'Productivity',
-          items: [{ text: 'Street Agent', link: '/features/street-agent' }],
+          items: [{ text: 'The Flow Master', link: '/features/the-flow-master' }],
         },
         { text: 'Building New Features', link: '/features/building-new-features' },
       ],
