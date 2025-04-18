@@ -1,5 +1,6 @@
 import { fileURLToPath, URL } from 'node:url'
 import { promises as fs } from 'node:fs'
+import path from 'node:path'
 
 import { defineConfig, loadEnv } from 'vite'
 import vue from '@vitejs/plugin-vue'
@@ -13,6 +14,7 @@ import Components from 'unplugin-vue-components/vite'
 import AutoImportMdiIcons from './src/plugins/icons'
 import { unheadComposablesImports } from 'unhead'
 import { VitePWA } from 'vite-plugin-pwa'
+import { i18nDevPlugin}  from './src/plugins/i18n-dev'
 
 async function extractMetaFromMarkdown(absolutePath: string): Promise<Record<string, unknown> | null> {
   try {
@@ -46,6 +48,7 @@ export default defineConfig(({ mode }) => {
   const isProduction = mode === 'production'
 
   return {
+    middlewareMode: true,
     plugins: [
       Markdown({}),
       VueRouter({
@@ -60,7 +63,10 @@ export default defineConfig(({ mode }) => {
         include: [/\.vue$/, /\.md$/]
       }),
       Vuetify(),
-      VueI18nPlugin({}),
+      VueI18nPlugin({
+          include: path.resolve(__dirname, './src/i18n/**')
+      }),
+      i18nDevPlugin(),
       AutoImport({
         imports: [
           'vue',

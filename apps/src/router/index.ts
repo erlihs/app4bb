@@ -9,9 +9,6 @@ const router = createRouter({
 router.beforeEach(async (to) => {
   to.meta.performance = performance.now()
 
-  const i18nStore = useI18nStore()
-  await i18nStore.loadTranslations(to.path)
-
   const appTitle = 'Bullshit Bingo'
   const navigationStore = useNavigationStore()
   const pageTitle = navigationStore.title(to.path)

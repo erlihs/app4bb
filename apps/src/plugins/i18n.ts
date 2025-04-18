@@ -1,23 +1,24 @@
 import { createI18n } from 'vue-i18n'
+import messages from '@intlify/unplugin-vue-i18n/messages'
 
 const i18n = createI18n({
   legacy: false,
   globalInjection: true,
   locale: 'en',
   fallbackLocale: 'en',
-  messages: {
-    en: {},
-    fr: {},
-  },
   fallbackWarn: false,
-  missing: handleMissing,
+  messages,
+  missing: (locale: string, key: string) => {
+    fetch('/i18n-add', {
+      method: 'POST',
+      body: JSON.stringify({
+        data: { locale, key },
+      }),
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    })
+  },
 })
 
 export default i18n
-
-function handleMissing(locale: string, key: string) {
-  //eslint-disable-next-line
-  //@ts-ignore
-  const i18nStore = useI18nStore()
-  i18nStore.addTranslation(locale, key)
-}
