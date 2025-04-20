@@ -161,6 +161,21 @@ Modify Authentication store to include privilege data in user info and update th
     }
 ```
 
+Also add function to check in UI, if user has privilege
+
+```ts
+//...
+    function hasRole(role: string): boolean {
+      return user.value.privileges.some((privilege) => privilege.role === role)
+    }
+//...    
+    return {
+//...    
+      hasRole,
+    }
+//...    
+```
+
 :::
 
 ## Pages & Page Meta's

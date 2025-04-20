@@ -185,6 +185,10 @@ export const useAuthStore = defineStore(
       return isAuthenticated.value
     }
 
+    function hasRole(role: string): boolean {
+      return user.value.privileges.some((privilege) => privilege.role === role)
+    }
+
     return {
       accessToken,
       refreshToken,
@@ -198,6 +202,7 @@ export const useAuthStore = defineStore(
       recoverPassword,
       resetPassword,
       signupSocial,
+      hasRole,
     }
   },
   {
