@@ -88,6 +88,7 @@ declare global {
   const useServerSeoMeta: typeof import('unhead')['useServerSeoMeta']
   const useSettingsStore: typeof import('./src/stores/app/settings')['useSettingsStore']
   const useSlots: typeof import('vue')['useSlots']
+  const useStorage: typeof import('./src/composables/storage')['useStorage']
   const useTemplateRef: typeof import('vue')['useTemplateRef']
   const useTheme: typeof import('vuetify')['useTheme']
   const useUiStore: typeof import('./src/stores/app/ui')['useUiStore']

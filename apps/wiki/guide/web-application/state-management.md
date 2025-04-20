@@ -1,5 +1,7 @@
 # State Management
 
+## Pinia
+
 Current application setup comes with prebuilt state management library [Pinia](https://pinia.vuejs.org/).
 
 It is a recommended. It is type-safe, extensible, and modular by design.
@@ -89,3 +91,15 @@ onMounted(() => {
 })
 </script>
 ```
+
+## useSorage
+
+For simple, local scenarios a custom made simple composable can be used to have a reactive value or object kept in local storage.
+
+```ts
+const admin = useStorage('admin', {tab: 'key'})
+```
+
+::: details `@/composables/storage.ts`
+<<< @../../src/composables/storage.ts
+:::
