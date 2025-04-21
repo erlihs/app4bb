@@ -52,7 +52,7 @@ Manage agents
 
 | Route Path  | Route Meta                                                                                                                                                     |
 | ----------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| /the-flow-master | `{  "role": "public",  "icon": "$mdiFaceAgent",  "color": "#E1BEE7",  "description": "Too much of everything and need just a simple, trustworthy and consistent digital assistant? ", "title": "The Flow Master"}` |
+| /the-flow-master | `{  "role": "public",  "icon": "$mdiFaceAgent",  "color": "#F8BBD0",  "description": "Too much of everything and need just a simple, trustworthy and consistent digital assistant? ", "title": "The Flow Master"}` |
 
 // todo
 

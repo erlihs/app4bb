@@ -41,5 +41,7 @@ declare module 'vue-router/auto-routes' {
     '/sandbox/sandbox-share': RouteRecordInfo<'/sandbox/sandbox-share', '/sandbox/sandbox-share', Record<never, never>, Record<never, never>>,
     '/sandbox/sandbox-table': RouteRecordInfo<'/sandbox/sandbox-table', '/sandbox/sandbox-table', Record<never, never>, Record<never, never>>,
     '/signup': RouteRecordInfo<'/signup', '/signup', Record<never, never>, Record<never, never>>,
+    '/the-flow-master/': RouteRecordInfo<'/the-flow-master/', '/the-flow-master', Record<never, never>, Record<never, never>>,
+    '/the-flow-master/admin': RouteRecordInfo<'/the-flow-master/admin', '/the-flow-master/admin', Record<never, never>, Record<never, never>>,
   }
 }

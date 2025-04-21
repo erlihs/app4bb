@@ -1,0 +1,19 @@
+{
+  "name": "Name",
+  "description": "Description",
+  "title": "Title",
+  "actions": "Actions",
+  "new": "New",
+  "add": "Add",
+  "session.expired": "Session expired",
+  "Name": "Name",
+  "Description": "Description",
+  "Required": "Required",
+  "key": "Key",
+  "edit": "Edit",
+  "coins": "Coins",
+  "options": "Options",
+  "details": "Details",
+  "started": "Started",
+  "duration": "Duration"
+}
