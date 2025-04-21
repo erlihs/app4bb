@@ -54,7 +54,7 @@
               </v-row>
               <v-row class="border-t">
                 <v-col>Remaining:</v-col>
-                <v-col class="text-right">{{ selectedBalance?.balance.toFixed(2) }}</v-col>
+                <v-col class="text-right">{{ selectedBalance?.remaining.toFixed(2) }}</v-col>
               </v-row>
             </v-container>
           </v-col>
@@ -111,14 +111,49 @@ const runsOptions = {
       name: 'name',
     },
     {
+      name: 'created',
+    },
+    {
       name: 'started',
     },
     {
       name: 'duration',
     },
     {
-      name: 'actions',
-      actions: [{ name: 'results' }],
+      name: 'status',
+      format: [
+        {
+          rules: { type: 'starts-with', params: 'P' },
+          text: 'Pending',
+          color: 'Orange',
+        },
+        {
+          color: 'green',
+        },
+      ],
+      actions: [
+        {
+          name: 'results',
+          key: 'status',
+          format: [
+            {
+              rules: { type: 'starts-with', params: 'C' },
+              text: 'Results',
+              color: 'green',
+            },
+            { hidden: true },
+          ],
+          form: {
+            fields: [
+              {
+                name: 'results',
+              },
+            ],
+            actions: [{ name: 'cancel' }],
+            actionCancel: 'cancel',
+          },
+        },
+      ],
     },
   ],
 }
@@ -142,8 +177,8 @@ async function handleRunsAction(
   actionData: Ref<BsbTableData | BsbTableData[]>,
   value?: BsbTableData,
 ) {
-  const { data, error } = await http.post('run/', { value })
-  console.log('action', data, error)
+  //const { data, error } = await http.post('run/', { value })
+  console.log('action', actionName, value)
 }
 
 const flowsOptions = {
@@ -151,7 +186,7 @@ const flowsOptions = {
   itemsPerPage: 3,
   columns: [
     {
-      name: 'title',
+      name: 'name',
     },
     {
       name: 'actions',
@@ -180,7 +215,7 @@ async function handleFlowsAction(
   actionData: Ref<BsbTableData | BsbTableData[]>,
   value?: BsbTableData,
 ) {
-  const { data, error } = await http.post('key/', { value })
+  const { data, error } = await http.put(`${actionName}/`, { ...value })
   console.log('action', data, error)
 }
 
@@ -188,7 +223,7 @@ type Balance = {
   period: string
   used: number
   limit: number
-  balance: number
+  remaining: number
 }
 
 const balancePeriods = [
@@ -205,7 +240,7 @@ const balance = ref<Balance[]>([
     period: 'D',
     used: 0,
     limit: 0,
-    balance: 0,
+    remaining: 0,
   },
 ])
 
@@ -214,7 +249,7 @@ const selectedBalance = computed(
     balance.value.find((b) => b.period === tfm.value.balanceTab) || {
       used: 0,
       limit: 0,
-      balance: 0,
+      remaining: 0,
     },
 )
 

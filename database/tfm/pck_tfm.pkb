@@ -123,15 +123,80 @@ CREATE OR REPLACE PACKAGE BODY pck_tfm IS
         SELECT
             r.urid AS "urid",
             f.name AS "name",
-            r.started AS "started",
+            TO_CHAR(r.created, 'YYYY-MM-DD HH24:MI:SS') AS "created",
+            TO_CHAR(r.started, 'YYYY-MM-DD HH24:MI:SS') AS "started",
             r.duration AS "duration",
-            r.coins AS "coins"
+            r.coins AS "coins",
+            r.results AS "results",
+            r.status AS "status"
         FROM tfm_runs r
         JOIN tfm_flows f ON f.ufid = r.ufid
-        WHERE uuid = v_uuid
+        WHERE (v_uuid IS NULL OR r.uuid = v_uuid)
         AND (p_search IS NULL OR name LIKE '%' || TRIM(UPPER(p_search)) || '%')
         ORDER BY name
         OFFSET p_offset ROWS FETCH NEXT p_limit ROWS ONLY;
+
+    END;
+
+    PROCEDURE put_run(
+        p_ufid VARCHAR2, -- Unique run identifier
+        p_options CLOB, -- Options
+        r_errors OUT SYS_REFCURSOR, -- List of errors [{name: name, message: message}]
+        r_urid OUT VARCHAR2 -- Unique run identifier
+    ) AS
+        v_uuid CHAR(32 CHAR) := pck_api_auth.uuid;
+        v_coins NUMBER;
+        v_remaining NUMBER;
+    BEGIN
+
+        SELECT MIN(remaining) INTO v_remaining FROM tfm_balance 
+        WHERE (v_uuid IS NULL OR uuid = v_uuid);
+
+        IF (v_remaining IS NULL) THEN
+
+            INSERT INTO tfm_balance (uuid, period, used, limit, remaining)
+            SELECT 
+                v_uuid,
+                period,
+                0 AS used,
+                limit,
+                limit
+            FROM tfm_limits
+            WHERE uuid = v_uuid;
+
+            IF SQL%ROWCOUNT = 0 THEN
+                INSERT INTO tfm_balance (uuid, period, used, limit, remaining)
+                SELECT 
+                    v_uuid,
+                    period,
+                    0 AS used,
+                    limit,
+                    limit
+                FROM tfm_limits
+                WHERE uuid IS NULL;
+            END IF;    
+
+        END IF;      
+
+        SELECT coins INTO v_coins FROM tfm_flows WHERE ufid = p_ufid;
+
+        IF v_coins > v_remaining THEN 
+            OPEN r_errors FOR
+            SELECT
+                'limit' AS "name",
+                'not.enough.coins.to.run.this.task' AS "message"
+            FROM dual;
+            RETURN;
+        END IF;
+
+        INSERT INTO tfm_runs (urid, ufid, uuid, options, coins)
+        VALUES (LOWER(SYS_GUID()), p_ufid, v_uuid, p_options, v_coins)
+        RETURNING urid INTO r_urid;
+
+        UPDATE tfm_balance SET used = used + v_coins, remaining = remaining - v_coins 
+        WHERE (v_uuid IS NULL OR uuid = v_uuid);
+   
+        COMMIT;
 
     END;
 
@@ -143,14 +208,101 @@ CREATE OR REPLACE PACKAGE BODY pck_tfm IS
         
         OPEN r_balance FOR
         SELECT
-            b.period AS "period",
-            b.used AS "used",
-            b.limit AS "limit",
-            b.balance AS "balance"
-        FROM tfm_balance b
-        WHERE uuid = v_uuid;
+            period AS "period",
+            used AS "used",
+            limit AS "limit",
+            remaining AS "remaining"
+        FROM tfm_balance
+       WHERE (v_uuid IS NULL OR uuid = v_uuid);
 
     END;   
+
+    PROCEDURE job_tfm IS
+        v_agent_name VARCHAR2(200 CHAR);
+        v_agent_options CLOB;
+        v_sql CLOB;
+        --TYPE t_params IS TABLE OF CLOB INDEX BY VARCHAR2(30 CHAR); 
+        --v_params t_params;
+        v_agent CLOB;
+        v_params CLOB;
+        v_result CLOB;
+        v_json JSON_OBJECT_T;
+        v_keys JSON_KEY_LIST;
+        v_value CLOB;
+    BEGIN
+        FOR r IN (
+            SELECT 
+                urid,
+                options
+            FROM tfm_runs
+            WHERE status = 'P'
+            FETCH NEXT 10 ROWS ONLY   
+        ) LOOP
+
+            UPDATE tfm_runs SET status = 'R', started = SYSTIMESTAMP WHERE urid = r.urid;
+            COMMIT;
+
+            BEGIN
+
+                SELECT 
+                    JSON_VALUE(options,'$.agent'), 
+                    JSON_QUERY(options,'$.params'),
+                    JSON_QUERY(options,'$.result')
+                INTO 
+                    v_agent,
+                    v_params,
+                    v_result
+                FROM tfm_agents 
+                WHERE name = JSON_VALUE(r.options, '$[0].name');
+
+                v_sql := 'BEGIN ' || v_agent || '(';
+
+
+                v_json := JSON_OBJECT_T.parse(v_params);
+                v_keys := v_json.get_keys;
+
+                FOR i IN 1 .. v_keys.count LOOP
+                    v_value := v_json.get_string(v_keys(i));
+
+                    IF v_value = '${openai_api_key}' THEN
+                        SELECT key INTO v_value FROM tfm_keys WHERE name = 'openai_api_key';
+                    END IF;
+
+                    v_sql := v_sql || 'p_' || v_keys(i) || ' => ''' || v_value || ''', ';
+
+                END LOOP;
+
+                v_json := JSON_OBJECT_T.parse(v_result);
+                v_keys := v_json.get_keys;
+
+                FOR i IN 1 .. v_keys.count LOOP
+                    v_value := v_json.get_string(v_keys(i));
+                    v_sql := v_sql || 'r_' || v_keys(i) || ' => :r_' || v_keys(i) || ', ';
+                END LOOP;
+
+                v_sql := RTRIM(v_sql, ', ') || '); END;';
+                DBMS_OUTPUT.PUT_LINE('SQL: ' || v_sql);
+
+                EXECUTE IMMEDIATE v_sql USING OUT v_value;
+
+                UPDATE tfm_runs SET status = 'C', results = '{"value":"' || v_value || '"}' WHERE urid = r.urid;
+                COMMIT;
+
+            EXCEPTION 
+                WHEN OTHERS THEN
+                    UPDATE tfm_runs SET status = 'E' WHERE urid = r.urid;
+                    COMMIT;
+            END;
+
+            UPDATE tfm_runs SET 
+                finished = SYSTIMESTAMP,
+                duration = (CAST(SYSTIMESTAMP AS DATE) - CAST(started AS DATE)) * 86400
+            WHERE urid = r.urid;
+            COMMIT;
+
+
+        END LOOP;
+    END;
 
 END;
 /

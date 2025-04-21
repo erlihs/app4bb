@@ -15,5 +15,8 @@
   "options": "Options",
   "details": "Details",
   "started": "Started",
-  "duration": "Duration"
+  "duration": "Duration",
+  "status": "Status",
+  "created": "Created",
+  "results": "Results"
 }

@@ -36,9 +36,18 @@ CREATE OR REPLACE PACKAGE pck_tfm IS -- The Flow Master
         r_runs OUT SYS_REFCURSOR -- List of runs [{urid: guid, name: name, started: 20251231T1612, duration: 1m 20s, coins: 1.00}]
     );
 
+    PROCEDURE put_run(
+        p_ufid VARCHAR2, -- Unique run identifier
+        p_options CLOB, -- Options
+        r_errors OUT SYS_REFCURSOR, -- List of errors [{name: name, message: message}]
+        r_urid OUT VARCHAR2 -- Unique run identifier
+    );
+
     PROCEDURE get_balance( -- Get balance for the Flow Master
         r_balance OUT SYS_REFCURSOR -- List of balance [{period: H, used: 0.30, limit: 1.00, balance: 0.70}]
     );
+
+    PROCEDURE job_tfm; -- Job for the Flow Master
 
 END;
 /

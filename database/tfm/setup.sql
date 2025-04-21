@@ -34,7 +34,7 @@ CREATE TABLE tfm_balance (
     period CHAR(1 CHAR) NOT NULL,
     used NUMBER(10, 2) NOT NULL,
     limit NUMBER(10, 2) NOT NULL,
-    balance NUMBER(10, 2) NOT NULL
+    remaining NUMBER(10, 2) NOT NULL
 )
 /
 
@@ -43,15 +43,15 @@ CREATE TABLE tfm_balance (
 CREATE TABLE tfm_limits (
     uuid CHAR(32),
     period CHAR(1 CHAR) NOT NULL,
-    coins NUMBER(10, 2) NOT NULL
+    limit NUMBER(10, 2) NOT NULL
 )
 /
 
-INSERT INTO tfm_limits (uuid, period, coins) VALUES (NULL, 'H', 1.00);
-INSERT INTO tfm_limits (uuid, period, coins) VALUES (NULL, 'D', 1.00);
-INSERT INTO tfm_limits (uuid, period, coins) VALUES (NULL, 'M', 1.00);
-INSERT INTO tfm_limits (uuid, period, coins) VALUES (NULL, 'Q', 1.00);
-INSERT INTO tfm_limits (uuid, period, coins) VALUES (NULL, 'Y', 1.00);
+INSERT INTO tfm_limits (uuid, period, limit) VALUES (NULL, 'H', 1.00);
+INSERT INTO tfm_limits (uuid, period, limit) VALUES (NULL, 'D', 1.00);
+INSERT INTO tfm_limits (uuid, period, limit) VALUES (NULL, 'M', 1.00);
+INSERT INTO tfm_limits (uuid, period, limit) VALUES (NULL, 'Q', 1.00);
+INSERT INTO tfm_limits (uuid, period, limit) VALUES (NULL, 'Y', 1.00);
 
 COMMIT;
 
@@ -67,7 +67,19 @@ CREATE TABLE tfm_flows (
 )
 /
 
+INSERT INTO tfm_flows (ufid, name, description, options, coins)
+VALUES ('3344d66faf9127a1e063eb9f12ac65c0', 'Random Joke', 'Generate a random joke', '
+[
+    {
+        "name": "Random joke"
+    }
+]
+', 0.01);
+
+COMMIT;
+
 -- tfm_runs
+
 CREATE TABLE tfm_runs (
     urid CHAR(32) NOT NULL,
     ufid CHAR(32) NOT NULL,
@@ -75,8 +87,9 @@ CREATE TABLE tfm_runs (
     options CLOB,
     results CLOB,
     coins NUMBER(10, 2) NOT NULL,
-    status CHAR(1 CHAR) DEFAULT 'A' NOT NULL,
-    started TIMESTAMP(6) DEFAULT SYSTIMESTAMP NOT NULL,
+    status CHAR(1 CHAR) DEFAULT 'P' NOT NULL,
+    created TIMESTAMP(6) DEFAULT SYSTIMESTAMP NOT NULL,
+    started TIMESTAMP(6),
     finished TIMESTAMP(6),
     duration NUMBER(19)
 )
@@ -115,26 +128,20 @@ CREATE INDEX tfm_agents_name on tfm_agents (name)
 
 DECLARE
     v_uaid VARCHAR2(32) := '331d92c1e93acc1ce063eb9f12ac5ac9';
-    v_name VARCHAR2(200) := 'Ask AI Assistant';
-    v_description VARCHAR2(2000) := 'Classical OpenAI Chat GPT 4.0 taking text as input and returning text as output';
+    v_name VARCHAR2(200) := 'Random joke';
+    v_description VARCHAR2(2000) := 'Classical OpenAI Chat GPT 4.0 generating a random joke';
     v_options CLOB := '
 {
-    "agent":"pck_openai_api.completion",
-    "agent_key": "openai_api_key",
-    "agent_options": {
+    "agent":"pck_api_openai.completion",
+    "params": {
+        "api_key": "${openai_api_key}",
         "model": "gpt-4",
-        "prompt": "Provide answer in plain text."
+        "prompt": "Generate a random joke",
+        "message":""
     },
-    "input": [
-        {
-            "type": "text", 
-            "name": "prompt", 
-            "label": "Ask the question", 
-            "rules": [
-                { "type": "required", "params": "true", "message": "Text is required" }
-            ]
-        }
-    ]
+    "result":{
+        "message": ""
+    }
 }
     ';
     v_coins NUMBER(10, 2) := 0.01;
