@@ -618,6 +618,10 @@ async function fetch(newPage?: number) {
   )
 }
 
+defineExpose({
+  fetch
+})
+
 onMounted(async () => {
   fetch()
 })
