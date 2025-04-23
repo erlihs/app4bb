@@ -190,24 +190,28 @@ CREATE TABLE tfm_keys (
     name VARCHAR2(200 CHAR) NOT NULL,
     key VARCHAR2(200 CHAR) NOT NULL,
     description VARCHAR2(2000 CHAR)
-) 
-/
+);
 
 COMMENT ON TABLE tfm_keys IS 'Table to store the keys';
 COMMENT ON COLUMN tfm_keys.ukid IS 'Unique key identifier';
 COMMENT ON COLUMN tfm_keys.name IS 'Key name';
 COMMENT ON COLUMN tfm_keys.key IS 'Key value';
 COMMENT ON COLUMN tfm_keys.description IS 'Key description';
-BEGIN NULL; END;
-/
 
-ALTER TABLE tfm_keys ADD CONSTRAINT tfm_keys_ukid PRIMARY KEY (ukid)
-/
+ALTER TABLE tfm_keys ADD CONSTRAINT tfm_keys_ukid PRIMARY KEY (ukid);
 
-CREATE INDEX tfm_keys_name on tfm_keys (name)
-/
+CREATE INDEX tfm_keys_name on tfm_keys (name);
 
 INSERT INTO tfm_keys (ukid, name, key, description) 
-VALUES ('3344d66faf9027a1e063eb9f12ac65c0', 'openai_api_key', '#key#', 'OpenAI API Key');
+SELECT LOWER(SYS_GUID()), 'openai_api_key', content, 'OpenAI API Key'
+FROM app_settings
+WHERE id = 'APP_OPENAI_API_KEY';
 
 COMMIT;
+
+-- job
+
+BEGIN
+    pck_api_jobs.remove('tfm');
+    pck_api_jobs.add('tfm','pck_tfm.job_tfm', NULL, 'FREQ=SECONDLY; INTERVAL=30', 'The Flow Master Job');
+END;

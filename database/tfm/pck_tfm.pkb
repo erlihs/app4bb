@@ -133,7 +133,7 @@ CREATE OR REPLACE PACKAGE BODY pck_tfm IS
         JOIN tfm_flows f ON f.ufid = r.ufid
         WHERE (v_uuid IS NULL OR r.uuid = v_uuid)
         AND (p_search IS NULL OR name LIKE '%' || TRIM(UPPER(p_search)) || '%')
-        ORDER BY name
+        ORDER BY created DESC
         OFFSET p_offset ROWS FETCH NEXT p_limit ROWS ONLY;
 
     END;

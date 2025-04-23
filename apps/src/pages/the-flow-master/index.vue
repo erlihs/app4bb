@@ -10,6 +10,7 @@
         <v-tabs-window v-model="tfm.tab">
           <v-tabs-window-item value="runs">
             <v-bsb-table
+              ref="runs"
               :options="runsOptions"
               :loading="loading"
               :t="t"
@@ -81,6 +82,8 @@
 </template>
 
 <script setup lang="ts">
+import type { BsbTableData } from '@/components'
+
 definePage({
   meta: {
     role: 'public',
@@ -103,6 +106,7 @@ const tfm = useStorage<{ tab: string; balanceTab: string }>('tfm', {
   balanceTab: 'D',
 })
 
+const runs = ref<{ fetch: (page?: number) => void } | null>(null)
 const runsOptions = {
   key: 'urid',
   itemsPerPage: 3,
@@ -112,9 +116,6 @@ const runsOptions = {
     },
     {
       name: 'created',
-    },
-    {
-      name: 'started',
     },
     {
       name: 'duration',
@@ -190,10 +191,13 @@ const flowsOptions = {
     },
     {
       name: 'actions',
-      actions: [{ name: 'history' }, { name: 'run' }],
+      actions: [
+        { name: 'history', format: { icon: '$mdiHistory' } },
+        { name: 'run', format: { icon: '$mdiRun', variant: 'flat' } },
+      ],
     },
   ],
-  actions: [{ name: 'new' }],
+  actions: isAdmin ? [{ name: 'new', format: { icon: '$mdiPlus', variant: 'flat' } }] : [],
 }
 
 async function handleFlowsFetch(
@@ -215,8 +219,12 @@ async function handleFlowsAction(
   actionData: Ref<BsbTableData | BsbTableData[]>,
   value?: BsbTableData,
 ) {
-  const { data, error } = await http.put(`${actionName}/`, { ...value })
-  console.log('action', data, error)
+  loading.value = true
+  await http.put(`${actionName}/`, { ...value })
+  await handleBalanceRefresh()
+  runs.value?.fetch(1)
+  if (actionName === 'run') tfm.value.tab = 'runs'
+  loading.value = false
 }
 
 type Balance = {
