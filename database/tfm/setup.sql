@@ -67,14 +67,40 @@ CREATE TABLE tfm_flows (
 )
 /
 
+ALTER TABLE tfm_flows ADD CONSTRAINT tfm_flows_ufid PRIMARY KEY (ufid);
+ALTER TABLE tfm_flows ADD CONSTRAINT tfm_flows_status CHECK (status IN ('A', 'I'));
+ALTER TABLE tfm_flows ADD CONSTRAINT tfm_flows_options CHECK (options IS JSON);
+CREATE INDEX tfm_flows_name on tfm_flows (name);
+
 INSERT INTO tfm_flows (ufid, name, description, options, coins)
-VALUES ('3344d66faf9127a1e063eb9f12ac65c0', 'Random Joke', 'Generate a random joke', '
+VALUES (LOWER(SYS_GUID()), 'Random joke', 'Generate a random joke', '
 [
     {
-        "name": "Random joke"
+        "name": "Random joke",
+        "params": {
+            "message": ""
+        },
+        "result": {
+            "message": "text"
+        }
     }
 ]
 ', 0.01);
+
+INSERT INTO tfm_flows (ufid, name, description, options, coins)
+VALUES (LOWER(SYS_GUID()), 'Random joke about animals', 'Generate a random joke about animals', '
+[
+    {
+        "name": "Random joke",
+        "params": {
+            "message": "About animals"
+        },
+        "result": {
+            "message": "text"
+        }
+    }
+]
+', 0.02);
 
 COMMIT;
 
@@ -123,31 +149,35 @@ ALTER TABLE tfm_agents ADD CONSTRAINT tfm_agents_uaid PRIMARY KEY (uaid)
 ALTER TABLE tfm_agents ADD CONSTRAINT csc_tfm_agents_status CHECK (status IN ('A', 'I'))
 /
 
+ALTER TABLE tfm_agents ADD CONSTRAINT csc_tfm_agents_options CHECK (options IS JSON);
+
 CREATE INDEX tfm_agents_name on tfm_agents (name)
 /
 
 DECLARE
-    v_uaid VARCHAR2(32) := '331d92c1e93acc1ce063eb9f12ac5ac9';
-    v_name VARCHAR2(200) := 'Random joke';
-    v_description VARCHAR2(2000) := 'Classical OpenAI Chat GPT 4.0 generating a random joke';
     v_options CLOB := '
 {
-    "agent":"pck_api_openai.completion",
-    "params": {
+    "name": "Random joke",
+    "description": "Classical OpenAI Chat GPT 4.0 generating a random joke",
+    "coins": 0.01,
+    "method":"pck_api_openai.completion",
+    "params":{
         "api_key": "${openai_api_key}",
         "model": "gpt-4",
         "prompt": "Generate a random joke",
-        "message":""
+        "message": "${message}"
     },
     "result":{
-        "message": ""
+        "message": "text"
     }
 }
     ';
-    v_coins NUMBER(10, 2) := 0.01;
+    v_name VARCHAR2(200) := JSON_VALUE(v_options, '$.name');
+    v_description VARCHAR2(2000) := JSON_VALUE(v_options, '$.description');
+    v_coins NUMBER(10, 2) := JSON_VALUE(v_options, '$.coins');
 BEGIN
     INSERT INTO tfm_agents (uaid, name, description, options, coins)
-    VALUES (v_uaid, v_name, v_description, v_options, v_coins);
+    VALUES (LOWER(SYS_GUID()), v_name, v_description, v_options, v_coins);
 
     COMMIT;
 END;

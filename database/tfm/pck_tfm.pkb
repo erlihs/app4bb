@@ -218,18 +218,41 @@ CREATE OR REPLACE PACKAGE BODY pck_tfm IS
     END;   
 
     PROCEDURE job_tfm IS
-        v_agent_name VARCHAR2(200 CHAR);
-        v_agent_options CLOB;
         v_sql CLOB;
-        --TYPE t_params IS TABLE OF CLOB INDEX BY VARCHAR2(30 CHAR); 
-        --v_params t_params;
-        v_agent CLOB;
+        v_method CLOB;
         v_params CLOB;
         v_result CLOB;
         v_json JSON_OBJECT_T;
         v_keys JSON_KEY_LIST;
         v_value CLOB;
+
+        TYPE t_storage IS TABLE OF CLOB INDEX BY VARCHAR2(30 CHAR); 
+        v_storage t_storage;
+
+        PROCEDURE write(p_key IN VARCHAR2, p_value IN CLOB) IS
+        BEGIN
+            v_storage(p_key) := p_value;
+        END;
+
+        FUNCTION read(p_key IN VARCHAR2) RETURN CLOB IS
+            v_value CLOB;   
+        BEGIN   
+            v_value := v_storage(p_key);
+            RETURN v_value;
+        END;    
+
     BEGIN
+
+        FOR k IN (
+            SELECT 
+                name,
+                key
+            FROM tfm_keys
+        ) LOOP
+            v_storage(k.name) := k.key;
+        END LOOP;
+
+
         FOR r IN (
             SELECT 
                 urid,
@@ -239,23 +262,31 @@ CREATE OR REPLACE PACKAGE BODY pck_tfm IS
             FETCH NEXT 10 ROWS ONLY   
         ) LOOP
 
+            v_params := JSON_QUERY(r.options, '$.params');
+            v_keys := JSON_OBJECT_T.parse(v_params).get_keys;
+            FOR i IN 1 .. v_keys.count LOOP
+                v_value := JSON_OBJECT_T.parse(v_params).get_string(v_keys(i));
+                write(v_keys(i), v_value);
+            END LOOP;
+
+
             UPDATE tfm_runs SET status = 'R', started = SYSTIMESTAMP WHERE urid = r.urid;
             COMMIT;
 
             BEGIN
 
                 SELECT 
-                    JSON_VALUE(options,'$.agent'), 
+                    JSON_VALUE(options,'$.method'), 
                     JSON_QUERY(options,'$.params'),
                     JSON_QUERY(options,'$.result')
                 INTO 
-                    v_agent,
+                    v_method,
                     v_params,
                     v_result
                 FROM tfm_agents 
                 WHERE name = JSON_VALUE(r.options, '$[0].name');
 
-                v_sql := 'BEGIN ' || v_agent || '(';
+                v_sql := 'BEGIN ' || v_method || '(';
 
 
                 v_json := JSON_OBJECT_T.parse(v_params);
@@ -264,8 +295,8 @@ CREATE OR REPLACE PACKAGE BODY pck_tfm IS
                 FOR i IN 1 .. v_keys.count LOOP
                     v_value := v_json.get_string(v_keys(i));
 
-                    IF v_value = '${openai_api_key}' THEN
-                        SELECT key INTO v_value FROM tfm_keys WHERE name = 'openai_api_key';
+                    IF v_value LIKE '${%' THEN
+                        v_value := read(SUBSTR(v_value, 3, LENGTH(v_value) - 3));
                     END IF;
 
                     v_sql := v_sql || 'p_' || v_keys(i) || ' => ''' || v_value || ''', ';
@@ -285,13 +316,18 @@ CREATE OR REPLACE PACKAGE BODY pck_tfm IS
 
                 EXECUTE IMMEDIATE v_sql USING OUT v_value;
 
-                UPDATE tfm_runs SET status = 'C', results = '{"value":"' || v_value || '"}' WHERE urid = r.urid;
+                v_params := JSON_QUERY(r.options, '$.result');
+                v_keys := JSON_OBJECT_T.parse(v_params).get_keys;
+                --FOR i IN 1 .. v_keys.count LOOP
+                    --v_value := JSON_OBJECT_T.parse(v_params).get_string(v_keys(i));
+                --END LOOP;
+                UPDATE tfm_runs SET status = 'C', results = '{"' || v_keys(1) || '":"' || v_value || '"}' WHERE urid = r.urid;
                 COMMIT;
 
-            EXCEPTION 
-                WHEN OTHERS THEN
-                    UPDATE tfm_runs SET status = 'E' WHERE urid = r.urid;
-                    COMMIT;
+            --EXCEPTION 
+                --WHEN OTHERS THEN
+                    --UPDATE tfm_runs SET status = 'E' WHERE urid = r.urid;
+                    --COMMIT;
             END;
 
             UPDATE tfm_runs SET 
