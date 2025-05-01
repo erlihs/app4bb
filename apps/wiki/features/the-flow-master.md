@@ -38,9 +38,11 @@ Manage agents
 
 - **tfm_flows** - workflow data
 
-- **tfm_history** - workflow data
+- **tfm_runs** - runs data
 
 - **tfm_balance** - token usage
+
+- **tfm_keys** - agent keys
 
 //todo
 

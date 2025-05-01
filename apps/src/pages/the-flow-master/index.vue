@@ -78,11 +78,27 @@
         <v-btn v-if="isAdmin" :to="'/the-flow-master/admin'" class="mt-4"> Admin </v-btn>
       </v-col>
     </v-row>
+    <v-dialog v-model="run" :width="mobile ? '100%' : '75%'">
+      <v-card>
+        <v-card-title>
+          <h2>{{ t('Run Flow') }}</h2>
+        </v-card-title>
+        <v-card-text>
+          <v-bsb-form
+            :options="runOptionsForm"
+            :loading="loading"
+            :t="t"
+            @submit="handleRunSubmit"
+            @cancel="handleRunCancel"
+          />
+        </v-card-text>
+      </v-card>
+    </v-dialog>
   </v-container>
 </template>
 
 <script setup lang="ts">
-import type { BsbTableData } from '@/components'
+import type { BsbFormOptions, BsbTableData } from '@/components'
 
 definePage({
   meta: {
@@ -98,6 +114,7 @@ definePage({
 const baseURL = (import.meta.env.DEV ? '/api/' : import.meta.env.VITE_API_URI) + 'tfm-v1/'
 const http = useHttp({ baseURL, headers: { 'Cache-Control': 'no-cache' } })
 
+const { mobile } = useDisplay()
 const { t } = useI18n()
 const loading = ref(false)
 const isAdmin = useAuthStore().hasRole('ADMIN')
@@ -105,6 +122,31 @@ const tfm = useStorage<{ tab: string; balanceTab: string }>('tfm', {
   tab: 'flows',
   balanceTab: 'D',
 })
+
+const run = ref(false)
+const runOptions = ref<{ ufid?: string; options?: Record<string, unknown> }>({})
+const runOptionsForm = ref<BsbFormOptions>({ fields: [] })
+
+async function handleRunSubmit(value?: BsbTableData) {
+  loading.value = true
+
+  const ufid = runOptions.value.ufid
+  const options = JSON.stringify({ ...runOptions.value.options, ...{ params: value } })
+
+  await http.put('run/', { ufid, options })
+  await handleBalanceRefresh()
+  runs.value?.fetch(1)
+  run.value = false
+  tfm.value.tab = 'runs'
+  loading.value = false
+
+  loading.value = false
+}
+
+async function handleRunCancel() {
+  console.log('cancel')
+  run.value = false
+}
 
 const runs = ref<{ fetch: (page?: number) => void } | null>(null)
 const runsOptions = {
@@ -219,11 +261,22 @@ async function handleFlowsAction(
   actionData: Ref<BsbTableData | BsbTableData[]>,
   value?: BsbTableData,
 ) {
+  if (!value) return
   loading.value = true
-  await http.put(`${actionName}/`, { ...value })
-  await handleBalanceRefresh()
-  runs.value?.fetch(1)
-  if (actionName === 'run') tfm.value.tab = 'runs'
+  if (actionName === 'run') {
+    if (value.options && typeof value.options === 'object' && 'form' in value.options) {
+      runOptions.value = value
+      runOptionsForm.value = value.options.form as BsbFormOptions
+      run.value = true
+    } else {
+      const ufid = value.ufid
+      const options = JSON.stringify(value.options)
+      await http.put(`${actionName}/`, { ufid, options })
+      await handleBalanceRefresh()
+      runs.value?.fetch(1)
+      tfm.value.tab = 'runs'
+    }
+  }
   loading.value = false
 }
 

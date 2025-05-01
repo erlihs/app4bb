@@ -72,35 +72,78 @@ ALTER TABLE tfm_flows ADD CONSTRAINT tfm_flows_status CHECK (status IN ('A', 'I'
 ALTER TABLE tfm_flows ADD CONSTRAINT tfm_flows_options CHECK (options IS JSON);
 CREATE INDEX tfm_flows_name on tfm_flows (name);
 
-INSERT INTO tfm_flows (ufid, name, description, options, coins)
-VALUES (LOWER(SYS_GUID()), 'Random joke', 'Generate a random joke', '
-[
-    {
-        "name": "Random joke",
-        "params": {
-            "message": ""
-        },
-        "result": {
-            "message": "text"
-        }
-    }
-]
-', 0.01);
 
-INSERT INTO tfm_flows (ufid, name, description, options, coins)
-VALUES (LOWER(SYS_GUID()), 'Random joke about animals', 'Generate a random joke about animals', '
-[
-    {
-        "name": "Random joke",
-        "params": {
-            "message": "About animals"
-        },
-        "result": {
-            "message": "text"
+INSERT INTO tfm_flows (ufid, name, description, coins, options)
+VALUES (LOWER(SYS_GUID()), 'Random joke about sports', 'Generate a random joke about sports', 0.02, '
+{
+    "name": "Random joke about sports",
+    "description": "Generates a random joke about sports",
+    "coins": 0.02,
+    "steps": {
+        "Random joke": {
+            "agent": "Ask Chat GPT 4.0",
+            "params": {
+                "message": "Tell me random joke about sports"
+            }
         }
-    }
-]
-', 0.02);
+    },
+    "report": "{{ Random joke }}"
+}
+');
+
+INSERT INTO tfm_flows (ufid, name, description, coins, options)
+VALUES (LOWER(SYS_GUID()), 'Random jokes about people and plants', 'Generate a random jokes about people and plants', 0.04, '
+{
+    "name": "Random joke about people and plants",
+    "description": "Generates a random joke about people and plants",
+    "coins": 0.04,
+    "steps": {
+        "Random people joke": {
+            "agent": "Ask Chat GPT 4.0",
+            "params": {
+                "message": "Tell me random joke about people"
+            }
+        },
+        "Random plants joke": {
+            "agent": "Ask Chat GPT 4.0",
+            "params": {
+                "message": "Tell me random joke about plants"
+            }
+        }
+    },
+    "report": "##People\n\n{{ Random people joke }}\n\n## Plants\n\n{{ Random plants joke }}\n\n"
+}
+');
+
+INSERT INTO tfm_flows (ufid, name, description, coins, options)
+VALUES (LOWER(SYS_GUID()), 'Random joke about something', 'Generate a random joke about something', 0.02, '
+{
+    "name": "Random joke about something",
+    "description": "Generates a random joke about something",
+    "coins": 0.02,
+    "form":{
+        "fields":[
+            {
+                "name":"something",
+                "type":"text",
+                "label":"Write topic"
+            }
+        ],
+        "actions" : ["cancel", "submit"],
+        "actionSubmit" : "submit",
+        "actionCancel" : "cancel"
+    },
+    "steps": {
+        "Random joke": {
+            "agent": "Ask Chat GPT 4.0",
+            "params": {
+                "message": "Generate a random joke about {{ something }}"
+            }
+        }
+    },
+    "report": "{{ Random joke }}"
+}
+');
 
 COMMIT;
 
@@ -112,6 +155,7 @@ CREATE TABLE tfm_runs (
     uuid CHAR(32),
     options CLOB,
     results CLOB,
+    errors CLOB,
     coins NUMBER(10, 2) NOT NULL,
     status CHAR(1 CHAR) DEFAULT 'P' NOT NULL,
     created TIMESTAMP(6) DEFAULT SYSTIMESTAMP NOT NULL,
@@ -157,18 +201,22 @@ CREATE INDEX tfm_agents_name on tfm_agents (name)
 DECLARE
     v_options CLOB := '
 {
-    "name": "Random joke",
-    "description": "Classical OpenAI Chat GPT 4.0 generating a random joke",
+    "name": "Ask Chat GPT 4.0",
+    "description": "Classical OpenAI Chat GPT 4.0",
     "coins": 0.01,
     "method":"pck_api_openai.completion",
-    "params":{
-        "api_key": "${openai_api_key}",
+    "keys":{
+        "api_key": "openai_api_key"
+    },
+    "const":{
         "model": "gpt-4",
-        "prompt": "Generate a random joke",
-        "message": "${message}"
+        "prompt": ""
+    },    
+    "params":{
+        "message": ""
     },
     "result":{
-        "message": "text"
+        "message": ""
     }
 }
     ';

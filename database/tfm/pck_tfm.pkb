@@ -102,7 +102,7 @@ CREATE OR REPLACE PACKAGE BODY pck_tfm IS
             ufid AS "ufid",
             name AS "name",
             description AS "description",
-            options AS "options",
+            options AS "{}options",
             coins AS "coins"
         FROM tfm_flows
         WHERE (p_search IS NULL OR name LIKE '%' || TRIM(UPPER(p_search)) || '%')
@@ -215,32 +215,33 @@ CREATE OR REPLACE PACKAGE BODY pck_tfm IS
         FROM tfm_balance
        WHERE (v_uuid IS NULL OR uuid = v_uuid);
 
-    END;   
+    END;
 
     PROCEDURE job_tfm IS
-        v_sql CLOB;
-        v_method CLOB;
-        v_params CLOB;
-        v_result CLOB;
+        TYPE t_cache IS TABLE OF CLOB INDEX BY VARCHAR2(200 CHAR); 
+        v_cache t_cache;
+
+        v_api_keys t_cache;
+
         v_json JSON_OBJECT_T;
         v_keys JSON_KEY_LIST;
+
+        v_step JSON_OBJECT_T;
+        v_step_agent VARCHAR2(200 CHAR);
+        v_step_params JSON_OBJECT_T;
+        v_step_keys JSON_KEY_LIST;
+
+        v_agent_method CLOB;
+        v_agent_api_keys CLOB;
+        v_agent_const CLOB;
+        v_agent_params CLOB;
+        v_agent_result CLOB;
+        v_agent_sql CLOB;
+        v_agent_json JSON_OBJECT_T;
+        v_agent_keys JSON_KEY_LIST;
+
+        v_key VARCHAR2(200 CHAR);
         v_value CLOB;
-
-        TYPE t_storage IS TABLE OF CLOB INDEX BY VARCHAR2(30 CHAR); 
-        v_storage t_storage;
-
-        PROCEDURE write(p_key IN VARCHAR2, p_value IN CLOB) IS
-        BEGIN
-            v_storage(p_key) := p_value;
-        END;
-
-        FUNCTION read(p_key IN VARCHAR2) RETURN CLOB IS
-            v_value CLOB;   
-        BEGIN   
-            v_value := v_storage(p_key);
-            RETURN v_value;
-        END;    
-
     BEGIN
 
         FOR k IN (
@@ -249,95 +250,153 @@ CREATE OR REPLACE PACKAGE BODY pck_tfm IS
                 key
             FROM tfm_keys
         ) LOOP
-            v_storage(k.name) := k.key;
+            v_api_keys(k.name) := k.key;
         END LOOP;
-
 
         FOR r IN (
             SELECT 
                 urid,
-                options
+                JSON_QUERY(options, '$.params') AS params,
+                JSON_QUERY(options, '$.steps') AS steps,
+                JSON_VALUE(options, '$.report') AS report
             FROM tfm_runs
             WHERE status = 'P'
             FETCH NEXT 10 ROWS ONLY   
         ) LOOP
 
-            v_params := JSON_QUERY(r.options, '$.params');
-            v_keys := JSON_OBJECT_T.parse(v_params).get_keys;
-            FOR i IN 1 .. v_keys.count LOOP
-                v_value := JSON_OBJECT_T.parse(v_params).get_string(v_keys(i));
-                write(v_keys(i), v_value);
-            END LOOP;
-
-
-            UPDATE tfm_runs SET status = 'R', started = SYSTIMESTAMP WHERE urid = r.urid;
-            COMMIT;
-
             BEGIN
 
-                SELECT 
-                    JSON_VALUE(options,'$.method'), 
-                    JSON_QUERY(options,'$.params'),
-                    JSON_QUERY(options,'$.result')
-                INTO 
-                    v_method,
-                    v_params,
-                    v_result
-                FROM tfm_agents 
-                WHERE name = JSON_VALUE(r.options, '$[0].name');
-
-                v_sql := 'BEGIN ' || v_method || '(';
-
-
-                v_json := JSON_OBJECT_T.parse(v_params);
-                v_keys := v_json.get_keys;
-
-                FOR i IN 1 .. v_keys.count LOOP
-                    v_value := v_json.get_string(v_keys(i));
-
-                    IF v_value LIKE '${%' THEN
-                        v_value := read(SUBSTR(v_value, 3, LENGTH(v_value) - 3));
-                    END IF;
-
-                    v_sql := v_sql || 'p_' || v_keys(i) || ' => ''' || v_value || ''', ';
-
-                END LOOP;
-
-                v_json := JSON_OBJECT_T.parse(v_result);
-                v_keys := v_json.get_keys;
-
-                FOR i IN 1 .. v_keys.count LOOP
-                    v_value := v_json.get_string(v_keys(i));
-                    v_sql := v_sql || 'r_' || v_keys(i) || ' => :r_' || v_keys(i) || ', ';
-                END LOOP;
-
-                v_sql := RTRIM(v_sql, ', ') || '); END;';
-                DBMS_OUTPUT.PUT_LINE('SQL: ' || v_sql);
-
-                EXECUTE IMMEDIATE v_sql USING OUT v_value;
-
-                v_params := JSON_QUERY(r.options, '$.result');
-                v_keys := JSON_OBJECT_T.parse(v_params).get_keys;
-                --FOR i IN 1 .. v_keys.count LOOP
-                    --v_value := JSON_OBJECT_T.parse(v_params).get_string(v_keys(i));
-                --END LOOP;
-                UPDATE tfm_runs SET status = 'C', results = '{"' || v_keys(1) || '":"' || v_value || '"}' WHERE urid = r.urid;
+                UPDATE tfm_runs SET status = 'R', started = SYSTIMESTAMP WHERE urid = r.urid;
                 COMMIT;
 
-            --EXCEPTION 
-                --WHEN OTHERS THEN
-                    --UPDATE tfm_runs SET status = 'E' WHERE urid = r.urid;
-                    --COMMIT;
-            END;
+                -- get params and write to cache
+                IF (r.params IS NOT NULL) THEN
+                    v_json := JSON_OBJECT_T.parse(r.params);
+                    v_keys := v_json.get_keys;
+                    FOR i IN 1 .. v_keys.count LOOP
+                        v_key := v_keys(i);
+                        v_value := v_json.get_string(v_keys(i));
+                        v_cache(v_key) := v_value;
+                    END LOOP;
+                END IF;
 
-            UPDATE tfm_runs SET 
-                finished = SYSTIMESTAMP,
-                duration = (CAST(SYSTIMESTAMP AS DATE) - CAST(started AS DATE)) * 86400
-            WHERE urid = r.urid;
-            COMMIT;
+                -- iterate over the steps
+                v_json := JSON_OBJECT_T.parse(r.steps);
+                v_keys := v_json.get_keys;
+                FOR i IN 1 .. v_keys.count LOOP
+                    v_step := JSON_OBJECT_T(v_json.get(v_keys(i)));
 
+                    -- get agent name
+                    v_step_agent := v_step.get_string('agent');
+                    
+                    -- get step params and write to cache
+                    v_step_params := JSON_OBJECT_T(v_step.get('params'));
+                    v_step_keys := v_step_params.get_keys;
+                    FOR j IN 1 .. v_step_keys.count LOOP
+                        v_key := v_step_keys(j);
+                        v_value := v_step_params.get_string(v_step_keys(j));
+                        v_cache(v_key) := v_value;
+                    END LOOP;
+                    
+                    -- get step agent details
+                    SELECT 
+                        JSON_VALUE(options, '$.method') AS method,
+                        JSON_QUERY(options, '$.keys') AS keys,
+                        JSON_QUERY(options, '$.const') AS const,
+                        JSON_QUERY(options, '$.params') AS params,
+                        JSON_QUERY(options, '$.result') AS result
+                    INTO v_agent_method, v_agent_api_keys, v_agent_const, v_agent_params, v_agent_result
+                    FROM tfm_agents 
+                    WHERE name = v_step_agent;
+
+                    -- run agent
+                    v_agent_sql := 'BEGIN ' || v_agent_method || '(';
+
+                    v_agent_json := JSON_OBJECT_T.parse(v_agent_api_keys);
+                    v_agent_keys := v_agent_json.get_keys;
+                    FOR j IN 1 .. v_agent_keys.count LOOP
+                        v_value := v_agent_json.get_string(v_agent_keys(j));
+                        v_value := v_api_keys(v_value);
+                        v_agent_sql := v_agent_sql || 'p_' || v_agent_keys(j) || ' => ''' || v_value || ''', ';
+                    END LOOP;
+
+                    v_agent_json := JSON_OBJECT_T.parse(v_agent_const);
+                    v_agent_keys := v_agent_json.get_keys;
+                    FOR j IN 1 .. v_agent_keys.count LOOP
+                        v_value := v_agent_json.get_string(v_agent_keys(j));
+                        v_agent_sql := v_agent_sql || 'p_' || v_agent_keys(j) || ' => ''' || v_value || ''', ';
+                    END LOOP;
+
+                    v_agent_json := JSON_OBJECT_T.parse(v_agent_params);
+                    v_agent_keys := v_agent_json.get_keys;
+                    FOR j IN 1 .. v_agent_keys.count LOOP
+                        v_key := v_agent_keys(j);
+                        IF v_cache.EXISTS(v_key) THEN
+                            v_value := v_cache(v_key);
+
+                            DECLARE
+                                k VARCHAR2(30 CHAR);
+                            BEGIN
+                                k := v_cache.FIRST;
+                                WHILE k IS NOT NULL LOOP
+                                    v_value := REPLACE(v_value, '{{ ' || k || ' }}', v_cache(k));
+                                    k := v_cache.NEXT(k);
+                                END LOOP;
+                            END;
+
+                            v_agent_sql := v_agent_sql || 'p_' || v_key || ' => ''' || v_value || ''', ';
+                        END IF;
+                    END LOOP;
+
+                    v_agent_json := JSON_OBJECT_T.parse(v_agent_result);
+                    v_agent_keys := v_agent_json.get_keys;
+                    FOR j IN 1 .. v_agent_keys.count LOOP
+                        v_agent_sql := v_agent_sql || 'r_' || v_agent_keys(j) || ' => :r_' || v_agent_keys(j) || ', ';
+                    END LOOP;
+
+                    v_agent_sql := RTRIM(v_agent_sql, ', ') || '); END;';
+
+                    v_cache('DEBUG SQL') := v_agent_sql;
+
+                    EXECUTE IMMEDIATE v_agent_sql USING OUT v_value;
+
+                    v_cache(v_keys(i)) := v_value; 
+
+                END LOOP;
+
+
+                v_value := r.report;
+                DECLARE
+                    k VARCHAR2(30 CHAR);
+                BEGIN
+                    k := v_cache.FIRST;
+                    WHILE k IS NOT NULL LOOP
+                        v_value := REPLACE(v_value, '{{ ' || k || ' }}', v_cache(k));
+                        k := v_cache.NEXT(k);
+                    END LOOP;
+                END;
+
+                UPDATE tfm_runs SET 
+                    status = 'C', 
+                    results = v_value,
+                    finished = SYSTIMESTAMP,
+                    duration = (CAST(SYSTIMESTAMP AS DATE) - CAST(started AS DATE)) * 86400
+                WHERE urid = r.urid;
+                COMMIT;
+
+            EXCEPTION
+                WHEN OTHERS THEN
+                    UPDATE tfm_runs SET 
+                        status = 'E', 
+                        errors =  SUBSTR(dbms_utility.format_error_backtrace, 1, 2000),
+                        finished = SYSTIMESTAMP,
+                        duration = (CAST(SYSTIMESTAMP AS DATE) - CAST(started AS DATE)) * 86400
+                    WHERE urid = r.urid;
+                    COMMIT; 
+            END;           
 
         END LOOP;
+
     END;
 
 END;
