@@ -1,9 +1,13 @@
 {
-  "name": "Name",
+  "name": "Nom",
   "description": "Description",
   "actions": "Actions",
-  "Name": "Name",
+  "Name": "Nom",
   "Description": "Description",
-  "title": "Title",
-  "new": "New"
+  "title": "Titre",
+  "new": "Nouveau",
+  "created": "Créé",
+  "duration": "Durée",
+  "status": "Statut",
+  "results": "Résultats"
 }
