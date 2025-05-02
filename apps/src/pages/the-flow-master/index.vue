@@ -189,7 +189,10 @@ const runsOptions = {
           form: {
             fields: [
               {
+                type: 'textarea',
                 name: 'results',
+                rows: 10,
+                readonly: true,
               },
             ],
             actions: [{ name: 'cancel' }],
