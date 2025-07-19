@@ -7,5 +7,6 @@
   "app.messages.welcome": "App messages welcome",
   "Request failed with status code 403": "Request failed with status code 403",
   "you.are.not.allowed.to.access.this.page": "You are not allowed to access this page",
-  "copied.to.clipboard": "Copied to clipboard"
+  "copied.to.clipboard": "Copied to clipboard",
+  "Request failed with status code 500": "Request failed with status code 500"
 }
