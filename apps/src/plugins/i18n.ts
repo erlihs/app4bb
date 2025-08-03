@@ -1,6 +1,8 @@
 import { createI18n } from 'vue-i18n'
 import messages from '@intlify/unplugin-vue-i18n/messages'
 
+const isDev = process.env.NODE_ENV === 'development' || (import.meta as any).env?.DEV
+
 const i18n = createI18n({
   legacy: false,
   globalInjection: true,
@@ -8,7 +10,7 @@ const i18n = createI18n({
   fallbackLocale: 'en',
   fallbackWarn: false,
   messages,
-  missing: (locale: string, key: string) => {
+  missing: isDev ? (locale: string, key: string) => {
     fetch('/i18n-add', {
       method: 'POST',
       body: JSON.stringify({
@@ -18,7 +20,7 @@ const i18n = createI18n({
         'Content-Type': 'application/json',
       },
     })
-  },
+  } : undefined,
 })
 
 export default i18n
